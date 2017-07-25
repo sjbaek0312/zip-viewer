@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="com.lab2.mapper.FileMapper">
+
+	<insert id="insert">
+		insert into zip_viewer.file (file_id, user_id, file_name, file_size, file_upload_time) values
+		(#{file_id}, #{user_id}, #{file_name}, #{file_size}, #{file_upload_time})
+	</insert>
+
+	<select id="listAll" resultType="com.lab2.domain.FileVO">
+		<![CDATA[
+		select
+		 *
+		from
+		 zip_viewer.file
+		]]>
+	</select>
+
+</mapper>
