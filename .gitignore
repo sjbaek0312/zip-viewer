@@ -44,7 +44,7 @@ local.properties
 # External tool builders
 .externalToolBuilders/
 
-# Locally stored ¡°Eclipse launch configurations¡±
+# Locally stored Â¡Â°Eclipse launch configurationsÂ¡Â±
 *.launch
 
 # CDT-specific
@@ -61,7 +61,6 @@ local.properties
 
 ### Maven ###
 target/
-*.pom.xml
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
