@@ -11,7 +11,7 @@ import com.naver.zipviewer.domain.FileVO;
 public class FileDAO {
 
 	@Autowired private SqlSession sqlSession;
-	private static String namespace = "com.lab2.mapper.FileMapper";
+	private static String namespace = "com.naver.zipviewer.mapper.FileMapper";
 	
 	public void insert(FileVO vo)
 	{

@@ -8,7 +8,7 @@ public class FileVO {
 	private String userId;
 	private String fileName;
 	private long fileSize;
-	private Date fileUploadTime;
+	private long fileUploadTime;
 	
 	public long getFileId() {
 		return fileId;
@@ -34,10 +34,10 @@ public class FileVO {
 	public void setFileSize(long fileSize) {
 		this.fileSize = fileSize;
 	}
-	public Date getFileUploadTime() {
+	public long getFileUploadTime() {
 		return fileUploadTime;
 	}
-	public void setFileUploadTime(Date fileUploadTime) {
+	public void setFileUploadTime(long fileUploadTime) {
 		this.fileUploadTime = fileUploadTime;
 	}
 }

@@ -10,7 +10,7 @@
 		(#{fileId}, #{userId}, #{fileName}, #{fileSize}, #{fileUploadTime})
 	</insert>
 
-	<select id="listAll" resultMap="com.naver.zipviewer.domain.FileVO">
+	<select id="listAll" resultType="com.naver.zipviewer.domain.FileVO">
 		SELECT
 		 file_id AS fileId, user_id AS userId, file_name AS fileName, file_size AS fileSize, file_upload_time AS fileUploadTime
 		FROM
