@@ -37,14 +37,6 @@ public class FileController {
 		try
 		{
 			voList = service.listAll();
-		/*	
-			for (FileVO vo : voList)
-			{
-				System.out.println(vo.getFileId());
-				System.out.println(vo.getFileName());
-			}
-
-			System.out.println(service.listAll());*/
 			return new ResponseEntity<>(voList, HttpStatus.OK);
 		}
 		catch(Exception e)

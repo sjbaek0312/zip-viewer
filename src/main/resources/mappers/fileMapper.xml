@@ -7,15 +7,24 @@
 
 	<insert id="insert">
 		insert into zip_viewer.file (file_id, user_id, file_name, file_size, file_upload_time) values
-		(#{file_id}, #{user_id}, #{file_name}, #{file_size}, #{file_upload_time})
+		(#{fileId}, #{userId}, #{fileName}, #{fileSize}, #{fileUploadTime})
 	</insert>
 
-	<select id="listAll" resultType="com.lab2.domain.FileVO">
+	<resultMap id="userFileMap" type="com.lab2.domain.FileVO">
+	        <id property="fileId" column="file_id"/>
+	        <result property="userId" column="user_id"/>
+	        <result property="fileName" column="file_name"/>
+	        <result property="fileSize" column="file_size"/>
+	        <result property="fileUploadTime" column="file_upload_time"/>
+	</resultMap>
+	<select id="listAll" resultMap="userFileMap">
 		<![CDATA[
 		select
 		 *
 		from
 		 zip_viewer.file
+		where
+		 user_id = "admin"
 		]]>
 	</select>
 
