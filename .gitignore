@@ -1,4 +1,4 @@
-﻿# Eclipse project files
+# Eclipse project files
 *.classpath
 *.project
 *.springBeans
@@ -83,3 +83,4 @@ src/main/webapp/WEB-INF/web.xml
 src/fe/node_modules/
 *yarn.lock
 
+src/main/webapp/testMain.html
