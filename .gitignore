@@ -1,4 +1,4 @@
-# Eclipse project files
+﻿# Eclipse project files
 *.classpath
 *.project
 *.springBeans
@@ -66,3 +66,20 @@ pom.xml.releaseBackup
 pom.xml.versionsBackup
 pom.xml.next
 release.properties
+
+
+### FE src ###
+src/test/
+
+### FE src/main ###
+src/main/java/
+src/main/resources/
+
+### FE src/main/webapp/WEB-INF/views 외 업로드 X ###
+src/main/webapp/WEB-INF/lib/
+src/main/webapp/WEB-INF/web.xml
+
+### FE root /src/fe/ ###
+src/fe/node_modules/
+*yarn.lock
+
