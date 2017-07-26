@@ -1,10 +1,11 @@
-
 module.exports = {
 		entry: {  
-			'mvc': ['./entry/mvc.js']
+			'main': ['./app/entry/main.js']
+		//	'login': ['./app/entry/login.js']
+		//	'join' : ['./app/entry/join.js']
 		},
 		output: {
-			path: __dirname +'/static/bundle',
+			path: __dirname +'/../main/webapp/static/bundle',
 			filename: '[name].js'
 		},
 		module: {
