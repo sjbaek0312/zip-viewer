@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="com.naver.zipviewer.mapper.FileMapper">
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="file_id">
+		INSERT INTO zip_viewer.file (file_id, user_id, file_name, file_size, file_upload_time) VALUES
+		(#{fileId}, #{userId}, #{fileName}, #{fileSize}, #{fileUploadTime})
+		<selectKey keyProperty="fileId" resultType="long">
+		SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="listAll" resultType="com.naver.zipviewer.domain.FileVO">
+		SELECT
+		 file_id AS fileId, user_id AS userId, file_name AS fileName, file_size AS fileSize, file_upload_time AS fileUploadTime
+		FROM
+		 zip_viewer.file
+		WHERE
+		 user_id = 'admin'
+	</select>
+
+</mapper>
