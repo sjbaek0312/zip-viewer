@@ -5,9 +5,12 @@
 	
 <mapper namespace="com.naver.zipviewer.mapper.FileMapper">
 
-	<insert id="insert">
+	<insert id="insert" useGeneratedKeys="true" keyProperty="file_id">
 		INSERT INTO zip_viewer.file (file_id, user_id, file_name, file_size, file_upload_time) VALUES
 		(#{fileId}, #{userId}, #{fileName}, #{fileSize}, #{fileUploadTime})
+		<selectKey keyProperty="fileId" resultType="long">
+		SELECT LAST_INSERT_ID()
+		</selectKey>
 	</insert>
 
 	<select id="listAll" resultType="com.naver.zipviewer.domain.FileVO">
