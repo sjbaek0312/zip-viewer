@@ -1,22 +1,17 @@
-/**
- * 
-	constructor(domId){
-	//	console.log(jQuery(domId+""));
-	//	console.log($(domId)); -> 이거 왜 안먹힌거지...?
-		this.$_dom = jQuery(domId);
-
-}
- */
 class FileListView {
 	constructor(domId){
-		super.();
-		this.$_dom = domId;
+		console.dir(jQuery(domId));
+		this._dom = jQuery(domId);
+		console.log(this._dom);
 	}
-	InitialRendering(objectArray) {
-		$(this.$_dom)
-		// 한개의 modelObject에 대해 처리하는 부분.
+	rendering(object) {
+		let li = $("<li></li>");
+		li.attr('id',object.fileId);
+		li.text(object.fileName);
+		this._dom.append(li);
 	}
-	
+	removeRendering(objectId) {
+		//
+	}
 }
-
 export default FileListView;
