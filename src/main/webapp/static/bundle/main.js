@@ -10345,26 +10345,29 @@ var _FileListView = __webpack_require__(4);
 
 var _FileListView2 = _interopRequireDefault(_FileListView);
 
-var _ModelViewHandler = __webpack_require__(5);
+var _FileUploadStateListView = __webpack_require__(5);
+
+var _FileUploadStateListView2 = _interopRequireDefault(_FileUploadStateListView);
+
+var _ModelViewHandler = __webpack_require__(6);
 
 var _ModelViewHandler2 = _interopRequireDefault(_ModelViewHandler);
 
-var _FileListController = __webpack_require__(7);
+var _FileListController = __webpack_require__(8);
 
 var _FileListController2 = _interopRequireDefault(_FileListController);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * logic start here
- */
-
 $(document).ready(function () {
 	var fileListView = new _FileListView2.default("#fileList");
-	var modelViewHandler = new _ModelViewHandler2.default(fileListView);
+	var uploadStateView = new _FileListView2.default("#uploadStateList");
+	var modelViewHandler = new _ModelViewHandler2.default(fileListView, uploadStateView);
 	var fileListModel = new _FileListModel2.default(modelViewHandler);
 	var fileController = new _FileListController2.default(fileListView, fileListModel);
-});
+}); /**
+     * logic start here
+     */
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
@@ -10387,12 +10390,13 @@ var FileListModel = function () {
 		_classCallCheck(this, FileListModel);
 
 		this._fileList = [];
+		this._dispatchedFiles = [];
 		this._handler = modelViewHandler;
 	}
 
 	_createClass(FileListModel, [{
-		key: "getFileList",
-		value: function getFileList() {
+		key: "apiFileList",
+		value: function apiFileList() {
 			var This = this;
 
 			$.ajax({
@@ -10408,6 +10412,56 @@ var FileListModel = function () {
 					var xhr = $.ajaxSettings.xhr();
 					return xhr;
 				}
+			});
+		}
+	}, {
+		key: "dispatchFiles",
+		value: function dispatchFiles(files) {
+			var isUploadingKnow = this._dispatchedFiles.length != 0;
+			for (var i = 0; i < files.length; i++) {
+				this._dispatchedFiles.push(files[i]);
+				this._handler.emit('dispatched', files[i]);
+			}
+			if (!isUploadingKnow) {
+				this.apiFileInsert();
+			}
+		}
+	}, {
+		key: "apiFileInsert",
+		value: function apiFileInsert() {
+			if (this._dispatchedFiles.length === 0) throw "NO MORE FILES TO UPLOAD";
+
+			var This = this;
+			var formData = new FormData();
+			formData.append("file", this._dispatchedFiles[0]);
+			$.ajax({
+				url: "http://localhost:8080/api/files",
+				data: formData,
+				contentType: false,
+				processData: false,
+				type: "POST",
+				mimeType: "multipart/form-data",
+				success: function success(result) {
+					console.log(result);
+					This._fileList.push(result);
+					This._handler.emit('add', result);
+				},
+				error: function error() {
+					console.log('ERROR'); // 
+				},
+				xhr: function xhr() {
+					var xhr = $.ajaxSettings.xhr();
+					xhr.upload.onprogress = function (event) {
+						console.log('progress', event.loaded, "/", event.total);
+					};
+					xhr.upload.onload = function (event) {
+						console.log('DONE!');
+					};
+					return xhr;
+				}
+			}).always(function () {
+				This._dispatchedFiles.shift();
+				This.apiFileInsert();
 			});
 		}
 	}]);
@@ -10439,7 +10493,6 @@ var FileListView = function () {
 
 		console.dir(jQuery(domId));
 		this._dom = jQuery(domId);
-		console.log(this._dom);
 	}
 
 	_createClass(FileListView, [{
@@ -10468,6 +10521,54 @@ exports.default = FileListView;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+/* WEBPACK VAR INJECTION */(function(jQuery, $) {
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * 
+ */
+var FileUploadStateListView = function () {
+	function FileUploadStateListView(domId) {
+		_classCallCheck(this, FileUploadStateListView);
+
+		console.dir(jQuery(domId));
+		this._dom = jQuery(domId);
+	}
+
+	_createClass(FileUploadStateListView, [{
+		key: "rendering",
+		value: function rendering(name, id) {
+			var li = $("<li>" + name + "</li>");
+			li.attr('id', id);
+			li.text(object.fileName);
+			this._dom.append(li);
+		}
+	}, {
+		key: "progressRendering",
+		value: function progressRendering(id, progress) {
+			var li = this._dom.find("#" + id);
+			li.text(progress);
+		}
+	}]);
+
+	return FileUploadStateListView;
+}();
+
+exports.default = FileUploadStateListView;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(0)))
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 
 
 Object.defineProperty(exports, "__esModule", {
@@ -10478,7 +10579,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _events = __webpack_require__(6);
+var _events = __webpack_require__(7);
 
 var _events2 = _interopRequireDefault(_events);
 
@@ -10493,25 +10594,33 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var ModelViewHandler = function (_EventEmitter) {
 	_inherits(ModelViewHandler, _EventEmitter);
 
-	function ModelViewHandler(view) {
+	function ModelViewHandler(fileListView, uploadListView) {
 		_classCallCheck(this, ModelViewHandler);
 
 		var _this = _possibleConstructorReturn(this, (ModelViewHandler.__proto__ || Object.getPrototypeOf(ModelViewHandler)).call(this));
 
-		_this._view = view;
+		_this._fileListView = fileListView;
+		_this._uploadListView = uploadListView;
 		_get(ModelViewHandler.prototype.__proto__ || Object.getPrototypeOf(ModelViewHandler.prototype), 'on', _this).call(_this, 'add', _this.addRendering);
+		_get(ModelViewHandler.prototype.__proto__ || Object.getPrototypeOf(ModelViewHandler.prototype), 'on', _this).call(_this, 'dispatched', _this.disPatchRendering);
+		_get(ModelViewHandler.prototype.__proto__ || Object.getPrototypeOf(ModelViewHandler.prototype), 'on', _this).call(_this, 'progressRendering', _this.progressRendering);
 		return _this;
 	}
 
 	_createClass(ModelViewHandler, [{
 		key: 'addRendering',
 		value: function addRendering(model) {
-			this._view.rendering(model);
+			this._fileListView.rendering(model);
 		}
 	}, {
-		key: 'removeRendering',
-		value: function removeRendering(modelId) {
-			this._view.rendering(modelId);
+		key: 'disPatchRendering',
+		value: function disPatchRendering(name) {
+			this._uploadListView.rendering(name);
+		}
+	}, {
+		key: 'progressRendering',
+		value: function progressRendering(id, progress) {
+			this._uploadListView.progressRendering(id, progress);
 		}
 	}]);
 
@@ -10521,7 +10630,7 @@ var ModelViewHandler = function (_EventEmitter) {
 exports.default = ModelViewHandler;
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports) {
 
 // Copyright Joyent, Inc. and other Node contributors.
@@ -10829,7 +10938,56 @@ function isUndefined(arg) {
 
 
 /***/ }),
-/* 7 */
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
+
+
+var _DropHandler = __webpack_require__(9);
+
+var _DropHandler2 = _interopRequireDefault(_DropHandler);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var FileListController = function () {
+	function FileListController(View, Model) {
+		_classCallCheck(this, FileListController);
+
+		this._view = View;
+		this._model = Model;
+		this.bindDropEvents();
+
+		this._model.apiFileList();
+	}
+
+	_createClass(FileListController, [{
+		key: "bindDropEvents",
+		value: function bindDropEvents() {
+			$("#dropZone").on("drop", { toModel: this._model }, _DropHandler2.default.drop);
+			$("#dropZone").on("dragover", _DropHandler2.default.dragover);
+		}
+	}]);
+
+	return FileListController;
+}();
+
+exports.default = FileListController;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10838,22 +10996,17 @@ function isUndefined(arg) {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * 
- */
-var FileListController = function FileListController(View, Model) {
-	_classCallCheck(this, FileListController);
-
-	this._view = View;
-	this._model = Model;
-	console.log(this._model);
-	this._model.getFileList();
+var DragAndDropAction = {
+	drop: function drop(event) {
+		event.preventDefault();
+		var draggedfiles = event.originalEvent.dataTransfer.files;
+		event.data.toModel.dispatchFiles(draggedfiles);
+	},
+	dragover: function dragover(event) {
+		event.preventDefault();
+	}
 };
-
-exports.default = FileListController;
+exports.default = DragAndDropAction;
 
 /***/ })
 /******/ ]);

@@ -1,15 +1,21 @@
 import EventEmitter from 'events';
 class ModelViewHandler extends EventEmitter {
-	constructor(view) {
+	constructor(fileListView, uploadListView) {
 		super();
-		this._view = view;
+		this._fileListView = fileListView;
+		this._uploadListView = uploadListView;
 		super.on('add',this.addRendering);
+		super.on('dispatched',this.disPatchRendering);
+		super.on('progressRendering',this.progressRendering);
 	}
 	addRendering(model) {
-		this._view.rendering(model);
+		this._fileListView.rendering(model);
 	}
-	removeRendering(modelId) {
-		this._view.rendering(modelId);
+	disPatchRendering(name) {
+		this._uploadListView.rendering(name);
+	}
+	progressRendering(id, progress) {
+		this._uploadListView.progressRendering(id, progress);
 	}
 }
 export default ModelViewHandler;

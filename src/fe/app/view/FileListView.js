@@ -2,7 +2,6 @@ class FileListView {
 	constructor(domId){
 		console.dir(jQuery(domId));
 		this._dom = jQuery(domId);
-		console.log(this._dom);
 	}
 	rendering(object) {
 		let li = $("<li></li>");
@@ -11,7 +10,7 @@ class FileListView {
 		this._dom.append(li);
 	}
 	removeRendering(objectId) {
-		//
+		// iteration 3
 	}
 }
 export default FileListView;
