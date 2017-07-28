@@ -3,29 +3,22 @@
 	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 	
-<mapper namespace="com.lab2.mapper.FileMapper">
+<mapper namespace="com.naver.zipviewer.mapper.FileMapper">
 
-	<insert id="insert">
-		insert into zip_viewer.file (file_id, user_id, file_name, file_size, file_upload_time) values
+	<insert id="insert" useGeneratedKeys="true" keyProperty="file_id">
+		INSERT INTO zip_viewer.file (file_id, user_id, file_name, file_size, file_upload_time) VALUES
 		(#{fileId}, #{userId}, #{fileName}, #{fileSize}, #{fileUploadTime})
+		<selectKey keyProperty="fileId" resultType="long">
+		SELECT LAST_INSERT_ID()
+		</selectKey>
 	</insert>
 
-	<resultMap id="userFileMap" type="com.lab2.domain.FileVO">
-	        <id property="fileId" column="file_id"/>
-	        <result property="userId" column="user_id"/>
-	        <result property="fileName" column="file_name"/>
-	        <result property="fileSize" column="file_size"/>
-	        <result property="fileUploadTime" column="file_upload_time"/>
-	</resultMap>
-	<select id="listAll" resultMap="userFileMap">
-		<![CDATA[
-		select
-		 *
-		from
+	<select id="listAll" resultType="com.naver.zipviewer.domain.FileVO">
+		SELECT
+		 file_id AS fileId, user_id AS userId, file_name AS fileName, file_size AS fileSize, file_upload_time AS fileUploadTime
+		FROM
 		 zip_viewer.file
-		where
-		 user_id = "admin"
-		]]>
+		WHERE
+		 user_id = 'admin'
 	</select>
-
 </mapper>
