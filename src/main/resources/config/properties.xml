@@ -1,16 +1,7 @@
-<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd" >
 
 <properties>
 <comment>file upload path</comment>
 <entry key="fileUploadPath">C:\\Users\\upload</entry>
-=======
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd" >
-
-<properties>
-<comment>file upload path</comment>
-<entry key="fileUploadPath">C:\\Users\\upload</entry>
->>>>>>> 88e5bc6ffdb2841b4f5a1bd9734d26eda01b0431
 </properties>
