@@ -28,7 +28,11 @@ public class FileController {
 	@GetMapping(value = "")
 	public ResponseEntity<?> list(Model model) throws IllegalStateException, SQLException
 	{
-		return new ResponseEntity<>(service.listAll(), HttpStatus.OK);
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("items", service.listAll());
+		list.add(map);
+		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 
 	@PostMapping(value = "")
