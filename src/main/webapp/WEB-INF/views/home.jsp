@@ -51,7 +51,7 @@
 						
 					</ul>
 				</li>
-				<li><a href="#"><span class="glyphicon glyphicon-off"></span></span>
+				<li><a href="#"><span class="glyphicon glyphicon-off"></span>
 						Logout</a></li>
 			</ul>
 		</div>
