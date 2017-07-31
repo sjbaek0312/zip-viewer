@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -30,7 +28,11 @@ public class FileController {
 	@GetMapping(value = "")
 	public ResponseEntity<?> list(Model model) throws IllegalStateException, SQLException
 	{
-		return new ResponseEntity<>(service.listAll(), HttpStatus.OK);
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("items", service.listAll());
+		list.add(map);
+		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 
 	@PostMapping(value = "")

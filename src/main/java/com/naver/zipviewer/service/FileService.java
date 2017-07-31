@@ -26,13 +26,11 @@ public class FileService {
 	public FileVO insert(@RequestPart("file") MultipartFile file, String path) throws SQLException, IOException, MultipartException
 	{
 		FileVO vo = new FileVO();
-		UUID uuid = UUID.randomUUID();
-		String uuidName = uuid.toString() + "_" + file.getOriginalFilename();
-		
+
 		vo.setUserId("admin");
 		InputStream is = file.getInputStream();
 		byte[] buffer = new byte[1024 * 8];
-		FileOutputStream fos = new FileOutputStream(new File(path, uuidName));
+		FileOutputStream fos = new FileOutputStream(new File(path, "tmp"));
 		while(true)
 		{
 			int count = is.read(buffer);
@@ -41,7 +39,7 @@ public class FileService {
 			fos.write(buffer, 0, count);
 		}
 		
-		vo.setFileName(uuidName);		
+		vo.setFileName(file.getOriginalFilename());		
 		vo.setFileSize(file.getSize());
 		vo.setFileUploadTime(new Date());
 
@@ -49,6 +47,7 @@ public class FileService {
 		fos.close();
 		
 		dao.insert(vo);
+		new File(path + "tmp").renameTo(new File(path + vo.getFileId()));
 		return vo;
 	}
 
