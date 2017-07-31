@@ -8,6 +8,7 @@ class FileListModel extends EventEmitter {
 	isFileZip(fileId){
 		return (this._fileList[fileId].isZip);
 	}
+	
 	_pushFiles(json){
 		console.dir(json); //
 		let fileType = json.fileName.slice(json.fileName.lastIndexOf(".") + 1); //확장자 구하기.
