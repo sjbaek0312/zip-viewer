@@ -24,14 +24,14 @@ public class CommonExceptionAdvice {
 	}
 	
 	// 404
-	@ExceptionHandler(NotFoundException.class)
+/*	@ExceptionHandler(NotFoundException.class)
 	public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e)
 	{
 		ErrorResponse er = new ErrorResponse();
 		er.setErrorCode(HttpStatus.NOT_FOUND.value());
 		er.setMsg("클라이언트가 요청한 리소스를 서버에서 찾을 수 없음");
 		return new ResponseEntity<ErrorResponse>(er, HttpStatus.NOT_FOUND);
-	}
+	}*/
 	
 	// 500
 	@ExceptionHandler(MultipartException.class)
