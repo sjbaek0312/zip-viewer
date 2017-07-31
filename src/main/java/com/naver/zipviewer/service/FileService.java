@@ -21,32 +21,51 @@ public class FileService {
  
 	@Autowired private FileDAO dao;
 
-	public FileVO insert(MultipartFile file, String path) throws SQLException, IOException, MultipartException
+	public FileVO insert(MultipartFile file, String path) throws SQLException, MultipartException
 	{
 		FileVO vo = new FileVO();
 		File f = new File(path, file.getOriginalFilename());
-		String ext = f.getName().substring(f.getName().lastIndexOf("."));
-		InputStream is = file.getInputStream();
-		byte[] buffer = new byte[1024 * 8];
-  
-		FileOutputStream fos = new FileOutputStream(f);
-		while(true)
+		InputStream is = null;
+		FileOutputStream fos = null;
+		String ext = "";
+		f = new File(path, file.getOriginalFilename());
+		
+		if (file.getOriginalFilename().contains("."))
+			ext = f.getName().substring(f.getName().lastIndexOf("."));
+		
+		try
 		{
-			int count = is.read(buffer);
-			if(count == -1)
-				break;
-			fos.write(buffer, 0, count);
+			is = file.getInputStream();
+			fos = new FileOutputStream(f);
+			byte[] buffer = new byte[1024 * 8];
+			while(true)
+			{
+				int count = is.read(buffer);
+				if(count == -1)
+					break;
+				fos.write(buffer, 0, count);
+			}
+	  
+			vo.setUserId("admin");
+			vo.setFileName(file.getOriginalFilename());  
+			vo.setFileSize(file.getSize());
+			vo.setFileUploadTime(new Date());
 		}
-  
-		vo.setUserId("admin");
-		vo.setFileName(file.getOriginalFilename());  
-		vo.setFileSize(file.getSize());
-		vo.setFileUploadTime(new Date());
-	
-		is.close();
-		fos.close();
-		if (!f.exists())
-			throw new IOException("File not uploaded.");
+		catch (IOException e) {}
+		finally
+		{
+			try 
+			{
+				is.close();
+			} 
+			catch (IOException e) {}
+			try 
+			{
+				fos.close();
+			}
+			catch (IOException e) {}
+		}
+
 		dao.insert(vo);
 
 		f.renameTo(new File(path + "\\" + vo.getFileId() + ext));
