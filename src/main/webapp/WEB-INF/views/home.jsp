@@ -4,12 +4,13 @@
 <head>
 <title>Compress File Viewer</title>
 <meta charset="utf-8">
-
-
 <link rel="stylesheet" type="text/css"  href="/static/dist/css/bootstrap.css">
+<link rel="stylesheet" href="dist/themes/default/style.min.css" />
+
 <script src="/static/bundle/jquery-3.2.1.js"></script>
 <script src="/static/bundle/main.js"></script>
 <script src="/static/dist/js/bootstrap.js"></script>
+<script src="/static/dist/jstree.min.js"></script>
 <style>
 
 </style>
