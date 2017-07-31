@@ -1,23 +1,37 @@
 import EventEmitter from 'events';
+class FileObject {
+	constructor(json){
+		this._fileId = json.fileId;
+		this._fileName = json.fileName;
+		this._fileType = json.fileName.slice(this._fileName.lastIndexOf(".") + 1);
+		this._fileUploadTime = json.fileName.fileUploadTime;
+		this._fileSize = json.fileSize;
+	}
+	isCompressed(){
+		let ZIP_TYPE = ["zip", "7z", "alz", "egg"]
+		ZIP_TYPE.forEach(function(type){
+			if(type == this._fileType) return true;
+		});
+		return false;
+	}
+}
 class FileListModel extends EventEmitter {
 	constructor(){
 		super();
-		this._fileList = {}; //json Dictionary type
+		this._fileList = {}; //json Dictionary type.. 변수이름 변경이 시급해 보임.
 		this._dispatchedFiles = []; //files 타입 배열들
 	}
 	isFileZip(fileId){
-		return (this._fileList[fileId].isZip);
+		return (this._fileList[fileId].isCompressed());
 	}
 	
-	_pushFiles(json){
-		console.dir(json); //
-		let fileType = json.fileName.slice(json.fileName.lastIndexOf(".") + 1); //확장자 구하기.
-		json.fileType = fileType.toLowerCase();
-		json.isZip = (json.fileName.lastIndexOf(".zip") != -1); // .zip 외의 확장자는 어떻게 처리하지??? 
-		this._fileList[json.fileId] = json;
-		this.emit('change:add', json);
+	_addFiles(json){
+		let fileObject = new FileObject(json);
+		this._fileList[json.fileId] = fileObject;
+		this.emit('change:add', fileObject);
 	}
-	_pushDispatchedQueue(json){
+  
+  	_pushDispatchedQueue(json){
 		this._dispatchedFiles.push(json);
 		this.emit('change:dispatched',json);
 	}
