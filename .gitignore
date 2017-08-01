@@ -79,5 +79,8 @@ src/main/resources/
 src/main/webapp/WEB-INF/lib/
 src/main/webapp/WEB-INF/web.xml
 
-### FE ###
+### FE root /src/fe/ ###
 *node_modules/
+*yarn.lock
+
+src/main/webapp/testMain.html
