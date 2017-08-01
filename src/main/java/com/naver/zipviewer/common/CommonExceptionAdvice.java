@@ -1,5 +1,6 @@
 package com.naver.zipviewer.common;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -32,6 +33,14 @@ public class CommonExceptionAdvice {
 		er.setMsg("클라이언트가 요청한 리소스를 서버에서 찾을 수 없음");
 		return new ResponseEntity<ErrorResponse>(er, HttpStatus.NOT_FOUND);
 	}*/
+	@ExceptionHandler(FileNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleNotFoundException(FileNotFoundException e)
+	{
+		ErrorResponse er = new ErrorResponse();
+		er.setErrorCode(HttpStatus.NOT_FOUND.value());
+		er.setMsg("클라이언트가 요청한 리소스를 서버에서 찾을 수 없음");
+		return new ResponseEntity<ErrorResponse>(er, HttpStatus.NOT_FOUND);
+	}
 	
 	// 500
 	@ExceptionHandler(MultipartException.class)
