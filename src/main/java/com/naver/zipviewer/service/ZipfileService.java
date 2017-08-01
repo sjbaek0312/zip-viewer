@@ -71,7 +71,7 @@ public class ZipfileService {
 					list.add(vo);
 				}
 				map.put(zipfileId, vo);
-				System.out.println(map.get(zipfileId).getZipfileName());
+				//System.out.println(map.get(zipfileId).getZipfileName());
 				zipfileId++;
 			}
 			saveList.add(map);
