@@ -1,6 +1,4 @@
-/**
- *
- */
+
 import FileListModel from "../model/FileListModel.js"
 import ZipFileController from "../controller/ZipFileController.js"
 import FileListView from "../view/FileListView.js"
@@ -50,3 +48,4 @@ class FileListController {
 }
 
 export default FileListController;
+

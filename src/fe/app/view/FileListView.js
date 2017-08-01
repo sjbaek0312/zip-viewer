@@ -2,6 +2,7 @@ class FileListView {
 	constructor(domId){
 		this._dom = jQuery(domId);
 	}
+
 	getDomForEventBinding(){
 		return this._dom;
 	}
@@ -26,4 +27,4 @@ class FileListView {
 		// iteration 3
 	}
 }
-export default FileListView;
+
