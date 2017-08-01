@@ -40,10 +40,9 @@ class FileListModel extends EventEmitter {
 		this.emit('change:')
 	}
 	_makeResponseJSON(response){
-		let resultResponse;
+		let resultResponse = response;
 		if (typeof response  === 'string')
 			resultResponse = JSON.parse(response);
-		else resultResponse = response;
 		return resultResponse;
 	}
 	
@@ -56,7 +55,7 @@ class FileListModel extends EventEmitter {
 				let resultFileList = This._makeResponseJSON(results);
 				resultFileList = resultFileList.items;
 				resultFileList.forEach(function(resultFile){
-					This._pushFiles(resultFile);
+					This._addFiles(resultFile);
 				})
 			},
 			xhr : function() {
