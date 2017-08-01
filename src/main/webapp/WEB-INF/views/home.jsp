@@ -8,13 +8,14 @@
 <link rel="stylesheet" href="dist/themes/default/style.min.css" />
 
 <script src="/static/bundle/jquery-3.2.1.js"></script>
-<script src="/static/bundle/main.js"></script>
+<script src="/static/bundle/main.js?var=1"></script>
 <script src="/static/dist/js/bootstrap.js"></script>
 <script src="/static/dist/jstree.min.js"></script>
 <style>
 
 </style>
 </head>
+
 
 <body>
 	<nav class="navbar navbar-default navbar-fixed-top">
@@ -29,18 +30,11 @@
 				<li class="dropdown">
 					<button class="btn btn-danger navbar-btn dropdown-toggle"
 						type="button" data-toggle="dropdown">
-						<span class="glyphicon glyphicon-cloud-upload"></span> <span class="caret"></span>
+						Upload Progress <span class="caret"></span>
 					</button>
-					<ul class="dropdown-menu dropDownView" id="uploadStateList">
+					<ul class="dropdown-menu dropDownView">
 
-						<li>
-							<div class="row">
-								<div class="col-xs-10">subTasj2.zip</div>
-								<div class="col-xs-2">
-									<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-								</div>
-							</div>
-						</li>
+						<li>subTasj2.zip upload Done</li>
 						<li>subTasj2.zip upload
 								<div class="progress">
 									<div class="progress-bar" role="progressbar" aria-valuenow="70"
@@ -49,10 +43,11 @@
 									</div>
 								</div>
 						</li>
-						
+						<li>subTasj2.zip upload </li>
 					</ul>
 				</li>
-				<li><a href="#"><span class="glyphicon glyphicon-off"></span>
+				<li><a href="#"><span class="glyphicon glyphicon-log-out"></span>
+
 						Logout</a></li>
 			</ul>
 		</div>
@@ -65,19 +60,15 @@
 	</div>
 
 	<div class="container" id="fileList">
-		<div class="row">
-		<div class="col-xs-12">name</div>
-		</div>
-
 	</div>
 
-	<div class="container ZipViewerBackground ">
+	<div class="container ZipViewerBackground">
 		<nav class="navbar navbar-default ">
 			<!-- phantom markup.. -->
 		</nav>
-		<div class="row height">
+		<div class="row">
 			<div class="col-xs-2 ">file Tree Zone</div>
-			<div class="col-xs-10 ">file List Zone</div>
+			<div class="col-xs-10">file List Zone</div>
 		</div>
 	</div>
 	<div class="container"></div>
