@@ -1,5 +1,6 @@
 class FileListView {
 	constructor(domId){
+		console.log(domId+" view Create..");
 		this._dom = jQuery(domId);
 	}
 
@@ -27,4 +28,4 @@ class FileListView {
 		// iteration 3
 	}
 }
-
+export default FileListView;
