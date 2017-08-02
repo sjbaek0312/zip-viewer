@@ -3,7 +3,7 @@
  */
 class FileUploadStateListView {
 	constructor(domId){
-		this._dom = jQuery(domId);
+		this._dom = $(domId);
 	}
 	rendering(json) {
 		let li = $("<li></li>");
