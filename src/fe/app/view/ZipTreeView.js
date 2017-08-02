@@ -1,6 +1,6 @@
 class ZipTreeView {
 	constructor(domId){
-		this._dom = jQuery(domId);
+		this._dom = $(domId);
 		this._RenderingNode
 	}
 	
