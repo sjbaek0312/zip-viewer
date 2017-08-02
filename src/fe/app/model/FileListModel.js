@@ -1,10 +1,10 @@
-
 import EventEmitter from 'events';
-class FileObject {
+
+class FileModel {
 	constructor(json){
 		this.fileId = json.fileId;
 		this.fileName = json.fileName;
-		this.fileType = json.fileName.slice(json.fileName.lastIndexOf(".") + 1);
+		this.fileType = json.fileName.slice(json.fileName.lastIndexOf(".") + 1).toLowerCase();
 		this.fileUploadTime = json.fileName.fileUploadTime;
 		this.fileSize = json.fileSize;
 	}
@@ -22,17 +22,24 @@ class FileListModel extends EventEmitter {
 	constructor(){
 		super();
 		console.log(" Model Create..");
-		this._fileList = {}; //json Dictionary type.. 변수이름 변경이 시급해 보임.
-		this._dispatchedFiles = []; //files 타입 배열들
+		this._url = "http://localhost:8080/api/files"; // test용
+//		this._url = "/api/files"				// 실제 사용.
+		this._fileList = {}; 
+		this._dispatchedFiles = []; 
 	}
+	
+	getFileModel(fileId){
+		return this._fileList[fileId];
+	}
+	
 	isFileZip(fileId){
 		return (this._fileList[fileId].isCompressed());
 	}
 	
 	_addFiles(json){
-		let fileObject = new FileObject(json);
-		this._fileList[json.fileId] = fileObject;
-		this.emit('change:add', fileObject);
+		let file = new FileModel(json);
+		this._fileList[json.fileId] = file;
+		this.emit('change:add', file);
 	}
   
   	_pushDispatchedQueue(json){
@@ -52,7 +59,7 @@ class FileListModel extends EventEmitter {
 	apiFileList() {
 		let This = this;
 		$.ajax({
-			url : "/api/files",
+			url : This._url ,
 			type : "GET",
 			success : function(results) {
 				let resultFileList = This._makeResponseJSON(results);
@@ -89,7 +96,7 @@ class FileListModel extends EventEmitter {
 		let formData = new FormData();
 		formData.append("file", this._dispatchedFiles[0]);
 		$.ajax({
-			url : "/api/files",
+			url : This._url ,
 			data : formData,
 			contentType : false,
 			processData : false,
@@ -100,7 +107,7 @@ class FileListModel extends EventEmitter {
 				This._addFiles(result);
 			},
 			error : function(){
-				console.log('ERROR');//
+				console.log('ERROR');
 			},
 			xhr : function() {
 				var xhr = $.ajaxSettings.xhr();

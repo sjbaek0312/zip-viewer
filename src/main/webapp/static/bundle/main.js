@@ -647,18 +647,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var FileObject = function () {
-	function FileObject(json) {
-		_classCallCheck(this, FileObject);
+var FileModel = function () {
+	function FileModel(json) {
+		_classCallCheck(this, FileModel);
 
 		this.fileId = json.fileId;
 		this.fileName = json.fileName;
-		this.fileType = json.fileName.slice(json.fileName.lastIndexOf(".") + 1);
+		this.fileType = json.fileName.slice(json.fileName.lastIndexOf(".") + 1).toLowerCase();
 		this.fileUploadTime = json.fileName.fileUploadTime;
 		this.fileSize = json.fileSize;
 	}
 
-	_createClass(FileObject, [{
+	_createClass(FileModel, [{
 		key: "isCompressed",
 		value: function isCompressed() {
 			var ZIP_TYPE = ["zip", "7z", "alz", "egg"];
@@ -671,7 +671,7 @@ var FileObject = function () {
 		}
 	}]);
 
-	return FileObject;
+	return FileModel;
 }();
 
 var FileListModel = function (_EventEmitter) {
@@ -683,12 +683,19 @@ var FileListModel = function (_EventEmitter) {
 		var _this = _possibleConstructorReturn(this, (FileListModel.__proto__ || Object.getPrototypeOf(FileListModel)).call(this));
 
 		console.log(" Model Create..");
-		_this._fileList = {}; //json Dictionary type.. 변수이름 변경이 시급해 보임.
-		_this._dispatchedFiles = []; //files 타입 배열들
+		_this._url = "http://localhost:8080/api/files"; // test용
+		//		this._url = "/api/files"				// 실제 사용.
+		_this._fileList = {};
+		_this._dispatchedFiles = [];
 		return _this;
 	}
 
 	_createClass(FileListModel, [{
+		key: "getFileModel",
+		value: function getFileModel(fileId) {
+			return this._fileList[fileId];
+		}
+	}, {
 		key: "isFileZip",
 		value: function isFileZip(fileId) {
 			return this._fileList[fileId].isCompressed();
@@ -696,9 +703,9 @@ var FileListModel = function (_EventEmitter) {
 	}, {
 		key: "_addFiles",
 		value: function _addFiles(json) {
-			var fileObject = new FileObject(json);
-			this._fileList[json.fileId] = fileObject;
-			this.emit('change:add', fileObject);
+			var file = new FileModel(json);
+			this._fileList[json.fileId] = file;
+			this.emit('change:add', file);
 		}
 	}, {
 		key: "_pushDispatchedQueue",
@@ -723,7 +730,7 @@ var FileListModel = function (_EventEmitter) {
 		value: function apiFileList() {
 			var This = this;
 			$.ajax({
-				url: "/api/files",
+				url: This._url,
 				type: "GET",
 				success: function success(results) {
 					var resultFileList = This._makeResponseJSON(results);
@@ -762,7 +769,7 @@ var FileListModel = function (_EventEmitter) {
 			var formData = new FormData();
 			formData.append("file", this._dispatchedFiles[0]);
 			$.ajax({
-				url: "/api/files",
+				url: This._url,
 				data: formData,
 				contentType: false,
 				processData: false,
@@ -773,7 +780,7 @@ var FileListModel = function (_EventEmitter) {
 					This._addFiles(result);
 				},
 				error: function error() {
-					console.log('ERROR'); //
+					console.log('ERROR');
 				},
 				xhr: function xhr() {
 					var xhr = $.ajaxSettings.xhr();
@@ -1201,7 +1208,7 @@ var FileListView = function () {
 		_classCallCheck(this, FileListView);
 
 		console.log(domId + " view Create..");
-		this._dom = jQuery(domId);
+		this._dom = $(domId);
 	}
 
 	_createClass(FileListView, [{
@@ -1212,15 +1219,15 @@ var FileListView = function () {
 	}, {
 		key: "rendering",
 		value: function rendering(json) {
-			var innerDiv = jQuery("<div></div>").addClass("col-xs-2 file").data("fileId", json.fileId);
-			var img = jQuery("<img class='media-object' style='height: 100px'></img>");
+			var innerDiv = $("<div></div>").addClass("col-xs-2 file").data("fileId", json.fileId);
+			var img = $("<img class='media-object' style='height: 100px'></img>");
 			img.attr("src", "/static/img/file-" + json.fileType + ".png").attr("onerror", "this.src='/static/img/file-common.png'");
 
-			var name = jQuery("<h5></h5>").text(json.fileName).addClass("filename");
+			var name = $("<h5></h5>").text(json.fileName).addClass("filename");
 			innerDiv.append(img).append(name);
 
 			var div = void 0;
-			if (this._dom.children().length % 6 === 0) div = jQuery("<div></div>").attr("class", "row");else div = this._dom.children().last();
+			if (this._dom.children().length % 6 === 0) div = $("<div></div>").attr("class", "row");else div = this._dom.children().last();
 
 			div.append(innerDiv);
 			this._dom.append(div);
@@ -1259,7 +1266,7 @@ var FileUploadStateListView = function () {
 	function FileUploadStateListView(domId) {
 		_classCallCheck(this, FileUploadStateListView);
 
-		this._dom = jQuery(domId);
+		this._dom = $(domId);
 	}
 
 	_createClass(FileUploadStateListView, [{
