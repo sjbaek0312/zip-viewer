@@ -1,6 +1,6 @@
 class ZipListView {
 	constructor(domId){
-		this._dom = jQuery(domId);
+		this._dom = $(domId);
 	}
 
 	getDomForEventBinding(){
