@@ -2,7 +2,7 @@ import ZipFileServiceModel from "./ZipFileServiceModel.js";
 class ZipFileModel {
 	constructor(json){
 		this.zipfileName = json.zipfileName;
-		this.zipfileType = json.zipfileName.slice((json.zipfileName.lastIndexOf(".") + 1));;
+		this.zipfileType = json.zipfileName.slice(json.zipfileName.lastIndexOf(".") + 1).toLowerCase();
 		this.zipfileId = json.zipfileId;
 		this.zipfileSize = json.zipfileSize;
 		this.zipfileParentId = json.zipfileParentId;
