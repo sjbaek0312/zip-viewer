@@ -42,7 +42,7 @@ public class ZipfileService {
 				vo.setFileId(fileId);
 				vo.setZipfileName(entry.getName());
 				vo.setZipfileSize(entry.getSize());
-				if (entry.getName().charAt(entry.getName().length() - 1) == '/')
+				if (entry.isDirectory())
 					vo.setDirectory(true);
 				else
 					vo.setDirectory(false);
