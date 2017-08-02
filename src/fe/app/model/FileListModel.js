@@ -49,21 +49,15 @@ class FileListModel extends EventEmitter {
 	_notifyProgress(){
 		this.emit('change:')
 	}
-	_makeResponseJSON(response){
-		let resultResponse = response;
-		if (typeof response  === 'string')
-			resultResponse = JSON.parse(response);
-		return resultResponse;
-	}
 	
 	apiFileList() {
 		let This = this;
 		$.ajax({
 			url : This._url ,
 			type : "GET",
+			dataType : "json",
 			success : function(results) {
-				let resultFileList = This._makeResponseJSON(results);
-				resultFileList = resultFileList.items;
+				let resultFileList = results.items;
 				resultFileList.forEach(function(resultFile){
 					This._addFiles(resultFile);
 				})
@@ -100,11 +94,11 @@ class FileListModel extends EventEmitter {
 			data : formData,
 			contentType : false,
 			processData : false,
+			dataType : "json",
 			type : "POST",
 			mimeType : "multipart/form-data",
 			success : function(results) {
-				let result = This._makeResponseJSON(results);
-				This._addFiles(result);
+				This._addFiles(results);
 			},
 			error : function(){
 				console.log('ERROR');

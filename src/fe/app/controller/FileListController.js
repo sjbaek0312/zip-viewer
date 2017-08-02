@@ -41,7 +41,7 @@ class FileListController {
 		fileListDom.on("click", ".file", function(event){
 			let fileId = jQuery(this).data("fileId");
 			if (This._model.isFileZip(fileId))
-				new ZipFileController(This._model.getFileModel(fileId)); 
+				new ZipFileController(fileId); 
 			else console.log("Not a zip File");
 		});
 	}

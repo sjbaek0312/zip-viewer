@@ -9,7 +9,7 @@
 
 <script src="/static/bundle/jquery-3.2.1.js"></script>
 
-<script src="/static/bundle/main.js?ver=astaaskyd"></script>
+<script src="/static/bundle/main.js?v=sdfsd959"></script>
 <script src="/static/dist/js/bootstrap.js"></script>
 <script src="/static/dist/jstree.min.js"></script>
 <style>
