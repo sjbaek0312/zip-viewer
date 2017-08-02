@@ -27,11 +27,7 @@ class FileListModel extends EventEmitter {
 		this._fileList = {}; 
 		this._dispatchedFiles = []; 
 	}
-	
-	getFileModel(fileId){
-		return this._fileList[fileId];
-	}
-	
+		
 	isFileZip(fileId){
 		return (this._fileList[fileId].isCompressed());
 	}
