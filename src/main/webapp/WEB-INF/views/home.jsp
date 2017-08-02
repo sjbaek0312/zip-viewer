@@ -74,9 +74,9 @@
 			<div class="col-xs-9" id="zipFileList">
 				<table class="table table-hover">
 					<thead>
-						<tr>
+						<th>
 						<td></td><td>Name</td><td>Size</td>
-						</tr>
+						</th>
 					</thead>
 					<tbody>
 						<tr>
