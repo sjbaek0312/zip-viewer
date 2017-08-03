@@ -1,6 +1,7 @@
 package com.naver.zipviewer.service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +22,7 @@ public class FileService {
  
 	@Autowired private FileDAO dao;
 
-	public FileVO insert(MultipartFile file, String path) throws SQLException, MultipartException
+	public FileVO insert(MultipartFile file, String path) throws SQLException, MultipartException, IOException, FileNotFoundException
 	{
 		FileVO vo = new FileVO();
 		File f = new File(path, file.getOriginalFilename());
@@ -37,33 +38,24 @@ public class FileService {
 		{
 			is = file.getInputStream();
 			fos = new FileOutputStream(f);
-			byte[] buffer = new byte[1024 * 8];
-			while(true)
+			byte[] buffer = new byte[1024 * 8];		
+			while(true)			
 			{
 				int count = is.read(buffer);
 				if(count == -1)
 					break;
 				fos.write(buffer, 0, count);
 			}
-	  
+		  
 			vo.setUserId("admin");
 			vo.setFileName(file.getOriginalFilename());  
 			vo.setFileSize(file.getSize());
 			vo.setFileUploadTime(new Date());
-		}
-		catch (IOException e) {}
+		}	
 		finally
 		{
-			try 
-			{
-				is.close();
-			} 
-			catch (IOException e) {}
-			try 
-			{
-				fos.close();
-			}
-			catch (IOException e) {}
+			is.close();
+			fos.close();
 		}
 
 		dao.insert(vo);
