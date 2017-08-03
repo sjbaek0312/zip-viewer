@@ -1,14 +1,12 @@
-class ZipListView {
+let zipFileListTemplate = require("../tpl/ZipFileList.html");
+
+class ZipFileListView {
 	constructor(domId){
 		this._dom = $(domId);
 	}
 
-	getDomForEventBinding(){
-		return this._dom;
-	}
-	
-	rendering(json) {
-
+	rendering(model) {		
+		this._dom.html(zipFileListTemplate(model));
 	}
 }
-export default ZipListView;
+export default ZipFileListView;

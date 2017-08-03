@@ -2,7 +2,7 @@ class FileListView {
 	constructor(domId){
 		console.log(domId+" view Create..");
 		this._dom = $(domId);
-		this._imgUrl = "/static/img/" 
+		this._imgUrl = "/static/img/"
 	}
 
 	getDomForEventBinding(){

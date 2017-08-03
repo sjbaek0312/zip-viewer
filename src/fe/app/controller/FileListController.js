@@ -20,15 +20,15 @@ class FileListController {
 		this._model.apiFileList();
 	}
 	_bindModelAndView(){
-		let This = this;
+		let self = this;
 		this._model.on("change:add", function(jsonInfo) {
-			This._view.rendering(jsonInfo);
+			self._view.rendering(jsonInfo);
 		});
 		this._model.on("change:dispatched", function(jsonInfo) {
-			This._uploadStateView.rendering(jsonInfo);
+			self._uploadStateView.rendering(jsonInfo);
 		});
 		this._model.on("progres:uploading", function(id, progress) {
-			This._uploadStateView.progressRendering(id, progress);
+			self._uploadStateView.progressRendering(id, progress);
 		});
 	}
 	_bindStaticDropEvents(){

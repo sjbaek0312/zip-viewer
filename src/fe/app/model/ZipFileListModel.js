@@ -1,4 +1,5 @@
-import ZipFileServiceModel from "./ZipFileServiceModel.js";
+import EventEmitter from 'events';
+
 class ZipFileModel {
 	constructor(json){
 		this.zipfileName = json.zipfileName;
@@ -9,24 +10,21 @@ class ZipFileModel {
 	}
 }
 
-class ZipFileListModel extends ZipFileServiceModel {
-	constructor(fileId){
-		super(fileId);
+class ZipFileListModel extends EventEmitter {
+	constructor(){
+		super();
 		this._zipFileList = [];
 	}
-	apiZipFileLoad(){
-		this._apiZipFileLoad();
-		this._promiseAPILoad.done(this._loadSuccess);
-		this._promiseAPILoad.fail();
-	}
-	_loadSuccess(response){
+
+	setModel(jsonArray){
+		let self = this;
 		this._zipFileList = [];
-		let zipFiles = response.items;
-		zipFiles.forEach(function(zipFile) {
-			let zipFileModel = new ZipFileModel(zipFile);
-			this._zipFileList.push(zipFileModel);
-		});
+		jsonArray.forEach(function(json){
+			self._zipFileList.push(new ZipFileModel(json));
+		})
 		console.dir(this._zipFileList);
+		this.emit("ModelSettingDone", this._zipFileList);
 	}
 }
+
 export default ZipFileListModel;
