@@ -99,10 +99,6 @@ public class ZipfileService implements CompressService{
 				tmpZipfileId++;
 			}
 		}
-		catch(IOException e)
-		{
-			System.out.println("Exception occured zip file streaming.");
-		}
 		finally
 		{
 			zis.close();
