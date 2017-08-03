@@ -11,7 +11,7 @@ public class ZipCacheService {
 	@Cacheable(value = "zips")
 	public Zip findZip(Zip z)
 	{
-		return new Zip();
+		return z;
 	}
 /*	
 	@Cacheable(value = "zips")
