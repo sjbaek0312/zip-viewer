@@ -1,5 +1,6 @@
 package com.naver.zipviewer.controller;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -36,7 +37,7 @@ public class FileController {
 	}
 
 	@PostMapping(value = "")
-	public ResponseEntity<?> insert(@RequestPart("file") MultipartFile file, Model model) throws SQLException, IOException, MultipartException
+	public ResponseEntity<?> insert(@RequestPart("file") MultipartFile file, Model model) throws SQLException, IOException, MultipartException, FileNotFoundException
 	{
 		return new ResponseEntity<>(service.insert(file, path), HttpStatus.CREATED);
 	}
