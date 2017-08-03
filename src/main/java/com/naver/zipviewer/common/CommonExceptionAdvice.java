@@ -20,7 +20,7 @@ public class CommonExceptionAdvice {
 	{
 		ErrorResponse er = new ErrorResponse();
 		er.setErrorCode(HttpStatus.BAD_REQUEST.value());
-		er.setMsg("잘못된 요청");
+		er.setMsg("Bad Request");
 		return new ResponseEntity<ErrorResponse>(er, HttpStatus.BAD_REQUEST);
 	}
 	
@@ -30,7 +30,7 @@ public class CommonExceptionAdvice {
 	{
 		ErrorResponse er = new ErrorResponse();
 		er.setErrorCode(HttpStatus.NOT_FOUND.value());
-		er.setMsg("클라이언트가 요청한 리소스를 서버에서 찾을 수 없음");
+		er.setMsg("Not Found");
 		return new ResponseEntity<ErrorResponse>(er, HttpStatus.NOT_FOUND);
 	}*/
 	@ExceptionHandler(FileNotFoundException.class)
@@ -38,7 +38,7 @@ public class CommonExceptionAdvice {
 	{
 		ErrorResponse er = new ErrorResponse();
 		er.setErrorCode(HttpStatus.NOT_FOUND.value());
-		er.setMsg("클라이언트가 요청한 리소스를 서버에서 찾을 수 없음");
+		er.setMsg("Not Found");
 		return new ResponseEntity<ErrorResponse>(er, HttpStatus.NOT_FOUND);
 	}
 	
@@ -48,7 +48,7 @@ public class CommonExceptionAdvice {
 	{
 		ErrorResponse er = new ErrorResponse();
 		er.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-		er.setMsg("내부 서버 오류");
+		er.setMsg("Internal Server Error");
 		return new ResponseEntity<ErrorResponse>(er, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	@ExceptionHandler(SQLException.class)
@@ -56,7 +56,7 @@ public class CommonExceptionAdvice {
 	{
 		ErrorResponse er = new ErrorResponse();
 		er.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-		er.setMsg("내부 서버 오류");
+		er.setMsg("Internal Server Error");
 		return new ResponseEntity<ErrorResponse>(er, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	@ExceptionHandler(IOException.class)
@@ -64,7 +64,7 @@ public class CommonExceptionAdvice {
 	{
 		ErrorResponse er = new ErrorResponse();
 		er.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-		er.setMsg("내부 서버 오류");
+		er.setMsg("Internal Server Error");
 		return new ResponseEntity<ErrorResponse>(er, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	@ExceptionHandler(Exception.class)
@@ -72,7 +72,7 @@ public class CommonExceptionAdvice {
 	{
 		ErrorResponse er = new ErrorResponse();
 		er.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-		er.setMsg("내부 서버 오류");
+		er.setMsg("Internal Server Error");
 		return new ResponseEntity<ErrorResponse>(er, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }

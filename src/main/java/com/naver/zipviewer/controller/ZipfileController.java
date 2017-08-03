@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +23,7 @@ public class ZipfileController {
 	@Value("#{config['fileUploadPath']}") String path;
 	
 	@PostMapping(value = "")
-	public ResponseEntity<?> load(@PathVariable(value = "fileId") long fileId, Model model)
+	public ResponseEntity<?> load(@PathVariable(value = "fileId") long fileId, Model model) throws Exception
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("items", service.load(fileId, path));

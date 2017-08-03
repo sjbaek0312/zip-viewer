@@ -3,5 +3,5 @@
 
 <properties>
 <comment>file upload path</comment>
-<entry key="fileUploadPath">C:\\Users\\upload</entry>
+<entry key="fileUploadPath">C:/Users/upload/</entry>
 </properties>

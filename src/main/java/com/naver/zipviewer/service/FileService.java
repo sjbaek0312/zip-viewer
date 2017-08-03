@@ -68,12 +68,17 @@ public class FileService {
 
 		dao.insert(vo);
 
-		f.renameTo(new File(path + "\\" + vo.getFileId() + ext));
+		f.renameTo(new File(path + vo.getFileId() + ext));
 		return vo;
 	}
 
 	public List<FileVO> listAll() throws SQLException
 	{
 		return dao.listAll();
+	}
+	
+	public String selectUserId(long fileId) throws SQLException
+	{
+		return dao.selectUserId(fileId);
 	}
 }

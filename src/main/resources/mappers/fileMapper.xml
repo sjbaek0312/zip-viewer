@@ -21,4 +21,13 @@
 		WHERE
 		 user_id = 'admin'
 	</select>
+	
+	<select id="selectUserId" resultType="String">
+		SELECT
+		 user_id AS userId
+		FROM
+		 zip_viewer.file
+		WHERE
+		 file_id = #{fileId}
+	</select>
 </mapper>

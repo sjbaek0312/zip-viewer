@@ -3,6 +3,7 @@ package com.naver.zipviewer.service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,83 +12,115 @@ import java.util.Map;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.naver.zipviewer.domain.ZipfileVO;
-import com.naver.zipviewer.domain.ZipfilelistVO;
+import com.naver.zipviewer.domain.Zipfile;
+import com.naver.zipviewer.domain.Zip;
 
 @Service
-public class ZipfileService {
+public class ZipfileService implements CompressService{
 
-	public List<ZipfileVO> load(long fileId, String path)
+	@Autowired private FileService fileService;
+	@Autowired private ZipCacheService zipCacheService;
+	
+	public List<Zipfile> load(long fileId, String path) throws Exception
 	{
-		List<ZipfileVO> list = new ArrayList<ZipfileVO>();
-		List<Map<Long, ZipfileVO>> saveList = new ArrayList<Map<Long, ZipfileVO>>();
-		List<Long> parentIdList = new ArrayList<Long>();
-		ZipfileVO vo;
-		ZipfilelistVO listvo = new ZipfilelistVO();
-		ZipArchiveInputStream zis = null;
-		ZipArchiveEntry entry;
-		long zipfileId = 1;
-		parentIdList.add((long) 0);
-
-		try 
+		File file = new File(path + fileId + ".zip");
+		if (!validation(fileId, "admin"))
 		{
-			Map<Long, ZipfileVO> map = new HashMap<Long, ZipfileVO>();
-			zis = new ZipArchiveInputStream(new FileInputStream(new File(path + "\\" + String.valueOf(fileId) + ".zip")), "EUC-KR");
+			throw new Exception("Not your file, or there is no file on database.");
+		}
+		if (!file.isFile())
+		{
+			throw new Exception("Not a zip file.");
+		}		
+		ZipArchiveInputStream zis = null;
+		ZipArchiveEntry entry = null;
+		List<Map<Long, List<Zipfile>>> list = new ArrayList<Map<Long, List<Zipfile>>>();
+		Map<Long, List<Zipfile>> map = new HashMap<Long, List<Zipfile>>();
+		List<Zipfile> zipfileList;
+		Zipfile zipfile;
+		List<Long> parentIdList = new ArrayList<Long>();
+		Zip z;
+		long tmpZipfileId = 1;
+		parentIdList.add((long) 0);
+		int depth = 0;
+		
+		try
+		{
+			zis = new ZipArchiveInputStream(new FileInputStream(file));
 			while ((entry = zis.getNextZipEntry()) != null)
 			{
-				vo = new ZipfileVO();
-				vo.setZipfileId(zipfileId);
-				vo.setFileId(fileId);
-				vo.setZipfileName(entry.getName());
-				vo.setZipfileSize(entry.getSize());
+				zipfile = new Zipfile();
+				zipfileList = new ArrayList<Zipfile>();
+				zipfile.setZipfileId(tmpZipfileId);
+				zipfile.setZipfileName(new File(entry.getName()).getName());
+				zipfile.setZipfileSize(entry.getSize());
 				if (entry.isDirectory())
-					vo.setDirectory(true);
+				{
+					zipfile.setDirectory(true);
+				}
 				else
-					vo.setDirectory(false);
+				{
+					zipfile.setDirectory(false);
+				}
 				
-				int depth = 0;
+				depth = 0;
 				for (int i = 0; i < entry.getName().length() - 1; i++)
+				{
 					if (entry.getName().charAt(i) == '/')
+					{
 						depth++;
+					}
+				}
+				zipfile.setZipfileParentId(parentIdList.get(depth - 1));
 				if (depth < parentIdList.size())
-					parentIdList.set(depth, vo.getZipfileId());
+				{
+					parentIdList.set(depth, zipfile.getZipfileId());
+				}
 				else
-					parentIdList.add(depth, vo.getZipfileId());
+				{
+					parentIdList.add(depth, zipfile.getZipfileId());
+				}
 				
-				if (depth == 0)
-					vo.setZipfileParentId(-1);
-				else
-					vo.setZipfileParentId(parentIdList.get(depth - 1));
-			
-				if (depth != 0)
+				if (!map.containsKey(parentIdList.get(depth - 1)))
 				{
-					if (parentIdList.get(depth - 1) == 0)
-						list.add(vo);
+					zipfileList.add(zipfile);
+					map.put(parentIdList.get(depth - 1), zipfileList);
 				}
 				else
 				{
-					list.add(vo);
+					zipfileList = map.get(parentIdList.get(depth - 1));
+					zipfileList.add(zipfile);
+					map.put(parentIdList.get(depth - 1), zipfileList);
 				}
-				map.put(zipfileId, vo);
-				//System.out.println(map.get(zipfileId).getZipfileName());
-				zipfileId++;
+				
+				tmpZipfileId++;
 			}
-			saveList.add(map);
-			listvo.setZipfilelist(saveList);
-			listvo.setAccessTime(new Date());
 		}
-		catch (IOException e) {}
+		catch(IOException e)
+		{
+			System.out.println("Exception occured zip file streaming.");
+		}
 		finally
 		{
-			try 
-			{
-				zis.close();
-			}
-			catch (IOException e) {}
+			zis.close();
 		}
+		
+		list.add(map);	
+		z = new Zip(fileId, new Date(), list);		
+		zipCacheService.findZip(z);
+		
+		return map.get((long) 0);
+	}
 	
-		return list;
+	public boolean validation(long fileId, String userId) throws SQLException
+	{
+		if (!fileService.selectUserId(fileId).equals(userId))
+		{
+			return false;
+		}
+		return true;
 	}
 }

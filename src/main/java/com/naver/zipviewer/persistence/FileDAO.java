@@ -2,6 +2,7 @@ package com.naver.zipviewer.persistence;
 
 import java.sql.SQLException;
 import java.util.List;
+
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -22,5 +23,10 @@ public class FileDAO {
 	public List<FileVO> listAll() throws SQLException
 	{
 		return sqlSession.selectList(namespace+".listAll");
+	}
+	
+	public String selectUserId(long fileId) throws SQLException
+	{
+		return sqlSession.selectOne(namespace+".selectUserId", fileId);
 	}
 }
