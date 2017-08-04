@@ -45,13 +45,12 @@ public class ZipfileService implements CompressService{
 		Zip z;
 		long tmpZipfileId = 1;
 		parentIdList.add((long) 0);
-		int depth = 0;
-		
+
 		try
 		{
 			zis = new ZipArchiveInputStream(new FileInputStream(file));
 			while ((entry = zis.getNextZipEntry()) != null)
-			{
+			{		
 				zipfile = new Zipfile();
 				zipfileList = new ArrayList<Zipfile>();
 				zipfile.setZipfileId(tmpZipfileId);
@@ -65,8 +64,8 @@ public class ZipfileService implements CompressService{
 				{
 					zipfile.setDirectory(false);
 				}
-				
-				depth = 0;
+
+				int depth = 0;
 				for (int i = 0; i < entry.getName().length() - 1; i++)
 				{
 					if (entry.getName().charAt(i) == '/')
@@ -74,28 +73,56 @@ public class ZipfileService implements CompressService{
 						depth++;
 					}
 				}
-				zipfile.setZipfileParentId(parentIdList.get(depth - 1));
-				if (depth < parentIdList.size())
+				
+				if (entry.isDirectory())
 				{
-					parentIdList.set(depth, zipfile.getZipfileId());
+					if (depth < parentIdList.size())
+					{
+						parentIdList.set(depth, zipfile.getZipfileId());
+					}
+					else
+					{
+						parentIdList.add(depth, zipfile.getZipfileId());
+					}
+				}	
+
+				if (depth == 0)
+				{
+					zipfile.setZipfileParentId(0);
 				}
 				else
 				{
-					parentIdList.add(depth, zipfile.getZipfileId());
+					zipfile.setZipfileParentId(parentIdList.get(depth - 1));
 				}
-				
-				if (!map.containsKey(parentIdList.get(depth - 1)))
+		
+				if (depth == 0)
 				{
-					zipfileList.add(zipfile);
-					map.put(parentIdList.get(depth - 1), zipfileList);
+					if (!map.containsKey(parentIdList.get(0)))
+					{
+						zipfileList.add(zipfile);
+						map.put(parentIdList.get(0), zipfileList);
+					}
+					else
+					{
+						zipfileList = map.get(parentIdList.get(0));
+						zipfileList.add(zipfile);
+						map.put(parentIdList.get(0), zipfileList);
+					}
 				}
 				else
 				{
-					zipfileList = map.get(parentIdList.get(depth - 1));
-					zipfileList.add(zipfile);
-					map.put(parentIdList.get(depth - 1), zipfileList);
+					if (!map.containsKey(parentIdList.get(depth - 1)))
+					{
+						zipfileList.add(zipfile);
+						map.put(parentIdList.get(depth - 1), zipfileList);
+					}
+					else
+					{
+						zipfileList = map.get(parentIdList.get(depth - 1));
+						zipfileList.add(zipfile);
+						map.put(parentIdList.get(depth - 1), zipfileList);
+					}
 				}
-				
 				tmpZipfileId++;
 			}
 		}
@@ -103,12 +130,12 @@ public class ZipfileService implements CompressService{
 		{
 			zis.close();
 		}
-		
+
 		list.add(map);	
 		z = new Zip(fileId, new Date(), list);		
 		zipCacheService.findZip(z);
-		
-		return map.get((long) 0);
+
+		return map.get(0);
 	}
 	
 	public boolean validation(long fileId, String userId) throws SQLException
