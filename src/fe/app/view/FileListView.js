@@ -19,9 +19,9 @@ class FileListView {
 		if (this.$el.children().length%6 === 0)
 			div = $("<div></div>").attr("class", "row");
 		else
-			div = this.$el.children().last();
+			div = this.$el.children().first();
 		
-		div.append(innerDiv);
+		div.prepend(innerDiv);
 		this.$el.prepend(div);
 	}
 	removeRendering() {
