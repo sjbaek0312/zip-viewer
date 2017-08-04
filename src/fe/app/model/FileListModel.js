@@ -24,17 +24,17 @@ class FileListModel extends EventEmitter {
 		console.log(" Model Create..");
 		this._url = "http://localhost:8080/api/files"; // test용
 //		this._url = "/api/files"				// 실제 사용.
-		this._fileList = {}; 
+		this._fileList = new Map(); 
 		this._dispatchedFiles = []; 
 	}
 		
 	isFileZip(fileId){
-		return (this._fileList[fileId].isCompressed());
+		return (this._fileList.get(fileId).isCompressed());
 	}
 	
 	_addFiles(json){
 		let file = new FileModel(json);
-		this._fileList[json.fileId] = file;
+		this._fileList.set(json.fileId, file);
 		this.emit('change:add', file);
 	}
   
@@ -47,15 +47,15 @@ class FileListModel extends EventEmitter {
 	}
 	
 	apiFileList() {
-		let This = this;
+		let self = this;
 		$.ajax({
-			url : This._url ,
+			url : this._url ,
 			type : "GET",
 			dataType : "json",
 			success : function(results) {
 				let resultFileList = results.items;
 				resultFileList.forEach(function(resultFile){
-					This._addFiles(resultFile);
+					self._addFiles(resultFile);
 				})
 			},
 			xhr : function() {
@@ -82,11 +82,11 @@ class FileListModel extends EventEmitter {
 	apiFileInsert() {
 		if(this._dispatchedFiles.length === 0) throw "NO MORE FILES TO UPLOAD";
 
-		let This = this;
+		let self = this;
 		let formData = new FormData();
 		formData.append("file", this._dispatchedFiles[0]);
 		$.ajax({
-			url : This._url ,
+			url : this._url ,
 			data : formData,
 			contentType : false,
 			processData : false,
@@ -94,7 +94,7 @@ class FileListModel extends EventEmitter {
 			type : "POST",
 			mimeType : "multipart/form-data",
 			success : function(results) {
-				This._addFiles(results);
+				self._addFiles(results);
 			},
 			error : function(){
 				console.log('ERROR');
@@ -103,7 +103,7 @@ class FileListModel extends EventEmitter {
 				var xhr = $.ajaxSettings.xhr();
 				xhr.upload.onprogress = function(event) {
 					console.log('progress', event.loaded, "/", event.total);
-					This.emit("progres:uploading");
+					self.emit("progres:uploading");
 				}
 				xhr.upload.onload =function(event){
 					console.log('DONE!');
@@ -111,8 +111,8 @@ class FileListModel extends EventEmitter {
 				return xhr;
 			}
 		}).always(function() {
-			This._dispatchedFiles.shift();
-			This.apiFileInsert();
+			self._dispatchedFiles.shift();
+			self.apiFileInsert();
 		});
 	}
 }
