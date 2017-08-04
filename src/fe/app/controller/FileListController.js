@@ -21,26 +21,22 @@ class FileListController {
 	}
 	_bindModelAndView(){
 		let self = this;
-		this._model.on("change:add", function(jsonInfo) {
-			self._view.rendering(jsonInfo);
-		});
-		this._model.on("change:dispatched", function(jsonInfo) {
-			self._uploadStateView.rendering(jsonInfo);
-		});
-		this._model.on("progres:uploading", function(id, progress) {
-			self._uploadStateView.progressRendering(id, progress);
-		});
+		this._model
+			.on("change:add", this._view.rendering.bind(this._view))
+			.on("change:dispatched", this._uploadStateView.bind(this._uploadStateView))
+			.on("progres:uploading", this._uploadStateView.progressRendering.bind(this._uploadStateView))
 	}
 	_bindStaticDropEvents(){
-		$("#dropZone").on("drop", {toModel : this._model}, DragAndDropAction.drop);
-		$("#dropZone").on("dragover",DragAndDropAction.dragover);
+		$("#dropZone")
+			.on("drop", {toModel : this._model}, DragAndDropAction.drop)
+			.on("dragover",DragAndDropAction.dragover);
 	}
 	_bindDynamicClickEvents(){ 
-		let This = this;
+		let self = this;
 		let fileListDom = this._view.getDomForEventBinding()
 		fileListDom.on("click", ".file", function(event){
-			let fileId = jQuery(this).data("fileId");
-			if (This._model.isFileZip(fileId))
+			let fileId = $(this).data("fileId");
+			if (self._model.isFileZip(fileId))
 				new ZipFileController(fileId); 
 			else console.log("Not a zip File");
 		});
