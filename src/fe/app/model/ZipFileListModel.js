@@ -17,13 +17,13 @@ class ZipFileListModel extends EventEmitter {
 	}
 
 	setModel(jsonArray){
-		let self = this;
 		this._zipFileList = [];
-		jsonArray.forEach(function(json){
-			self._zipFileList.push(new ZipFileModel(json));
-		})
+		jsonArray.forEach(this._pushZipFile, this)
 		console.dir(this._zipFileList);
 		this.emit("ModelSettingDone", this._zipFileList);
+	}
+	_pushZipFile(json){
+		this._zipFileList.push(new ZipFileModel(json))
 	}
 }
 
