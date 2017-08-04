@@ -1200,30 +1200,21 @@ var FileListController = function () {
 		key: "_bindModelAndView",
 		value: function _bindModelAndView() {
 			var self = this;
-			this._model.on("change:add", function (jsonInfo) {
-				self._view.rendering(jsonInfo);
-			});
-			this._model.on("change:dispatched", function (jsonInfo) {
-				self._uploadStateView.rendering(jsonInfo);
-			});
-			this._model.on("progres:uploading", function (id, progress) {
-				self._uploadStateView.progressRendering(id, progress);
-			});
+			this._model.on("change:add", this._view.rendering.bind(this._view)).on("change:dispatched", this._uploadStateView.rendering.bind(this._uploadStateView)).on("progres:uploading", this._uploadStateView.progressRendering.bind(this._uploadStateView));
 		}
 	}, {
 		key: "_bindStaticDropEvents",
 		value: function _bindStaticDropEvents() {
-			$("#dropZone").on("drop", { toModel: this._model }, _DropHandler2.default.drop);
-			$("#dropZone").on("dragover", _DropHandler2.default.dragover);
+			$("#dropZone").on("drop", { toModel: this._model }, _DropHandler2.default.drop).on("dragover", _DropHandler2.default.dragover);
 		}
 	}, {
 		key: "_bindDynamicClickEvents",
 		value: function _bindDynamicClickEvents() {
-			var This = this;
+			var self = this;
 			var fileListDom = this._view.getDomForEventBinding();
 			fileListDom.on("click", ".file", function (event) {
-				var fileId = jQuery(this).data("fileId");
-				if (This._model.isFileZip(fileId)) new _ZipFileController2.default(fileId);else console.log("Not a zip File");
+				var fileId = $(this).data("fileId");
+				if (self._model.isFileZip(fileId)) new _ZipFileController2.default(fileId);else console.log("Not a zip File");
 			});
 		}
 	}]);
@@ -1273,10 +1264,10 @@ var FileModel = function () {
 		key: "isCompressed",
 		value: function isCompressed() {
 			var ZIP_TYPE = ["zip", "7z", "alz", "egg"];
-			var This = this;
+			var self = this;
 			var result = false;
 			ZIP_TYPE.forEach(function (type) {
-				if (type == This.fileType) result = true;
+				if (type == self.fileType) result = true;
 			});
 			return result;
 		}
@@ -1296,7 +1287,7 @@ var FileListModel = function (_EventEmitter) {
 		console.log(" Model Create..");
 		_this._url = "http://localhost:8080/api/files"; // test용
 		//		this._url = "/api/files"				// 실제 사용.
-		_this._fileList = {};
+		_this._fileList = new Map();
 		_this._dispatchedFiles = [];
 		return _this;
 	}
@@ -1304,13 +1295,13 @@ var FileListModel = function (_EventEmitter) {
 	_createClass(FileListModel, [{
 		key: "isFileZip",
 		value: function isFileZip(fileId) {
-			return this._fileList[fileId].isCompressed();
+			return this._fileList.get(fileId).isCompressed();
 		}
 	}, {
 		key: "_addFiles",
 		value: function _addFiles(json) {
 			var file = new FileModel(json);
-			this._fileList[json.fileId] = file;
+			this._fileList.set(json.fileId, file);
 			this.emit('change:add', file);
 		}
 	}, {
@@ -1327,15 +1318,15 @@ var FileListModel = function (_EventEmitter) {
 	}, {
 		key: "apiFileList",
 		value: function apiFileList() {
-			var This = this;
+			var self = this;
 			$.ajax({
-				url: This._url,
+				url: this._url,
 				type: "GET",
 				dataType: "json",
 				success: function success(results) {
 					var resultFileList = results.items;
 					resultFileList.forEach(function (resultFile) {
-						This._addFiles(resultFile);
+						self._addFiles(resultFile);
 					});
 				},
 				xhr: function xhr() {
@@ -1364,11 +1355,11 @@ var FileListModel = function (_EventEmitter) {
 		value: function apiFileInsert() {
 			if (this._dispatchedFiles.length === 0) throw "NO MORE FILES TO UPLOAD";
 
-			var This = this;
+			var self = this;
 			var formData = new FormData();
 			formData.append("file", this._dispatchedFiles[0]);
 			$.ajax({
-				url: This._url,
+				url: this._url,
 				data: formData,
 				contentType: false,
 				processData: false,
@@ -1376,7 +1367,7 @@ var FileListModel = function (_EventEmitter) {
 				type: "POST",
 				mimeType: "multipart/form-data",
 				success: function success(results) {
-					This._addFiles(results);
+					self._addFiles(results);
 				},
 				error: function error() {
 					console.log('ERROR');
@@ -1385,7 +1376,7 @@ var FileListModel = function (_EventEmitter) {
 					var xhr = $.ajaxSettings.xhr();
 					xhr.upload.onprogress = function (event) {
 						console.log('progress', event.loaded, "/", event.total);
-						This.emit("progres:uploading");
+						self.emit("progres:uploading");
 					};
 					xhr.upload.onload = function (event) {
 						console.log('DONE!');
@@ -1393,8 +1384,8 @@ var FileListModel = function (_EventEmitter) {
 					return xhr;
 				}
 			}).always(function () {
-				This._dispatchedFiles.shift();
-				This.apiFileInsert();
+				self._dispatchedFiles.shift();
+				self.apiFileInsert();
 			});
 		}
 	}]);
@@ -1445,8 +1436,8 @@ var ZipFileController = function () {
 	function ZipFileController(fileId) {
 		_classCallCheck(this, ZipFileController);
 
-		this._zipFileListView = new _ZipFileListView2.default("#zipFileList"); //#zipFileList
-		this._zipFileTreeView = new _ZipFileTreeView2.default("#zipFileTree"); //#zipFileTree
+		this._zipFileListView = new _ZipFileListView2.default("#zipFileList");
+		this._zipFileTreeView = new _ZipFileTreeView2.default("#zipFileTree");
 
 		this._zipFileAction = new _ZipFileAction2.default(fileId);
 		this._zipFileTreeModel = new _ZipFileTreeModel2.default();
@@ -1454,6 +1445,7 @@ var ZipFileController = function () {
 
 		this._bindActionEvents();
 		this._bindModelEvents();
+		this._bindViewEvents();
 
 		this._zipFileAction.apiZipFileLoad();
 
@@ -1468,12 +1460,10 @@ var ZipFileController = function () {
 			this._zipFileAction.on("APILoadDone", function (jsonArray) {
 				self._zipFileListModel.setModel(jsonArray);
 				self._zipFileTreeModel.setModel(jsonArray);
-			});
-			this._zipFileAction.on("APIListDone:Dir", function (jsonArray) {
+			}).on("APIListDone:Dir", function (jsonArray) {
 				self._zipFileListModel.setModel(jsonArray);
 				self._zipFileTreeModel.addModel(jsonArray);
-			});
-			this._zipFileAction.on("APIListDone:Tree", function (jsonArray) {
+			}).on("APIListDone:Tree", function (jsonArray) {
 				self._zipFileTreeModel.addModel(jsonArray);
 			});
 		}
@@ -1493,26 +1483,27 @@ var ZipFileController = function () {
 	}, {
 		key: "_bindViewEvents",
 		value: function _bindViewEvents() {
-			// 언제할래 ^^
+			// 
 		}
 	}, {
 		key: "_startView",
 		value: function _startView() {
 			$("#ZipViewerBackground").css("display", "block");
-			// 아래 로직은 view 와 모델로 분리 시켜야함... 
 		}
 	}, {
 		key: "_bindClickFinishEvent",
 		value: function _bindClickFinishEvent() {
-			var This = this;
+			var self = this;
 			$("#zipFileClose").on("click", function () {
-
 				$("#ZipViewerBackground").css("display", "none");
+				self._finish();
 			});
 		}
 	}, {
 		key: "_finish",
-		value: function _finish() {}
+		value: function _finish() {
+			console.log("자원 종료 로직.");
+		}
 	}]);
 
 	return ZipFileController;
@@ -1553,6 +1544,7 @@ var ZipFileModel = function ZipFileModel(json) {
 	this.zipfileId = json.zipfileId;
 	this.zipfileSize = json.zipfileSize;
 	this.zipfileParentId = json.zipfileParentId;
+	if (json.isDirectory) this.zipfileType = "dir";
 };
 
 var ZipFileListModel = function (_EventEmitter) {
@@ -1570,13 +1562,15 @@ var ZipFileListModel = function (_EventEmitter) {
 	_createClass(ZipFileListModel, [{
 		key: "setModel",
 		value: function setModel(jsonArray) {
-			var self = this;
 			this._zipFileList = [];
-			jsonArray.forEach(function (json) {
-				self._zipFileList.push(new ZipFileModel(json));
-			});
+			jsonArray.forEach(this._pushZipFile, this);
 			console.dir(this._zipFileList);
 			this.emit("ModelSettingDone", this._zipFileList);
+		}
+	}, {
+		key: "_pushZipFile",
+		value: function _pushZipFile(json) {
+			this._zipFileList.push(new ZipFileModel(json));
 		}
 	}]);
 
@@ -1608,18 +1602,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } /**
-                                                                                                                                                           * 		zipFileTree =  [
-                                                                                                                                                          			{ "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-                                                                                                                                                                 		{ "id" : "ajson2", "parent" : "#", "text" : "Root node 2" },
-                                                                                                                                                                 		{ "id" : "ajson3", "parent" : "ajson2", "text" : "Child 1" },
-                                                                                                                                                                 		{ "id" : "ajson4", "parent" : "ajson2", "text" : "Child 2" },
-                                                                                                                                                                 		{ "id" : "", "parent" : "ajson3", "text" : "" }, // trash value;
-                                                                                                                                                                 		{ "id" : "", "parent" : "ajson4", "text" : "" }, // trash Value
-                                                                                                                                                          		]	
-                                                                                                                                                          		이런 식으로 저장이 되어야 한다.
-                                                                                                                                                          */
-
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var ZipFileModel = function ZipFileModel(json) {
 	_classCallCheck(this, ZipFileModel);
@@ -1627,7 +1610,6 @@ var ZipFileModel = function ZipFileModel(json) {
 	this.text = json.zipfileName;
 	this.id = json.zipfileId;
 	this.parent = json.zipfileParentId;
-	this.isSearched = false;
 };
 
 var ZipFileTreeModel = function (_EventEmitter) {
@@ -1640,7 +1622,7 @@ var ZipFileTreeModel = function (_EventEmitter) {
 
 		_this._zipFileTree = [];
 		_this._zipFileTree[0] = { "id": 0, "parent": "#", "text": "TEMP ROOT" };
-		// 생성자로 부터 값을 넘겨 받아야 할 것 같은데.
+		// 생성자로 부터 root 파일 이름을 넘겨 받아야 할 것 같다.
 		return _this;
 	}
 
@@ -1660,6 +1642,7 @@ var ZipFileTreeModel = function (_EventEmitter) {
 			var self = this;
 			jsonArray.forEach(function (json) {
 				if (json.isDirectory) self._zipFileTee.push(new ZipFileModel(json));
+				// 기존 쓰레기 값을 지우고 addModel 해줘야함.
 			});
 			console.dir(this._zipFileTee);
 		}
@@ -1704,20 +1687,31 @@ var ZipFileAction = function (_EventEmitter) {
 		var _this = _possibleConstructorReturn(this, (ZipFileAction.__proto__ || Object.getPrototypeOf(ZipFileAction)).call(this));
 
 		_this._fileId = fileId;
-		_this._URL = "http://localhost:8080/api/files/" + _this._fileId + "/zipFiles"; //testURL
-		//		this._URL = "/api/files/"+this._fileId+"/zipFiles"; //realURL
+		//		this._URL = "http://localhost:8080/api/files/"+this._fileId+"/zipFiles"; //testURL
+		_this._URL = "/api/files/" + _this._fileId + "/zipFiles"; //realURL
+		_this._promiseAPIList;
 		return _this;
 	}
 
 	_createClass(ZipFileAction, [{
 		key: "clickDir",
-		value: function clickDir() {
-			this.emit("APIListDone:Dir", jsonResponse);
+		value: function clickDir(parentId) {
+			var self = this;
+			_apiZipFileList(parentId);
+			this._promiseAPIList.done(function (response) {
+				self._apiZipFileRenew();
+				self.emit("APIListDone:Dir", response.items);
+			});
 		}
 	}, {
 		key: "clickTree",
-		value: function clickTree() {
-			this.emit("APIListDone:Tree", jsonResponse);
+		value: function clickTree(parentId) {
+			var self = this;
+			_apiZipFileList(parentId);
+			this._promiseAPIList.done(function (response) {
+				self._apiZipFileRenew();
+				self.emit("APIListDone:Tree", response.items);
+			});
 		}
 	}, {
 		key: "apiZipFileLoad",
@@ -1728,13 +1722,17 @@ var ZipFileAction = function (_EventEmitter) {
 				} });
 			promiseAPILoad.done(function (response) {
 				self.emit("APILoadDone", response.items);
+				self._apiZipFileRenew();
+			});
+			promiseAPILoad.fail(function () {
+				self.emit("APILoadFail");
 			});
 		}
 	}, {
 		key: "_apiZipFileList",
 		value: function _apiZipFileList(parentId) {
-			var formData = new FormData();
-			var promiseAPIList = $.ajax({
+			var self = this;
+			this._promiseAPIList = $.ajax({
 				url: this._URL,
 				data: { "zipfileParentId": parentId },
 				type: "GET",
@@ -1744,18 +1742,27 @@ var ZipFileAction = function (_EventEmitter) {
 					return xhr;
 				}
 			});
+			this._promiseAPIList.fail(function () {
+				self.emit("APIListFail");
+			});
 		}
 	}, {
 		key: "_apiZipFileRenew",
 		value: function _apiZipFileRenew() {
-			var formData = new FormData();
-			formData.append("zipfileParentId", this._fileId);
-			$.ajax({ url: this._URL, data: formData, dataType: "json", type: "PATCH" });
+			$.ajax({ url: this._URL, dataType: "json", type: "PATCH" });
 		}
 	}, {
 		key: "apiZipFileExpire",
 		value: function apiZipFileExpire() {
 			$.ajax({ url: this._URL, dataType: "json", type: "DELETE" });
+		}
+	}, {
+		key: "apiZipFileDownload",
+		value: function apiZipFileDownload(zipFileId) {
+			var promiseAPIDownload = $.ajax({ url: this._URL, data: { "zipfileId": zipFileId }, type: "GET" });
+			promiseAPIDownload.fail(function () {
+				self.emit("APIDownloadFail");
+			});
 		}
 	}]);
 
@@ -1779,21 +1786,19 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-//import {zipFileListTemplate} from "../tpl/ZipFileList.html"
 var zipFileListTemplate = __webpack_require__(15);
 
 var ZipFileListView = function () {
 	function ZipFileListView(domId) {
 		_classCallCheck(this, ZipFileListView);
 
-		this._dom = $(domId);
+		this.$el = $(domId);
 	}
 
 	_createClass(ZipFileListView, [{
 		key: "rendering",
 		value: function rendering(model) {
-			console.log("handlebar starts here");
-			this._dom.html(zipFileListTemplate(model));
+			this.$el.html(zipFileListTemplate(model));
 		}
 	}]);
 
@@ -1811,7 +1816,9 @@ function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj);
 module.exports = (Handlebars["default"] || Handlebars).template({"1":function(container,depth0,helpers,partials,data) {
     var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
 
-  return "		<tr >\r\n			<td class=\"col-xs-2\"><img src=\"static/img/file-txt.png\"\r\n								width=\"20\" /></td>\r\n			<td class=\"col-xs-7\">"
+  return "		<tr >\r\n			<td class=\"col-xs-2\"><img src=\"/static/img/file-"
+    + alias4(((helper = (helper = helpers.zipfileType || (depth0 != null ? depth0.zipfileType : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"zipfileType","hash":{},"data":data}) : helper)))
+    + ".png\"\r\n								width=\"20\" onerror=\"this.src='/static/img/file-common.png'\"/></td>\r\n			<td class=\"col-xs-7\">"
     + alias4(((helper = (helper = helpers.zipfileName || (depth0 != null ? depth0.zipfileName : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"zipfileName","hash":{},"data":data}) : helper)))
     + "</td>\r\n			<td class=\"col-xs-3\">"
     + alias4(((helper = (helper = helpers.zipfileSize || (depth0 != null ? depth0.zipfileSize : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"zipfileSize","hash":{},"data":data}) : helper)))
@@ -2789,17 +2796,13 @@ var ZipFileTreeView = function () {
 	function ZipFileTreeView(domId) {
 		_classCallCheck(this, ZipFileTreeView);
 
-		this._el = $(domId);
-		// 주원님... _el  말고  어떻게 작성하라고 하셨었죠....? 실수로 다 날려버렸어요 죄송합니다 ㅠㅠ.
+		this.$el = $(domId);
 	}
 
 	_createClass(ZipFileTreeView, [{
 		key: "rendering",
 		value: function rendering(model) {
-			model = [{ "id": "ajson1", "parent": "#", "text": "Simple root node" }, { "id": "ajson2", "parent": "#", "text": "Root node 2" }, { "id": "ajson3", "parent": "ajson2", "text": "Child 1" }, { "id": "ajson4", "parent": "ajson2", "text": "Child 2" }, { "id": "trash1", "parent": "ajson3", "text": "" }, // trash value;
-			{ "id": "trahs2", "parent": "ajson4", "text": "" //id가 ""
-			}];
-			this._el.jstree({
+			this.$el.jstree({
 				"plugins": ["wholerow"],
 				'core': {
 					'data': model,
@@ -2835,16 +2838,14 @@ var FileListView = function () {
 	function FileListView(domId) {
 		_classCallCheck(this, FileListView);
 
-		console.log(domId + " view Create..");
-		this._dom = $(domId);
-		//		this._imgUrl = "/static/img/" 
-		this._imgUrl = "static/img/";
+		this.$el = $(domId);
+		this._imgUrl = "/static/img/";
 	}
 
 	_createClass(FileListView, [{
 		key: "getDomForEventBinding",
 		value: function getDomForEventBinding() {
-			return this._dom;
+			return this.$el;
 		}
 	}, {
 		key: "rendering",
@@ -2857,10 +2858,10 @@ var FileListView = function () {
 			innerDiv.append(img).append(name);
 
 			var div = void 0;
-			if (this._dom.children().length % 6 === 0) div = $("<div></div>").attr("class", "row");else div = this._dom.children().last();
+			if (this.$el.children().length % 6 === 0) div = $("<div></div>").attr("class", "row");else div = this.$el.children().first();
 
-			div.append(innerDiv);
-			this._dom.append(div);
+			div.prepend(innerDiv);
+			this.$el.prepend(div);
 		}
 	}, {
 		key: "removeRendering",
@@ -2896,7 +2897,7 @@ var FileUploadStateListView = function () {
 	function FileUploadStateListView(domId) {
 		_classCallCheck(this, FileUploadStateListView);
 
-		this._dom = $(domId);
+		this.$el = $(domId);
 	}
 
 	_createClass(FileUploadStateListView, [{
@@ -2910,12 +2911,12 @@ var FileUploadStateListView = function () {
 			innerDiv2.append(iconSpan);
 			div.append(innerDiv10).append(innerDiv2);
 			li.append(div);
-			this._dom.append(li);
+			this.$el.append(li);
 		}
 	}, {
 		key: "progressRendering",
 		value: function progressRendering(id, progress) {
-			var li = this._dom.find("#" + id);
+			var li = this.$el.find("#" + id);
 			li.text(progress);
 		}
 	}]);
@@ -2987,7 +2988,7 @@ exports = module.exports = __webpack_require__(4)(undefined);
 
 
 // module
-exports.push([module.i, "\r\n/* jjk376 */\r\n#dropZone {\r\n\tborder-style: dashed;\r\n\tborder-width: 2px;\r\n\ttext-align: center;\r\n\tcolor: gray;\r\n}\r\n.dropdown-menu {\r\n\toverflow-y:auto;\r\n}\r\n.dropdown-menu > li{\r\n\tmin-height:50px;\r\n\twidth: 300px;\r\n\tpadding: 20px 20px 10px 10px;\r\n\tborder-bottom: 1px dashed gray;\r\n}\r\n.dropdown-menu > li:last-child {\r\n\tborder-bottom: none;\r\n}\r\n.dropDownView {\r\n\tmax-height:300px;\r\n    position: absolute;\r\n    border:1px solid red;\r\n    overflow-y:scroll;\r\n}\r\n.filename{\r\n\tdisplay: block; \r\n\toverflow: hidden; \r\n\ttext-overflow: ellipsis;\r\n\twhite-space: nowrap; \r\n\twidth: 130px;\r\n\ttext-overflow: ellipsis;\r\n}\r\n\r\n#ZipViewerBackground {\r\n\tposition: fixed;\r\n\tdisplay:none;\r\n\ttop: 51px;\r\n\theight: 100%;\r\n\twidth: 100%;\r\n\tbackground: rgba(255, 255, 255, 0.9);\r\n\tz-index: 1;\r\n}\r\n\r\n.floatRight{\r\n\tfloat: right;\r\n\tmargin-right: 2px;\r\n}\r\n#zipFileTab{\r\n\theight: 30px;\r\n\tbackground-color: gray;\r\n}\r\n#zipFileTree {\r\n\tborder-right: 1px dashed gray;\r\n\theight: calc(100% - 55px);\r\n\toverflow: auto;\r\n}\r\n#zipFileList {\r\n\tpadding: 0px;\r\n\toverflow: auto;\r\n\theight: calc(100% - 55px);\r\n}", ""]);
+exports.push([module.i, "/* jjk376 */\r\n#dropZone {\r\n\tborder-style: dashed;\r\n\tborder-width: 2px;\r\n\ttext-align: center;\r\n\tcolor: gray;\r\n}\r\n.dropdown-menu {\r\n\toverflow-y:auto;\r\n}\r\n.dropdown-menu > li{\r\n\tmin-height:50px;\r\n\twidth: 300px;\r\n\tpadding: 20px 20px 10px 10px;\r\n\tborder-bottom: 1px dashed gray;\r\n}\r\n.dropdown-menu > li:last-child {\r\n\tborder-bottom: none;\r\n}\r\n.dropDownView {\r\n\tmax-height:300px;\r\n    position: absolute;\r\n    border:1px solid red;\r\n    overflow-y:scroll;\r\n}\r\n.filename{\r\n\tdisplay: block; \r\n\toverflow: hidden; \r\n\ttext-overflow: ellipsis;\r\n\twhite-space: nowrap; \r\n\twidth: 130px;\r\n\ttext-overflow: ellipsis;\r\n}\r\n\r\n#ZipViewerBackground {\r\n\tposition: fixed;\r\n\tdisplay:none;\r\n\ttop: 51px;\r\n\theight: 100%;\r\n\twidth: 100%;\r\n\tbackground: rgba(255, 255, 255, 0.9);\r\n\tz-index: 1;\r\n}\r\n\r\n.floatRight{\r\n\tfloat: right;\r\n\tmargin-right: 2px;\r\n}\r\n#zipFileTab{\r\n\theight: 30px;\r\n\tbackground-color: gray;\r\n}\r\n#zipFileTree {\r\n\tborder-right: 1px dashed gray;\r\n\theight: calc(100% - 55px);\r\n\toverflow: auto;\r\n}\r\n#zipFileList {\r\n\tpadding: 0px;\r\n\toverflow: auto;\r\n\theight: calc(100% - 55px);\r\n}", ""]);
 
 // exports
 
@@ -3127,7 +3128,7 @@ exports = module.exports = __webpack_require__(4)(undefined);
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\r\n@charset \"UTF-8\";\r\n/* Template-specific stuff\r\n *\r\n * Customizations just for the template; these are not necessary for anything\r\n * with disabling the responsiveness.\r\n */\r\n\r\n/* Account for fixed navbar */\r\nbody {\r\n  padding-top: 70px;\r\n  padding-bottom: 30px;\r\n}\r\n\r\nbody,\r\n.navbar-fixed-top,\r\n.navbar-fixed-bottom {\r\n  min-width: 970px;\r\n}\r\n\r\n/* Don't let the lead text change font-size. */\r\n.lead {\r\n  font-size: 16px;\r\n}\r\n\r\n/* Finesse the page header spacing */\r\n.page-header {\r\n  margin-bottom: 30px;\r\n}\r\n.page-header .lead {\r\n  margin-bottom: 10px;\r\n}\r\n\r\n\r\n/* Non-responsive overrides\r\n *\r\n * Utilize the following CSS to disable the responsive-ness of the container,\r\n * grid system, and navbar.\r\n */\r\n\r\n/* Reset the container */\r\n.container {\r\n  width: 970px;\r\n  max-width: none !important;\r\n}\r\n\r\n/* Demonstrate the grids */\r\n\r\n.container .navbar-header,\r\n.container .navbar-collapse {\r\n  margin-right: 0;\r\n  margin-left: 0;\r\n}\r\n\r\n/* Always float the navbar header */\r\n.navbar-header {\r\n  float: left;\r\n}\r\n\r\n/* Undo the collapsing navbar */\r\n.navbar-collapse {\r\n  display: block !important;\r\n  height: auto !important;\r\n  padding-bottom: 0;\r\n  overflow: visible !important;\r\n  visibility: visible !important;\r\n}\r\n\r\n.navbar-toggle {\r\n  display: none;\r\n}\r\n.navbar-collapse {\r\n  border-top: 0;\r\n}\r\n\r\n.navbar-brand {\r\n  margin-left: -15px;\r\n}\r\n\r\n/* Always apply the floated nav */\r\n.navbar-nav {\r\n  float: left;\r\n  margin: 0;\r\n}\r\n.navbar-nav > li {\r\n  float: left;\r\n}\r\n.navbar-nav > li > a {\r\n  padding: 15px;\r\n}\r\n\r\n/* Redeclare since we override the float above */\r\n.navbar-nav.navbar-right {\r\n  float: right;\r\n}\r\n\r\n/* Undo custom dropdowns */\r\n.navbar .navbar-nav .open .dropdown-menu {\r\n  position: absolute;\r\n  float: left;\r\n  background-color: #fff;\r\n  border: 1px solid #ccc;\r\n  border: 1px solid rgba(0, 0, 0, .15);\r\n  border-width: 0 1px 1px;\r\n  border-radius: 0 0 4px 4px;\r\n  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);\r\n          box-shadow: 0 6px 12px rgba(0, 0, 0, .175);\r\n}\r\n.navbar-default .navbar-nav .open .dropdown-menu > li > a {\r\n  color: #333;\r\n}\r\n.navbar .navbar-nav .open .dropdown-menu > li > a:hover,\r\n.navbar .navbar-nav .open .dropdown-menu > li > a:focus,\r\n.navbar .navbar-nav .open .dropdown-menu > .active > a,\r\n.navbar .navbar-nav .open .dropdown-menu > .active > a:hover,\r\n.navbar .navbar-nav .open .dropdown-menu > .active > a:focus {\r\n  color: #fff !important;\r\n  background-color: #428bca !important;\r\n}\r\n.navbar .navbar-nav .open .dropdown-menu > .disabled > a,\r\n.navbar .navbar-nav .open .dropdown-menu > .disabled > a:hover,\r\n.navbar .navbar-nav .open .dropdown-menu > .disabled > a:focus {\r\n  color: #999 !important;\r\n  background-color: transparent !important;\r\n}\r\n\r\n/* Undo form expansion */\r\n.navbar-form {\r\n  float: left;\r\n  width: auto;\r\n  padding-top: 0;\r\n  padding-bottom: 0;\r\n  margin-right: 0;\r\n  margin-left: 0;\r\n  border: 0;\r\n  -webkit-box-shadow: none;\r\n          box-shadow: none;\r\n}\r\n\r\n/* Copy-pasted from forms.less since we mixin the .form-inline styles. */\r\n.navbar-form .form-group {\r\n  display: inline-block;\r\n  margin-bottom: 0;\r\n  vertical-align: middle;\r\n}\r\n\r\n.navbar-form .form-control {\r\n  display: inline-block;\r\n  width: auto;\r\n  vertical-align: middle;\r\n}\r\n\r\n.navbar-form .form-control-static {\r\n  display: inline-block;\r\n}\r\n\r\n.navbar-form .input-group {\r\n  display: inline-table;\r\n  vertical-align: middle;\r\n}\r\n\r\n.navbar-form .input-group .input-group-addon,\r\n.navbar-form .input-group .input-group-btn,\r\n.navbar-form .input-group .form-control {\r\n  width: auto;\r\n}\r\n\r\n.navbar-form .input-group > .form-control {\r\n  width: 100%;\r\n}\r\n\r\n.navbar-form .control-label {\r\n  margin-bottom: 0;\r\n  vertical-align: middle;\r\n}\r\n\r\n.navbar-form .radio,\r\n.navbar-form .checkbox {\r\n  display: inline-block;\r\n  margin-top: 0;\r\n  margin-bottom: 0;\r\n  vertical-align: middle;\r\n}\r\n\r\n.navbar-form .radio label,\r\n.navbar-form .checkbox label {\r\n  padding-left: 0;\r\n}\r\n\r\n.navbar-form .radio input[type=\"radio\"],\r\n.navbar-form .checkbox input[type=\"checkbox\"] {\r\n  position: relative;\r\n  margin-left: 0;\r\n}\r\n\r\n.navbar-form .has-feedback .form-control-feedback {\r\n  top: 0;\r\n}\r\n\r\n/* Undo inline form compaction on small screens */\r\n.form-inline .form-group {\r\n  display: inline-block;\r\n  margin-bottom: 0;\r\n  vertical-align: middle;\r\n}\r\n\r\n.form-inline .form-control {\r\n  display: inline-block;\r\n  width: auto;\r\n  vertical-align: middle;\r\n}\r\n\r\n.form-inline .form-control-static {\r\n  display: inline-block;\r\n}\r\n\r\n.form-inline .input-group {\r\n  display: inline-table;\r\n  vertical-align: middle;\r\n}\r\n.form-inline .input-group .input-group-addon,\r\n.form-inline .input-group .input-group-btn,\r\n.form-inline .input-group .form-control {\r\n  width: auto;\r\n}\r\n\r\n.form-inline .input-group > .form-control {\r\n  width: 100%;\r\n}\r\n\r\n.form-inline .control-label {\r\n  margin-bottom: 0;\r\n  vertical-align: middle;\r\n}\r\n\r\n.form-inline .radio,\r\n.form-inline .checkbox {\r\n  display: inline-block;\r\n  margin-top: 0;\r\n  margin-bottom: 0;\r\n  vertical-align: middle;\r\n}\r\n.form-inline .radio label,\r\n.form-inline .checkbox label {\r\n  padding-left: 0;\r\n}\r\n\r\n.form-inline .radio input[type=\"radio\"],\r\n.form-inline .checkbox input[type=\"checkbox\"] {\r\n  position: relative;\r\n  margin-left: 0;\r\n}\r\n\r\n.form-inline .has-feedback .form-control-feedback {\r\n  top: 0;\r\n}\r\n", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\r\n@charset \"UTF-8\";\r\n/* Template-specific stuff\r\n *\r\n * Customizations just for the template; these are not necessary for anything\r\n * with disabling the responsiveness.\r\n */\r\n\r\n/* Account for fixed navbar */\r\nbody {\r\n  padding-top: 70px;\r\n  padding-bottom: 30px;\r\n}\r\n\r\nbody,\r\n.navbar-fixed-top,\r\n.navbar-fixed-bottom {\r\n  min-width: 970px;\r\n}\r\n\r\n/* Don't let the lead text change font-size. */\r\n.lead {\r\n  font-size: 16px;\r\n}\r\n\r\n/* Finesse the page header spacing */\r\n.page-header {\r\n  margin-bottom: 30px;\r\n}\r\n.page-header .lead {\r\n  margin-bottom: 10px;\r\n}\r\n\r\n\r\n/* Non-responsive overrides\r\n *\r\n * Utilize the following CSS to disable the responsive-ness of the container,\r\n * grid system, and navbar.\r\n */\r\n\r\n/* Reset the container */\r\n.container {\r\n  width: 970px;\r\n  max-width: none !important;\r\n}\r\n\r\n/* Demonstrate the grids */\r\n\r\n.container .navbar-header,\r\n.container .navbar-collapse {\r\n  margin-right: 0;\r\n  margin-left: 0;\r\n}\r\n\r\n/* Always float the navbar header */\r\n.navbar-header {\r\n  float: left;\r\n}\r\n\r\n/* Undo the collapsing navbar */\r\n.navbar-collapse {\r\n  display: block !important;\r\n  height: auto !important;\r\n  padding-bottom: 0;\r\n  overflow: visible !important;\r\n  visibility: visible !important;\r\n}\r\n\r\n.navbar-toggle {\r\n  display: none;\r\n}\r\n.navbar-collapse {\r\n  border-top: 0;\r\n}\r\n\r\n.navbar-brand {\r\n  margin-left: -15px;\r\n}\r\n\r\n/* Always apply the floated nav */\r\n.navbar-nav {\r\n  float: left;\r\n  margin: 0;\r\n}\r\n.navbar-nav > li {\r\n  float: left;\r\n}\r\n.navbar-nav > li > a {\r\n  padding: 15px;\r\n}\r\n\r\n/* Redeclare since we override the float above */\r\n.navbar-nav.navbar-right {\r\n  float: right;\r\n}\r\n\r\n/* Undo custom dropdowns */\r\n.navbar .navbar-nav .open .dropdown-menu {\r\n  position: absolute;\r\n  float: left;\r\n  background-color: #fff;\r\n  border: 1px solid #ccc;\r\n  border: 1px solid rgba(0, 0, 0, .15);\r\n  border-width: 0 1px 1px;\r\n  border-radius: 0 0 4px 4px;\r\n  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);\r\n          box-shadow: 0 6px 12px rgba(0, 0, 0, .175);\r\n}\r\n.navbar-default .navbar-nav .open .dropdown-menu > li > a {\r\n  color: #333;\r\n}\r\n.navbar .navbar-nav .open .dropdown-menu > li > a:hover,\r\n.navbar .navbar-nav .open .dropdown-menu > li > a:focus,\r\n.navbar .navbar-nav .open .dropdown-menu > .active > a,\r\n.navbar .navbar-nav .open .dropdown-menu > .active > a:hover,\r\n.navbar .navbar-nav .open .dropdown-menu > .active > a:focus {\r\n  color: #fff !important;\r\n  background-color: #428bca !important;\r\n}\r\n.navbar .navbar-nav .open .dropdown-menu > .disabled > a,\r\n.navbar .navbar-nav .open .dropdown-menu > .disabled > a:hover,\r\n.navbar .navbar-nav .open .dropdown-menu > .disabled > a:focus {\r\n  color: #999 !important;\r\n  background-color: transparent !important;\r\n}\r\n\r\n/* Undo form expansion */\r\n.navbar-form {\r\n  float: left;\r\n  width: auto;\r\n  padding-top: 0;\r\n  padding-bottom: 0;\r\n  margin-right: 0;\r\n  margin-left: 0;\r\n  border: 0;\r\n  -webkit-box-shadow: none;\r\n          box-shadow: none;\r\n}\r\n\r\n/* Copy-pasted from forms.less since we mixin the .form-inline styles. */\r\n.navbar-form .form-group {\r\n  display: inline-block;\r\n  margin-bottom: 0;\r\n  vertical-align: middle;\r\n}\r\n\r\n.navbar-form .form-control {\r\n  display: inline-block;\r\n  width: auto;\r\n  vertical-align: middle;\r\n}\r\n\r\n.navbar-form .form-control-static {\r\n  display: inline-block;\r\n}\r\n\r\n.navbar-form .input-group {\r\n  display: inline-table;\r\n  vertical-align: middle;\r\n}\r\n\r\n.navbar-form .input-group .input-group-addon,\r\n.navbar-form .input-group .input-group-btn,\r\n.navbar-form .input-group .form-control {\r\n  width: auto;\r\n}\r\n\r\n.navbar-form .input-group > .form-control {\r\n  width: 100%;\r\n}\r\n\r\n.navbar-form .control-label {\r\n  margin-bottom: 0;\r\n  vertical-align: middle;\r\n}\r\n\r\n.navbar-form .radio,\r\n.navbar-form .checkbox {\r\n  display: inline-block;\r\n  margin-top: 0;\r\n  margin-bottom: 0;\r\n  vertical-align: middle;\r\n}\r\n\r\n.navbar-form .radio label,\r\n.navbar-form .checkbox label {\r\n  padding-left: 0;\r\n}\r\n\r\n.navbar-form .radio input[type=\"radio\"],\r\n.navbar-form .checkbox input[type=\"checkbox\"] {\r\n  position: relative;\r\n  margin-left: 0;\r\n}\r\n\r\n.navbar-form .has-feedback .form-control-feedback {\r\n  top: 0;\r\n}\r\n\r\n/* Undo inline form compaction on small screens */\r\n.form-inline .form-group {\r\n  display: inline-block;\r\n  margin-bottom: 0;\r\n  vertical-align: middle;\r\n}\r\n\r\n.form-inline .form-control {\r\n  display: inline-block;\r\n  width: auto;\r\n  vertical-align: middle;\r\n}\r\n\r\n.form-inline .form-control-static {\r\n  display: inline-block;\r\n}\r\n\r\n.form-inline .input-group {\r\n  display: inline-table;\r\n  vertical-align: middle;\r\n}\r\n.form-inline .input-group .input-group-addon,\r\n.form-inline .input-group .input-group-btn,\r\n.form-inline .input-group .form-control {\r\n  width: auto;\r\n}\r\n\r\n.form-inline .input-group > .form-control {\r\n  width: 100%;\r\n}\r\n\r\n.form-inline .control-label {\r\n  margin-bottom: 0;\r\n  vertical-align: middle;\r\n}\r\n\r\n.form-inline .radio,\r\n.form-inline .checkbox {\r\n  display: inline-block;\r\n  margin-top: 0;\r\n  margin-bottom: 0;\r\n  vertical-align: middle;\r\n}\r\n.form-inline .radio label,\r\n.form-inline .checkbox label {\r\n  padding-left: 0;\r\n}\r\n\r\n.form-inline .radio input[type=\"radio\"],\r\n.form-inline .checkbox input[type=\"checkbox\"] {\r\n  position: relative;\r\n  margin-left: 0;\r\n}\r\n\r\n.form-inline .has-feedback .form-control-feedback {\r\n  top: 0;\r\n}", ""]);
 
 // exports
 
