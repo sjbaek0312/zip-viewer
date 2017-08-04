@@ -22,4 +22,4 @@ class FileUploadStateListView {
 	}
 }
 export default FileUploadStateListView;
->>>>>>> feature/jjk376_zipModel
+
