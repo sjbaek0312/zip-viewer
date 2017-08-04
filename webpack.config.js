@@ -1,3 +1,4 @@
+var path = require("path");
 module.exports = {
 		entry: {  
 			'main': ['./src/fe/app/entry/main.js']
@@ -6,7 +7,18 @@ module.exports = {
 			path: __dirname +'/src/main/webapp/static/bundle',
 			filename: '[name].js'
 		},
+		resolve: {
+			alias : {
+				'view': __dirname + '/src/fe/app/view',
+				'tpl': __dirname + '/src/fe/app/tpl',
+				'model': __dirname + '/src/fe/app/model',
+				'controller': __dirname + '/src/fe/app/controller',
+				'lib': __dirname + '/src/fe/app/lib',
+				'css': __dirname + '/src/fe/css'
+			}
+		},
 		module: {
+
 			rules: [
 				{
 					test: /\.css$/,
@@ -15,6 +27,7 @@ module.exports = {
 						'css-loader'
 					]
 				},
+				{ test: /\.html$/, loader: "handlebars-loader" },
 				{ 
 					test: /\.js$/,
 					exclude: /node_modules/,
@@ -30,7 +43,7 @@ module.exports = {
 						]]
 					}
 					
-				},
+				},				
 				{ 
 				      test: /\.(ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
 				      loader: 'url-loader',

@@ -3,7 +3,7 @@
  */
 class FileUploadStateListView {
 	constructor(domId){
-		this._dom = $(domId);
+		this.$el = $(domId);
 	}
 	rendering(json) {
 		let li = $("<li></li>");
@@ -14,11 +14,12 @@ class FileUploadStateListView {
 		innerDiv2.append(iconSpan);
 		div.append(innerDiv10).append(innerDiv2);
 		li.append(div);
-		this._dom.append(li);
+		this.$el.append(li);
 	}
 	progressRendering(id, progress) {
-		let li = this._dom.find("#"+id);
+		let li = this.$el.find("#"+id);
 		li.text(progress);
 	}
 }
 export default FileUploadStateListView;
+>>>>>>> feature/jjk376_zipModel

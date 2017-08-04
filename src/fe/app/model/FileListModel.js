@@ -1,18 +1,19 @@
 import EventEmitter from 'events';
-class FileObject {
+
+class FileModel {
 	constructor(json){
 		this.fileId = json.fileId;
 		this.fileName = json.fileName;
-		this.fileType = json.fileName.slice(json.fileName.lastIndexOf(".") + 1);
+		this.fileType = json.fileName.slice(json.fileName.lastIndexOf(".") + 1).toLowerCase();
 		this.fileUploadTime = json.fileName.fileUploadTime;
 		this.fileSize = json.fileSize;
 	}
 	isCompressed(){
 		const ZIP_TYPE = ["zip", "7z", "alz", "egg"]
-		let This = this;
+		let self = this;
 		let result = false;
 		ZIP_TYPE.forEach(function(type){
-			if(type == This.fileType) result = true;
+			if(type == self.fileType) result = true;
 		});
 		return result;
 	}
@@ -21,17 +22,20 @@ class FileListModel extends EventEmitter {
 	constructor(){
 		super();
 		console.log(" Model Create..");
-		this._fileList = {}; //json Dictionary type.. 변수이름 변경이 시급해 보임.
-		this._dispatchedFiles = []; //files 타입 배열들
+		this._url = "http://localhost:8080/api/files"; // test용
+//		this._url = "/api/files"				// 실제 사용.
+		this._fileList = new Map(); 
+		this._dispatchedFiles = []; 
 	}
+		
 	isFileZip(fileId){
-		return (this._fileList[fileId].isCompressed());
+		return (this._fileList.get(fileId).isCompressed());
 	}
 	
 	_addFiles(json){
-		let fileObject = new FileObject(json);
-		this._fileList[json.fileId] = fileObject;
-		this.emit('change:add', fileObject);
+		let file = new FileModel(json);
+		this._fileList.set(json.fileId, file);
+		this.emit('change:add', file);
 	}
   
   	_pushDispatchedQueue(json){
@@ -41,23 +45,17 @@ class FileListModel extends EventEmitter {
 	_notifyProgress(){
 		this.emit('change:')
 	}
-	_makeResponseJSON(response){
-		let resultResponse = response;
-		if (typeof response  === 'string')
-			resultResponse = JSON.parse(response);
-		return resultResponse;
-	}
 	
 	apiFileList() {
-		let This = this;
+		let self = this;
 		$.ajax({
-			url : "/api/files",
+			url : this._url ,
 			type : "GET",
+			dataType : "json",
 			success : function(results) {
-				let resultFileList = This._makeResponseJSON(results);
-				resultFileList = resultFileList.items;
+				let resultFileList = results.items;
 				resultFileList.forEach(function(resultFile){
-					This._addFiles(resultFile);
+					self._addFiles(resultFile);
 				})
 			},
 			xhr : function() {
@@ -84,28 +82,28 @@ class FileListModel extends EventEmitter {
 	apiFileInsert() {
 		if(this._dispatchedFiles.length === 0) throw "NO MORE FILES TO UPLOAD";
 
-		let This = this;
+		let self = this;
 		let formData = new FormData();
 		formData.append("file", this._dispatchedFiles[0]);
 		$.ajax({
-			url : "/api/files",
+			url : this._url ,
 			data : formData,
 			contentType : false,
 			processData : false,
+			dataType : "json",
 			type : "POST",
 			mimeType : "multipart/form-data",
 			success : function(results) {
-				let result = This._makeResponseJSON(results);
-				This._addFiles(result);
+				self._addFiles(results);
 			},
 			error : function(){
-				console.log('ERROR');//
+				console.log('ERROR');
 			},
 			xhr : function() {
 				var xhr = $.ajaxSettings.xhr();
 				xhr.upload.onprogress = function(event) {
 					console.log('progress', event.loaded, "/", event.total);
-					This.emit("progres:uploading");
+					self.emit("progres:uploading");
 				}
 				xhr.upload.onload =function(event){
 					console.log('DONE!');
@@ -113,8 +111,8 @@ class FileListModel extends EventEmitter {
 				return xhr;
 			}
 		}).always(function() {
-			This._dispatchedFiles.shift();
-			This.apiFileInsert();
+			self._dispatchedFiles.shift();
+			self.apiFileInsert();
 		});
 	}
 }

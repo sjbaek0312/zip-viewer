@@ -9,7 +9,7 @@
 
 <script src="/static/bundle/jquery-3.2.1.js"></script>
 
-<script src="/static/bundle/main.js?ver=astaaskyd"></script>
+<script src="/static/bundle/main.js?v=sdfsd959"></script>
 <script src="/static/dist/js/bootstrap.js"></script>
 <script src="/static/dist/jstree.min.js"></script>
 <style>
@@ -61,6 +61,7 @@
 	</div>
 
 	<div class="container" id="fileList">
+	<!-- tpl/FileList.html -->
 	</div>
 
 	<div id="ZipViewerBackground" class="displayBlock">
@@ -72,167 +73,8 @@
 				
 			</div>
 			<div class="col-xs-9" id="zipFileList">
-				<table class="table table-hover">
-					<thead>
-						<tr>
-						<th></th><th>Name</th><th>Size</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						<tr>
-							<td class="col-xs-2"><img src="/static/img/file-txt.png"
-								width="20" /></td>
-							<td class="col-xs-7">fileName</td>
-							<td class="col-xs-3">fileSize</td>
-						</tr>
-						
-					</tbody>
-				</table>
-				
+				<div class="col-xs-9" id="zipFileList">
+				<!-- tpl/ZipFileList.html -->
 			</div>
 		</div>
 	</div>

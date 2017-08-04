@@ -1,0 +1,17 @@
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th></th><th>Name</th><th>Size</th>
+		</tr>
+	</thead>
+	<tbody>
+		{{#each this}}
+		<tr >
+			<td class="col-xs-2"><img src="/static/img/file-txt.png"
+								width="20" /></td>
+			<td class="col-xs-7">{{zipfileName}}</td>
+			<td class="col-xs-3">{{zipfileSize}}</td>
+		</tr>
+		{{/each}}				
+	</tbody>
+</table>
