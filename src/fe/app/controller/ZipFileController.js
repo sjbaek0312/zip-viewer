@@ -25,17 +25,18 @@ class ZipFileController {
 	
 	_bindActionEvents(){
 		let self = this;
-		this._zipFileAction.on("APILoadDone",function(jsonArray){
-			self._zipFileListModel.setModel(jsonArray);
-			self._zipFileTreeModel.setModel(jsonArray);
-		});
-		this._zipFileAction.on("APIListDone:Dir", function(jsonArray){
-			self._zipFileListModel.setModel(jsonArray);
-			self._zipFileTreeModel.addModel(jsonArray);
-		});
-		this._zipFileAction.on("APIListDone:Tree", function(jsonArray){
-			self._zipFileTreeModel.addModel(jsonArray);
-		})
+		this._zipFileAction
+			.on("APILoadDone", function(jsonArray) {
+				self._zipFileListModel.setModel(jsonArray);
+				self._zipFileTreeModel.setModel(jsonArray);
+			})
+			.on("APIListDone:Dir", function(jsonArray) {
+				self._zipFileListModel.setModel(jsonArray);
+				self._zipFileTreeModel.addModel(jsonArray);
+			})
+			.on("APIListDone:Tree", function(jsonArray) {
+				self._zipFileTreeModel.addModel(jsonArray);
+			})
 	}
 	
 	_bindModelEvents(){
