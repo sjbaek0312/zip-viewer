@@ -37,6 +37,4 @@ public class FileController {
 	{
 		return new ResponseEntity<>(service.insert(file), HttpStatus.CREATED);
 	}
-	
-
 }

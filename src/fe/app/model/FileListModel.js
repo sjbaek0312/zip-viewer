@@ -1,24 +1,26 @@
-
 import EventEmitter from 'events';
 class FileObject {
 	constructor(json){
-		this._fileId = json.fileId;
-		this._fileName = json.fileName;
-		this._fileType = json.fileName.slice(this._fileName.lastIndexOf(".") + 1);
-		this._fileUploadTime = json.fileName.fileUploadTime;
-		this._fileSize = json.fileSize;
+		this.fileId = json.fileId;
+		this.fileName = json.fileName;
+		this.fileType = json.fileName.slice(json.fileName.lastIndexOf(".") + 1);
+		this.fileUploadTime = json.fileName.fileUploadTime;
+		this.fileSize = json.fileSize;
 	}
 	isCompressed(){
-		let ZIP_TYPE = ["zip", "7z", "alz", "egg"]
+		const ZIP_TYPE = ["zip", "7z", "alz", "egg"]
+		let This = this;
+		let result = false;
 		ZIP_TYPE.forEach(function(type){
-			if(type == this._fileType) return true;
+			if(type == This.fileType) result = true;
 		});
-		return false;
+		return result;
 	}
 }
 class FileListModel extends EventEmitter {
 	constructor(){
 		super();
+		console.log(" Model Create..");
 		this._fileList = {}; //json Dictionary type.. 변수이름 변경이 시급해 보임.
 		this._dispatchedFiles = []; //files 타입 배열들
 	}
@@ -40,10 +42,9 @@ class FileListModel extends EventEmitter {
 		this.emit('change:')
 	}
 	_makeResponseJSON(response){
-		let resultResponse;
+		let resultResponse = response;
 		if (typeof response  === 'string')
 			resultResponse = JSON.parse(response);
-		else resultResponse = response;
 		return resultResponse;
 	}
 	
@@ -56,7 +57,7 @@ class FileListModel extends EventEmitter {
 				let resultFileList = This._makeResponseJSON(results);
 				resultFileList = resultFileList.items;
 				resultFileList.forEach(function(resultFile){
-					This._pushFiles(resultFile);
+					This._addFiles(resultFile);
 				})
 			},
 			xhr : function() {
@@ -95,7 +96,7 @@ class FileListModel extends EventEmitter {
 			mimeType : "multipart/form-data",
 			success : function(results) {
 				let result = This._makeResponseJSON(results);
-				This._pushFiles(result);
+				This._addFiles(result);
 			},
 			error : function(){
 				console.log('ERROR');//
@@ -103,6 +104,7 @@ class FileListModel extends EventEmitter {
 			xhr : function() {
 				var xhr = $.ajaxSettings.xhr();
 				xhr.upload.onprogress = function(event) {
+					console.log('progress', event.loaded, "/", event.total);
 					This.emit("progres:uploading");
 				}
 				xhr.upload.onload =function(event){
