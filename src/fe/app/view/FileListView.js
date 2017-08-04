@@ -1,12 +1,11 @@
 class FileListView {
 	constructor(domId){
-		console.log(domId+" view Create..");
-		this._dom = $(domId);
+		this.$el = $(domId);
 		this._imgUrl = "/static/img/"
 	}
 
 	getDomForEventBinding(){
-		return this._dom;
+		return this.$el;
 	}
 	rendering(json) {
 		let innerDiv = $("<div></div>").addClass("col-xs-2 file").data("fileId",json.fileId);
@@ -17,13 +16,13 @@ class FileListView {
 		innerDiv.append(img).append(name);
 	
 		let div;
-		if (this._dom.children().length%6 === 0)
+		if (this.$el.children().length%6 === 0)
 			div = $("<div></div>").attr("class", "row");
 		else
-			div = this._dom.children().last();
+			div = this.$el.children().last();
 		
 		div.append(innerDiv);
-		this._dom.append(div);
+		this.$el.prepend(div);
 	}
 	removeRendering() {
 		// iteration 3
