@@ -19,6 +19,7 @@ class ZipFileAction extends EventEmitter {
 	}
 	
 	clickTree(parentId){
+		let self = this;
 		_apiZipFileList(parentId);
 		this._promiseAPIList.done(function(response){
 			 self._apiZipFileRenew();
