@@ -61,7 +61,7 @@ class ZipFileController {
 		let self = this;
 		$("#zipFileClose").on("click", function(){
 			$("#ZipViewerBackground").css("display","none");
-			serf._finish();
+			self._finish();
 		})
 	}
 	_finish(){
