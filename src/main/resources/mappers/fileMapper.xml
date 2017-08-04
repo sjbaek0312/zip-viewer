@@ -22,9 +22,9 @@
 		 user_id = 'admin'
 	</select>
 	
-	<select id="selectUserId" resultType="String">
+	<select id="select" resultType="com.naver.zipviewer.domain.FileVO">
 		SELECT
-		 user_id AS userId
+		 file_id AS fileId, user_id AS userId, file_name AS fileName, file_size AS fileSize, file_upload_time AS fileUploadTime
 		FROM
 		 zip_viewer.file
 		WHERE

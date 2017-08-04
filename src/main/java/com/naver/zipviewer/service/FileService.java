@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class FileService {
  
 	@Autowired private FileDAO dao;
 
-	public FileVO insert(MultipartFile file, String path) throws SQLException, MultipartException, IOException, FileNotFoundException
+	public FileVO insert(MultipartFile file, String path) throws MultipartException, IOException, FileNotFoundException
 	{
 		FileVO vo = new FileVO();
 		File f = new File(path, file.getOriginalFilename());
@@ -54,8 +53,14 @@ public class FileService {
 		}	
 		finally
 		{
-			is.close();
-			fos.close();
+			try
+			{
+				is.close();
+			}
+			finally
+			{
+				fos.close();
+			}
 		}
 
 		dao.insert(vo);
@@ -64,13 +69,13 @@ public class FileService {
 		return vo;
 	}
 
-	public List<FileVO> listAll() throws SQLException
+	public List<FileVO> listAll()
 	{
 		return dao.listAll();
 	}
 	
-	public String selectUserId(long fileId) throws SQLException
+	public FileVO select(long fileId)
 	{
-		return dao.selectUserId(fileId);
+		return dao.select(fileId);
 	}
 }

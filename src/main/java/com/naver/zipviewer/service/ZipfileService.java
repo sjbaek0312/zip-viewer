@@ -2,17 +2,19 @@ package com.naver.zipviewer.service;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+
+import javax.annotation.Resource;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.naver.zipviewer.domain.Zipfile;
@@ -23,7 +25,7 @@ public class ZipfileService implements CompressService{
 
 	@Autowired private FileService fileService;
 	@Autowired private ZipCacheService zipCacheService;
-	
+
 	public List<Zipfile> load(long fileId, String path) throws Exception
 	{
 		File file = new File(path + fileId + ".zip");
@@ -34,10 +36,9 @@ public class ZipfileService implements CompressService{
 		if (!file.isFile())
 		{
 			throw new Exception("Not a zip file.");
-		}		
+		}
 		ZipArchiveInputStream zis = null;
 		ZipArchiveEntry entry = null;
-		List<Map<Long, List<Zipfile>>> list = new ArrayList<Map<Long, List<Zipfile>>>();
 		Map<Long, List<Zipfile>> map = new HashMap<Long, List<Zipfile>>();
 		List<Zipfile> zipfileList;
 		Zipfile zipfile;
@@ -130,17 +131,16 @@ public class ZipfileService implements CompressService{
 		{
 			zis.close();
 		}
-
-		list.add(map);	
-		z = new Zip(fileId, new Date(), list);		
+	
+		z = new Zip(fileId, new Date(), map);		
 		zipCacheService.findZip(z);
 
 		return map.get((long) 0);
 	}
 	
-	public boolean validation(long fileId, String userId) throws SQLException
+	public boolean validation(long fileId, String userId)
 	{
-		if (!fileService.selectUserId(fileId).equals(userId))
+		if (!fileService.select(fileId).getUserId().equals(userId))
 		{
 			return false;
 		}

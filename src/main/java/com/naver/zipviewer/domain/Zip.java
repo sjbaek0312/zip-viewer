@@ -8,15 +8,15 @@ public class Zip {
 
 	private long fileId;
 	private Date accessTime;
-	private List<Map<Long, List<Zipfile>>> list;
+	private Map<Long, List<Zipfile>> map;
 	
 	public Zip() {}
 	
-	public Zip(long fileId, Date accessTime, List<Map<Long, List<Zipfile>>> list)
+	public Zip(long fileId, Date accessTime, Map<Long, List<Zipfile>> map)
 	{
 		this.fileId = fileId;
 		this.accessTime = accessTime;
-		this.list = list;
+		this.map = map;
 	}
 	
 	public long getFileId() {
@@ -31,10 +31,10 @@ public class Zip {
 	public void setAccessTime(Date accessTime) {
 		this.accessTime = accessTime;
 	}
-	public List<Map<Long, List<Zipfile>>> getList() {
-		return list;
+	public Map<Long, List<Zipfile>> getMap() {
+		return map;
 	}
-	public void setList(List<Map<Long, List<Zipfile>>> list) {
-		this.list = list;
+	public void setList(Map<Long, List<Zipfile>> map) {
+		this.map = map;
 	} 
 }
