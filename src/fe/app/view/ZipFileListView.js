@@ -1,4 +1,4 @@
-let zipFileListTemplate = require("../tpl/ZipFileList.html");
+let zipFileListTemplate = require("tpl/ZipFileList.html");
 
 class ZipFileListView {
 	constructor(domId){
