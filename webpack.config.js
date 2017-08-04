@@ -7,6 +7,16 @@ module.exports = {
 			path: __dirname +'/src/main/webapp/static/bundle',
 			filename: '[name].js'
 		},
+		resolve: {
+			alias : {
+				'view': __dirname + '/src/fe/app/view',
+				'tpl': __dirname + '/src/fe/app/tpl',
+				'model': __dirname + '/src/fe/app/model',
+				'controller': __dirname + '/src/fe/app/controller',
+				'lib': __dirname + '/src/fe/app/lib',
+				'css': __dirname + '/src/fe/css'
+			},
+		},
 		module: {
 
 			rules: [
