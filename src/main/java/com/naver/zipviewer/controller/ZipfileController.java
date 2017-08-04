@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,13 +18,12 @@ import com.naver.zipviewer.service.ZipfileService;
 public class ZipfileController {
 	
 	@Autowired private ZipfileService service;
-	@Value("#{config['fileUploadPath']}") String path;
 	
 	@PostMapping(value = "")
 	public ResponseEntity<?> load(@PathVariable(value = "fileId") long fileId) throws Exception
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("items", service.load(fileId, path));
+		map.put("items", service.load(fileId));
 		return new ResponseEntity<>(map, HttpStatus.CREATED);
 	}
 }

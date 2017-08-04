@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,9 +20,10 @@ import com.naver.zipviewer.persistence.FileDAO;
 @Service
 public class FileService {
  
+	@Value("#{config['fileUploadPath']}") String path;
 	@Autowired private FileDAO dao;
 
-	public FileVO insert(MultipartFile file, String path) throws MultipartException, IOException, FileNotFoundException
+	public FileVO insert(MultipartFile file) throws MultipartException, IOException, FileNotFoundException
 	{
 		FileVO vo = new FileVO();
 		File f = new File(path, file.getOriginalFilename());

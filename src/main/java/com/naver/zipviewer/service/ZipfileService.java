@@ -7,9 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-
-import javax.annotation.Resource;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
@@ -23,10 +20,11 @@ import com.naver.zipviewer.domain.Zip;
 @Service
 public class ZipfileService implements CompressService{
 
+	@Value("#{config['fileUploadPath']}") String path;
 	@Autowired private FileService fileService;
 	@Autowired private ZipCacheService zipCacheService;
-
-	public List<Zipfile> load(long fileId, String path) throws Exception
+	
+	public List<Zipfile> load(long fileId) throws Exception
 	{
 		File file = new File(path + fileId + ".zip");
 		if (!validation(fileId, "admin"))

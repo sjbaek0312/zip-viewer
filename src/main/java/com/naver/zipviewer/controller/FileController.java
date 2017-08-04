@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +23,6 @@ import com.naver.zipviewer.service.FileService;
 public class FileController {
 
 	@Autowired private FileService service;
-	@Value("#{config['fileUploadPath']}") String path;
 	
 	@GetMapping(value = "")
 	public ResponseEntity<?> list() throws IllegalStateException
@@ -37,7 +35,7 @@ public class FileController {
 	@PostMapping(value = "")
 	public ResponseEntity<?> insert(@RequestPart("file") MultipartFile file) throws IOException, MultipartException, FileNotFoundException
 	{
-		return new ResponseEntity<>(service.insert(file, path), HttpStatus.CREATED);
+		return new ResponseEntity<>(service.insert(file), HttpStatus.CREATED);
 	}
 	
 
