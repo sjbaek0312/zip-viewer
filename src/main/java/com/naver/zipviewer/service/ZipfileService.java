@@ -135,7 +135,7 @@ public class ZipfileService implements CompressService{
 		z = new Zip(fileId, new Date(), list);		
 		zipCacheService.findZip(z);
 
-		return map.get(0);
+		return map.get((long) 0);
 	}
 	
 	public boolean validation(long fileId, String userId) throws SQLException
