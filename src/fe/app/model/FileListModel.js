@@ -1,4 +1,3 @@
-
 import EventEmitter from 'events';
 class FileObject {
 	constructor(json){

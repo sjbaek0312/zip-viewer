@@ -1,5 +1,6 @@
 package com.naver.zipviewer.common;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -18,8 +19,8 @@ public class CommonExceptionAdvice {
 	public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException e)
 	{
 		ErrorResponse er = new ErrorResponse();
-		er.setErrorCode(HttpStatus.BAD_REQUEST.value());
-		er.setMsg("잘못된 요청");
+		er.setErrorCode(100);
+		er.setMsg("Bad Request");
 		return new ResponseEntity<ErrorResponse>(er, HttpStatus.BAD_REQUEST);
 	}
 	
@@ -28,42 +29,50 @@ public class CommonExceptionAdvice {
 	public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e)
 	{
 		ErrorResponse er = new ErrorResponse();
-		er.setErrorCode(HttpStatus.NOT_FOUND.value());
-		er.setMsg("클라이언트가 요청한 리소스를 서버에서 찾을 수 없음");
+		er.setErrorCode(100);
+		er.setMsg("Not Found");
 		return new ResponseEntity<ErrorResponse>(er, HttpStatus.NOT_FOUND);
 	}*/
+	@ExceptionHandler(FileNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleFileNotFoundException(FileNotFoundException e)
+	{
+		ErrorResponse er = new ErrorResponse();
+		er.setErrorCode(100);
+		er.setMsg("Not Found");
+		return new ResponseEntity<ErrorResponse>(er, HttpStatus.NOT_FOUND);
+	}
 	
 	// 500
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorResponse> handleException(Exception e)
+	{
+		ErrorResponse er = new ErrorResponse();
+		er.setErrorCode(100);
+		er.setMsg("Internal Server Error");
+		return new ResponseEntity<ErrorResponse>(er, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 	@ExceptionHandler(MultipartException.class)
 	public ResponseEntity<ErrorResponse> handleMultipartException(MultipartException e)
 	{
 		ErrorResponse er = new ErrorResponse();
-		er.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-		er.setMsg("내부 서버 오류");
-		return new ResponseEntity<ErrorResponse>(er, HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-	@ExceptionHandler(SQLException.class)
-	public ResponseEntity<ErrorResponse> handleSQLException(SQLException e)
-	{
-		ErrorResponse er = new ErrorResponse();
-		er.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-		er.setMsg("내부 서버 오류");
+		er.setErrorCode(201);
+		er.setMsg("Multipart Exception");
 		return new ResponseEntity<ErrorResponse>(er, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	@ExceptionHandler(IOException.class)
 	public ResponseEntity<ErrorResponse> handleIOException(IOException e)
 	{
 		ErrorResponse er = new ErrorResponse();
-		er.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-		er.setMsg("내부 서버 오류");
+		er.setErrorCode(202);
+		er.setMsg("IO Exception");
 		return new ResponseEntity<ErrorResponse>(er, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorResponse> handleException(Exception e)
+	@ExceptionHandler(SQLException.class)
+	public ResponseEntity<ErrorResponse> handleSQLException(SQLException e)
 	{
 		ErrorResponse er = new ErrorResponse();
-		er.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-		er.setMsg("내부 서버 오류");
+		er.setErrorCode(301);
+		er.setMsg("SQL Exception");
 		return new ResponseEntity<ErrorResponse>(er, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }
