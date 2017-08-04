@@ -15,7 +15,7 @@ module.exports = {
 				'controller': __dirname + '/src/fe/app/controller',
 				'lib': __dirname + '/src/fe/app/lib',
 				'css': __dirname + '/src/fe/css'
-			},
+			}
 		},
 		module: {
 
