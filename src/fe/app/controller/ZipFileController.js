@@ -1,8 +1,8 @@
-import ZipFileListModel from "../model/ZipFileListModel.js"
-import ZipFileTreeModel from "../model/ZipFileTreeModel.js"
-import ZipFileAction from "../model/ZipFileAction.js"
-import ZipFileListView from "../view/ZipFileListView.js"
-import ZipFileTreeView from "../view/ZipFileTreeView.js"
+import ZipFileListModel from "model/ZipFileListModel.js"
+import ZipFileTreeModel from "model/ZipFileTreeModel.js"
+import ZipFileAction from "model/ZipFileAction.js"
+import ZipFileListView from "view/ZipFileListView.js"
+import ZipFileTreeView from "view/ZipFileTreeView.js"
 
 class ZipFileController {
 	constructor(fileId){
