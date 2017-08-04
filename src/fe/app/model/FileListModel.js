@@ -10,10 +10,10 @@ class FileModel {
 	}
 	isCompressed(){
 		const ZIP_TYPE = ["zip", "7z", "alz", "egg"]
-		let This = this;
+		let self = this;
 		let result = false;
 		ZIP_TYPE.forEach(function(type){
-			if(type == This.fileType) result = true;
+			if(type == self.fileType) result = true;
 		});
 		return result;
 	}
