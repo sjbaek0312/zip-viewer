@@ -7,6 +7,8 @@ class ZipFileModel {
 		this.zipfileId = json.zipfileId;
 		this.zipfileSize = json.zipfileSize;
 		this.zipfileParentId = json.zipfileParentId;
+		if(json.isDirectory) 
+			this.zipfileType = "dir";
 	}
 }
 
