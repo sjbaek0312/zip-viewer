@@ -23,7 +23,7 @@ class FileListController {
 		let self = this;
 		this._model
 			.on("change:add", this._view.rendering.bind(this._view))
-			.on("change:dispatched", this._uploadStateView.bind(this._uploadStateView))
+			.on("change:dispatched", this._uploadStateView.rendering.bind(this._uploadStateView))
 			.on("progres:uploading", this._uploadStateView.progressRendering.bind(this._uploadStateView))
 	}
 	_bindStaticDropEvents(){
