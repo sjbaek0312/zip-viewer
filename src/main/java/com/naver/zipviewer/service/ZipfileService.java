@@ -2,13 +2,17 @@ package com.naver.zipviewer.service;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +22,7 @@ import com.naver.zipviewer.domain.Zipfile;
 import com.naver.zipviewer.domain.Zip;
 
 @Service
-public class ZipfileService implements CompressService{
+public class ZipfileService {
 
 	@Value("#{config['fileUploadPath']}") String path;
 	@Autowired private FileService fileService;
@@ -26,17 +30,12 @@ public class ZipfileService implements CompressService{
 	
 	public List<Zipfile> load(long fileId) throws Exception
 	{
-		File file = new File(path + fileId + ".zip");
 		if (!validation(fileId, "admin"))
 		{
 			throw new Exception("Not your file, or there is no file on database.");
 		}
-		if (!file.isFile())
-		{
-			throw new Exception("Not a zip file.");
-		}
-		ZipArchiveInputStream zis = null;
-		ZipArchiveEntry entry = null;
+		ArchiveInputStream is = null;
+		ArchiveEntry entry = null;
 		Map<Long, List<Zipfile>> map = new HashMap<Long, List<Zipfile>>();
 		List<Zipfile> zipfileList;
 		Zipfile zipfile;
@@ -47,8 +46,13 @@ public class ZipfileService implements CompressService{
 
 		try
 		{
-			zis = new ZipArchiveInputStream(new FileInputStream(file));
-			while ((entry = zis.getNextZipEntry()) != null)
+			if (CompressArchiveInputStream(path, fileId) == null)
+			{
+				throw new Exception("Not a compressed file.");
+			}
+			is = CompressArchiveInputStream(path, fileId);
+
+			while ((entry = is.getNextEntry()) != null)
 			{		
 				zipfile = new Zipfile();
 				zipfileList = new ArrayList<Zipfile>();
@@ -57,11 +61,11 @@ public class ZipfileService implements CompressService{
 				zipfile.setZipfileSize(entry.getSize());
 				if (entry.isDirectory())
 				{
-					zipfile.setDirectory(true);
+					zipfile.setIsDirectory(true);
 				}
 				else
 				{
-					zipfile.setDirectory(false);
+					zipfile.setIsDirectory(false);
 				}
 
 				int depth = 0;
@@ -127,12 +131,11 @@ public class ZipfileService implements CompressService{
 		}
 		finally
 		{
-			zis.close();
+			is.close();
 		}
 	
 		z = new Zip(fileId, new Date(), map);		
 		zipCacheService.findZip(z);
-
 		return map.get((long) 0);
 	}
 	
@@ -143,5 +146,30 @@ public class ZipfileService implements CompressService{
 			return false;
 		}
 		return true;
+	}
+	
+	public ArchiveInputStream CompressArchiveInputStream(String path, long fileId) throws FileNotFoundException
+	{
+		File file;
+		
+		file = new File(path + fileId + ".zip");
+		if (file.isFile())
+		{
+			return new ZipArchiveInputStream(new FileInputStream(file), "EUC-KR");
+		}
+		
+		file = new File(path + fileId + ".tar");
+		if (file.isFile())
+		{
+			return new TarArchiveInputStream(new FileInputStream(file), "EUC-KR");
+		}
+		
+		file = new File(path + fileId + ".jar");
+		if (file.isFile())
+		{
+			return new JarArchiveInputStream(new FileInputStream(file));
+		}
+		
+		return null;
 	}
 }
