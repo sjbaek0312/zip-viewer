@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -567,6 +567,15 @@ function isUndefined(arg) {
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
+// Create a simple path alias to allow browserify to resolve
+// the runtime on a supported path.
+module.exports = __webpack_require__(17)['default'];
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 
@@ -675,7 +684,7 @@ exports.logger = _logger2['default'];
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports) {
 
 /*
@@ -757,7 +766,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -803,7 +812,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(39);
+var	fixUrls = __webpack_require__(40);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -1116,26 +1125,26 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(7);
+module.exports = __webpack_require__(8);
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _FileListController = __webpack_require__(8);
+var _FileListController = __webpack_require__(9);
 
 var _FileListController2 = _interopRequireDefault(_FileListController);
 
-__webpack_require__(37);
+__webpack_require__(38);
 
-__webpack_require__(40);
+__webpack_require__(41);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1144,7 +1153,7 @@ $(document).ready(function () {
 });
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1156,11 +1165,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _FileListModel = __webpack_require__(9);
+var _FileListModel = __webpack_require__(10);
 
 var _FileListModel2 = _interopRequireDefault(_FileListModel);
 
-var _ZipFileController = __webpack_require__(10);
+var _ZipFileController = __webpack_require__(11);
 
 var _ZipFileController2 = _interopRequireDefault(_ZipFileController);
 
@@ -1168,11 +1177,11 @@ var _FileListView = __webpack_require__(34);
 
 var _FileListView2 = _interopRequireDefault(_FileListView);
 
-var _FileUploadStateListView = __webpack_require__(35);
+var _FileUploadStateListView = __webpack_require__(36);
 
 var _FileUploadStateListView2 = _interopRequireDefault(_FileUploadStateListView);
 
-var _DropHandler = __webpack_require__(36);
+var _DropHandler = __webpack_require__(37);
 
 var _DropHandler2 = _interopRequireDefault(_DropHandler);
 
@@ -1213,7 +1222,7 @@ var FileListController = function () {
 			var self = this;
 			var fileListDom = this._view.getDomForEventBinding();
 			fileListDom.on("click", ".file", function (event) {
-				var fileId = $(this).data("fileId");
+				var fileId = $(this).data('fileid');
 				if (self._model.isFileZip(fileId)) new _ZipFileController2.default(fileId);else console.log("Not a zip File");
 			});
 		}
@@ -1225,7 +1234,7 @@ var FileListController = function () {
 exports.default = FileListController;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1284,7 +1293,6 @@ var FileListModel = function (_EventEmitter) {
 
 		var _this = _possibleConstructorReturn(this, (FileListModel.__proto__ || Object.getPrototypeOf(FileListModel)).call(this));
 
-		console.log(" Model Create..");
 		_this._url = "http://localhost:8080/api/files"; // test용
 		//		this._url = "/api/files"				// 실제 사용.
 		_this._fileList = new Map();
@@ -1396,7 +1404,7 @@ var FileListModel = function (_EventEmitter) {
 exports.default = FileListModel;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1408,19 +1416,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _ZipFileListModel = __webpack_require__(11);
+var _ZipFileListModel = __webpack_require__(12);
 
 var _ZipFileListModel2 = _interopRequireDefault(_ZipFileListModel);
 
-var _ZipFileTreeModel = __webpack_require__(12);
+var _ZipFileTreeModel = __webpack_require__(13);
 
 var _ZipFileTreeModel2 = _interopRequireDefault(_ZipFileTreeModel);
 
-var _ZipFileAction = __webpack_require__(13);
+var _ZipFileAction = __webpack_require__(14);
 
 var _ZipFileAction2 = _interopRequireDefault(_ZipFileAction);
 
-var _ZipFileListView = __webpack_require__(14);
+var _ZipFileListView = __webpack_require__(15);
 
 var _ZipFileListView2 = _interopRequireDefault(_ZipFileListView);
 
@@ -1450,6 +1458,7 @@ var ZipFileController = function () {
 		this._zipFileAction.apiZipFileLoad();
 
 		this._startView();
+
 		this._bindClickFinishEvent();
 	}
 
@@ -1471,19 +1480,26 @@ var ZipFileController = function () {
 		key: "_bindModelEvents",
 		value: function _bindModelEvents() {
 			var self = this;
-			this._zipFileListModel.on("ModelSettingDone", function (ModelArray) {
-				self._zipFileListView.rendering(ModelArray);
-			});
-			this._zipFileTreeModel.on("ModelSettingDone", function (ModelArray) {
-				console.log("hihihihih");
-				console.dir(ModelArray);
-				self._zipFileTreeView.rendering(ModelArray);
-			});
+			this._zipFileListModel.on("ModelSettingDone", this._zipFileListView.rendering.bind(this._zipFileListView));
+			this._zipFileTreeModel.on("ModelSettingDone", this._zipFileTreeView.rendering.bind(this._zipFileTreeView));
 		}
 	}, {
 		key: "_bindViewEvents",
 		value: function _bindViewEvents() {
-			// 
+			var self = this;
+			var dom = this._zipFileListView.getDom();
+
+			dom.on("click", ".zipfile", function (event) {
+				console.dir(event);
+				if (self._zipFileListModel.isDirectory(this.dataset.id)) {
+					var zipFileId = self._zipFileListModel.getZipfileId(this.dataset.id);
+					self._zipFileAction.clickDir(zipFileId);
+				} else {
+					console.log("Not a directory type");
+				}
+			});
+
+			dom = null;
 		}
 	}, {
 		key: "_startView",
@@ -1494,7 +1510,7 @@ var ZipFileController = function () {
 		key: "_bindClickFinishEvent",
 		value: function _bindClickFinishEvent() {
 			var self = this;
-			$("#zipFileClose").on("click", function () {
+			$("#zipFileClose").one("click", function () {
 				$("#ZipViewerBackground").css("display", "none");
 				self._finish();
 			});
@@ -1502,7 +1518,17 @@ var ZipFileController = function () {
 	}, {
 		key: "_finish",
 		value: function _finish() {
-			console.log("자원 종료 로직.");
+			this._zipFileTreeView.destroy();
+			this._zipFileListView.destroy();
+
+			this._zipFileListView = null;
+			this._zipFileTreeView = null;
+
+			this._zipFileAction = null;
+			this._zipFileTreeModel = null;
+			this._zipFileListModel = null;
+
+			console.log("zipFileController Finished");
 		}
 	}]);
 
@@ -1512,7 +1538,7 @@ var ZipFileController = function () {
 exports.default = ZipFileController;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1544,6 +1570,7 @@ var ZipFileModel = function ZipFileModel(json) {
 	this.zipfileId = json.zipfileId;
 	this.zipfileSize = json.zipfileSize;
 	this.zipfileParentId = json.zipfileParentId;
+	this.isDirectory = json.isDirectory;
 	if (json.isDirectory) this.zipfileType = "dir";
 };
 
@@ -1562,15 +1589,25 @@ var ZipFileListModel = function (_EventEmitter) {
 	_createClass(ZipFileListModel, [{
 		key: "setModel",
 		value: function setModel(jsonArray) {
+			console.dir(jsonArray);
 			this._zipFileList = [];
 			jsonArray.forEach(this._pushZipFile, this);
-			console.dir(this._zipFileList);
 			this.emit("ModelSettingDone", this._zipFileList);
 		}
 	}, {
 		key: "_pushZipFile",
 		value: function _pushZipFile(json) {
 			this._zipFileList.push(new ZipFileModel(json));
+		}
+	}, {
+		key: "getZipfileId",
+		value: function getZipfileId(domId) {
+			return this._zipFileList[domId].zipfileId;
+		}
+	}, {
+		key: "isDirectory",
+		value: function isDirectory(domId) {
+			return this._zipFileList[domId].isDirectory;
 		}
 	}]);
 
@@ -1580,7 +1617,7 @@ var ZipFileListModel = function (_EventEmitter) {
 exports.default = ZipFileListModel;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1621,7 +1658,6 @@ var ZipFileTreeModel = function (_EventEmitter) {
 		var _this = _possibleConstructorReturn(this, (ZipFileTreeModel.__proto__ || Object.getPrototypeOf(ZipFileTreeModel)).call(this));
 
 		_this._zipFileTree = [];
-		_this._zipFileTree[0] = { "id": 0, "parent": "#", "text": "TEMP ROOT" };
 		// 생성자로 부터 root 파일 이름을 넘겨 받아야 할 것 같다.
 		return _this;
 	}
@@ -1630,21 +1666,33 @@ var ZipFileTreeModel = function (_EventEmitter) {
 		key: "setModel",
 		value: function setModel(jsonArray) {
 			var self = this;
+
+			this._zipFileTree[0] = { "id": 0, "parent": "#", "text": "TEMP ROOT", "state": { "opened": true } };
 			jsonArray.forEach(function (json) {
-				if (json.isDirectory) self._zipFileTree.push(new ZipFileModel(json));
+				if (json.isDirectory) {
+					self._zipFileTree.push(new ZipFileModel(json));
+					self._zipFileTree.push(self._makeTrashChild(json));
+				}
 				// 쓰레기 자식값을 넣어줘야함.
 			});
 			this.emit("ModelSettingDone", this._zipFileTree);
+		}
+	}, {
+		key: "_makeTrashChild",
+		value: function _makeTrashChild(json) {
+			var trashId = json.zipfileId + "temp";
+			console.log(trashId);
+			return { "id": trashId, "parent": json.zipfileId };
 		}
 	}, {
 		key: "addModel",
 		value: function addModel(jsonArray) {
 			var self = this;
 			jsonArray.forEach(function (json) {
-				if (json.isDirectory) self._zipFileTee.push(new ZipFileModel(json));
+				if (json.isDirectory) self._zipFileTree.push(new ZipFileModel(json));
 				// 기존 쓰레기 값을 지우고 addModel 해줘야함.
 			});
-			console.dir(this._zipFileTee);
+			console.dir(this._zipFileTree);
 		}
 	}]);
 
@@ -1654,7 +1702,7 @@ var ZipFileTreeModel = function (_EventEmitter) {
 exports.default = ZipFileTreeModel;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1687,8 +1735,8 @@ var ZipFileAction = function (_EventEmitter) {
 		var _this = _possibleConstructorReturn(this, (ZipFileAction.__proto__ || Object.getPrototypeOf(ZipFileAction)).call(this));
 
 		_this._fileId = fileId;
-		//		this._URL = "http://localhost:8080/api/files/"+this._fileId+"/zipfiles"; //testURL
-		_this._URL = "/api/files/" + _this._fileId + "/zipfiles"; //realURL
+		_this._URL = "http://localhost:8080/api/files/" + _this._fileId + "/zipfiles"; //testURL
+		//		this._URL = "/api/files/"+this._fileId+"/zipfiles"; //realURL
 		_this._promiseAPIList;
 		return _this;
 	}
@@ -1697,7 +1745,8 @@ var ZipFileAction = function (_EventEmitter) {
 		key: "clickDir",
 		value: function clickDir(parentId) {
 			var self = this;
-			_apiZipFileList(parentId);
+
+			this._apiZipFileList(parentId);
 			this._promiseAPIList.done(function (response) {
 				self._apiZipFileRenew();
 				self.emit("APIListDone:Dir", response.items);
@@ -1772,7 +1821,7 @@ var ZipFileAction = function (_EventEmitter) {
 exports.default = ZipFileAction;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1786,7 +1835,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var zipFileListTemplate = __webpack_require__(15);
+var zipFileListTemplate = __webpack_require__(16);
 
 var ZipFileListView = function () {
 	function ZipFileListView(domId) {
@@ -1800,6 +1849,17 @@ var ZipFileListView = function () {
 		value: function rendering(model) {
 			this.$el.html(zipFileListTemplate(model));
 		}
+	}, {
+		key: "destroy",
+		value: function destroy() {
+			this.$el.off("click");
+			this.$el = null;
+		}
+	}, {
+		key: "getDom",
+		value: function getDom() {
+			return this.$el;
+		}
 	}]);
 
 	return ZipFileListView;
@@ -1808,15 +1868,17 @@ var ZipFileListView = function () {
 exports.default = ZipFileListView;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Handlebars = __webpack_require__(16);
+var Handlebars = __webpack_require__(3);
 function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }
 module.exports = (Handlebars["default"] || Handlebars).template({"1":function(container,depth0,helpers,partials,data) {
     var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
 
-  return "		<tr >\r\n			<td class=\"col-xs-2\"><img src=\"/static/img/file-"
+  return "		<tr class=\"zipfile\" data-id=\""
+    + alias4(((helper = (helper = helpers.index || (data && data.index)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"index","hash":{},"data":data}) : helper)))
+    + "\" >\r\n			<td class=\"col-xs-2\"><img src=\"/static/img/file-"
     + alias4(((helper = (helper = helpers.zipfileType || (depth0 != null ? depth0.zipfileType : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"zipfileType","hash":{},"data":data}) : helper)))
     + ".png\" width=\"20\" onerror=\"this.src='/static/img/file-common.png'\"/></td>\r\n			<td class=\"col-xs-7\">"
     + alias4(((helper = (helper = helpers.zipfileName || (depth0 != null ? depth0.zipfileName : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"zipfileName","hash":{},"data":data}) : helper)))
@@ -1830,15 +1892,6 @@ module.exports = (Handlebars["default"] || Handlebars).template({"1":function(co
     + ((stack1 = helpers.each.call(depth0 != null ? depth0 : (container.nullContext || {}),depth0,{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + "	</tbody>\r\n</table>\r\n";
 },"useData":true});
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// Create a simple path alias to allow browserify to resolve
-// the runtime on a supported path.
-module.exports = __webpack_require__(17)['default'];
-
 
 /***/ }),
 /* 17 */
@@ -1856,7 +1909,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'd
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
-var _handlebarsBase = __webpack_require__(3);
+var _handlebarsBase = __webpack_require__(4);
 
 var base = _interopRequireWildcard(_handlebarsBase);
 
@@ -2438,7 +2491,7 @@ var _exception = __webpack_require__(1);
 
 var _exception2 = _interopRequireDefault(_exception);
 
-var _base = __webpack_require__(3);
+var _base = __webpack_require__(4);
 
 function checkRevision(compilerInfo) {
   var compilerRevision = compilerInfo && compilerInfo[0] || 1,
@@ -2797,20 +2850,44 @@ var ZipFileTreeView = function () {
 		_classCallCheck(this, ZipFileTreeView);
 
 		this.$el = $(domId);
+		this.$el.jstree({
+			"plugins": ["wholerow", "changed", "opened"],
+			'core': {
+				'data': [],
+				'themes': {
+					'name': 'proton'
+				}
+			},
+			'types': {
+				"default": {
+					"valid_children": "all"
+				}
+			}
+		});
+		this.$el.on("before_open.jstree", function (e, data) {
+			//	console.log("before open");	
+			//	console.dir(data.node.children); 
+		}).on("select_node.jstree", function (e, data) {
+			//	console.log("list View 도 바껴야 함!!");
+			//	console.dir(data.node);
+		}).on("model.jstree", function (e, data) {
+			//	console.log("new DataSet");
+			//	console.dir(data);
+		});
 	}
 
 	_createClass(ZipFileTreeView, [{
 		key: "rendering",
 		value: function rendering(model) {
-			this.$el.jstree({
-				"plugins": ["wholerow"],
-				'core': {
-					'data': model,
-					'themes': {
-						'name': 'proton'
-					}
-				}
-			});
+			this.$el.jstree(true).settings.core.data = model;
+			this.$el.jstree(true).refresh();
+			this.$el.jstree(true).open_node("#");
+		}
+	}, {
+		key: "destroy",
+		value: function destroy() {
+			this.$el.jstree(true).destroy();
+			this.$el = null;
 		}
 	}]);
 
@@ -2834,12 +2911,13 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var FileListTemplate = __webpack_require__(35);
+
 var FileListView = function () {
 	function FileListView(domId) {
 		_classCallCheck(this, FileListView);
 
 		this.$el = $(domId);
-		this._imgUrl = "/static/img/";
 	}
 
 	_createClass(FileListView, [{
@@ -2849,13 +2927,8 @@ var FileListView = function () {
 		}
 	}, {
 		key: "rendering",
-		value: function rendering(json) {
-			var innerDiv = $("<div></div>").addClass("col-xs-2 file").data("fileId", json.fileId);
-			var img = $("<img></img>").css("height", "100px").addClass("media-object");
-			img.attr("src", this._imgUrl + "file-" + json.fileType + ".png").attr("onerror", "this.src='" + this._imgUrl + "file-common.png'");
-
-			var name = $("<h5></h5>").text(json.fileName).addClass("filename");
-			innerDiv.append(img).append(name);
+		value: function rendering(model) {
+			var innerDiv = FileListTemplate(model);
 
 			var div = void 0;
 			if (this.$el.children().length % 6 === 0) div = $("<div></div>").attr("class", "row");else div = this.$el.children().first();
@@ -2877,6 +2950,24 @@ exports.default = FileListView;
 
 /***/ }),
 /* 35 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Handlebars = __webpack_require__(3);
+function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }
+module.exports = (Handlebars["default"] || Handlebars).template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+
+  return "<div class=\"col-xs-2 file\" data-fileid=\""
+    + alias4(((helper = (helper = helpers.fileId || (depth0 != null ? depth0.fileId : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"fileId","hash":{},"data":data}) : helper)))
+    + "\">\r\n	<img class=\"media-object\" src=\"/static/img/file-"
+    + alias4(((helper = (helper = helpers.fileType || (depth0 != null ? depth0.fileType : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"fileType","hash":{},"data":data}) : helper)))
+    + ".png\" onerror=\"this.src='/static/img/file-common.png'\" style=\"height: 100px;\">\r\n	<h5 class=\"filename\">"
+    + alias4(((helper = (helper = helpers.fileName || (depth0 != null ? depth0.fileName : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"fileName","hash":{},"data":data}) : helper)))
+    + "</h5>\r\n</div>";
+},"useData":true});
+
+/***/ }),
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2927,7 +3018,7 @@ var FileUploadStateListView = function () {
 exports.default = FileUploadStateListView;
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2949,13 +3040,13 @@ var DragAndDropAction = {
 exports.default = DragAndDropAction;
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(38);
+var content = __webpack_require__(39);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -2963,7 +3054,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(5)(content, options);
+var update = __webpack_require__(6)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -2980,10 +3071,10 @@ if(false) {
 }
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)(undefined);
+exports = module.exports = __webpack_require__(5)(undefined);
 // imports
 
 
@@ -2994,7 +3085,7 @@ exports.push([module.i, "/* jjk376 */\r\n#dropZone {\r\n\tborder-style: dashed;\
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports) {
 
 
@@ -3089,13 +3180,13 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(41);
+var content = __webpack_require__(42);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -3103,7 +3194,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(5)(content, options);
+var update = __webpack_require__(6)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -3120,10 +3211,10 @@ if(false) {
 }
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)(undefined);
+exports = module.exports = __webpack_require__(5)(undefined);
 // imports
 
 

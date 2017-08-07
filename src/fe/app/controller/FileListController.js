@@ -34,7 +34,7 @@ class FileListController {
 		let self = this;
 		let fileListDom = this._view.getDomForEventBinding()
 		fileListDom.on("click", ".file", function(event){
-			let fileId = $(this).data("fileId");
+			let fileId = $(this).data('fileid');
 			if (self._model.isFileZip(fileId))
 				new ZipFileController(fileId); 
 			else console.log("Not a zip File");
