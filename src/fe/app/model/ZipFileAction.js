@@ -4,8 +4,8 @@ class ZipFileAction extends EventEmitter {
 	constructor(fileId){
 		super();
 		this._fileId = fileId;
-//		this._URL = "http://localhost:8080/api/files/"+this._fileId+"/zipFiles"; //testURL
-		this._URL = "/api/files/"+this._fileId+"/zipFiles"; //realURL
+//		this._URL = "http://localhost:8080/api/files/"+this._fileId+"/zipfiles"; //testURL
+		this._URL = "/api/files/"+this._fileId+"/zipfiles"; //realURL
 		this._promiseAPIList;
 	}
 	
