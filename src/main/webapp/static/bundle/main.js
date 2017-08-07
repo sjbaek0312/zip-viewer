@@ -1687,8 +1687,8 @@ var ZipFileAction = function (_EventEmitter) {
 		var _this = _possibleConstructorReturn(this, (ZipFileAction.__proto__ || Object.getPrototypeOf(ZipFileAction)).call(this));
 
 		_this._fileId = fileId;
-		//		this._URL = "http://localhost:8080/api/files/"+this._fileId+"/zipFiles"; //testURL
-		_this._URL = "/api/files/" + _this._fileId + "/zipFiles"; //realURL
+		//		this._URL = "http://localhost:8080/api/files/"+this._fileId+"/zipfiles"; //testURL
+		_this._URL = "/api/files/" + _this._fileId + "/zipfiles"; //realURL
 		_this._promiseAPIList;
 		return _this;
 	}
@@ -1818,7 +1818,7 @@ module.exports = (Handlebars["default"] || Handlebars).template({"1":function(co
 
   return "		<tr >\r\n			<td class=\"col-xs-2\"><img src=\"/static/img/file-"
     + alias4(((helper = (helper = helpers.zipfileType || (depth0 != null ? depth0.zipfileType : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"zipfileType","hash":{},"data":data}) : helper)))
-    + ".png\"\r\n								width=\"20\" onerror=\"this.src='/static/img/file-common.png'\"/></td>\r\n			<td class=\"col-xs-7\">"
+    + ".png\" width=\"20\" onerror=\"this.src='/static/img/file-common.png'\"/></td>\r\n			<td class=\"col-xs-7\">"
     + alias4(((helper = (helper = helpers.zipfileName || (depth0 != null ? depth0.zipfileName : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"zipfileName","hash":{},"data":data}) : helper)))
     + "</td>\r\n			<td class=\"col-xs-3\">"
     + alias4(((helper = (helper = helpers.zipfileSize || (depth0 != null ? depth0.zipfileSize : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"zipfileSize","hash":{},"data":data}) : helper)))
