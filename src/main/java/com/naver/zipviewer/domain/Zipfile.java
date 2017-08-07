@@ -32,10 +32,10 @@ public class Zipfile {
 	public void setZipfileParentId(long zipfileParentId) {
 		this.zipfileParentId = zipfileParentId;
 	}
-	public boolean isDirectory() {
+	public boolean getIsDirectory() {
 		return isDirectory;
 	}
-	public void setDirectory(boolean isDirectory) {
+	public void setIsDirectory(boolean isDirectory) {
 		this.isDirectory = isDirectory;
 	}
 
