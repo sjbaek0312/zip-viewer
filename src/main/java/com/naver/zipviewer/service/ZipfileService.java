@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.naver.zipviewer.domain.Zipfile;
-import com.naver.zipviewer.factory.Compress;
 import com.naver.zipviewer.factory.CompressFactory;
 import com.naver.zipviewer.domain.Zip;
 
