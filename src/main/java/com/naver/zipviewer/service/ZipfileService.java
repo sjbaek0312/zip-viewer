@@ -43,7 +43,7 @@ public class ZipfileService {
 
 		try
 		{
-			if (CompressFactory.createCompress(path, fileId, ext).getArchiveInputStream() == null)
+			if (CompressFactory.createCompress(path, fileId, ext) == null)
 			{
 				throw new Exception("Not a compressed file.");
 			}
