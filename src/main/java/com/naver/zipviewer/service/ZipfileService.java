@@ -1,8 +1,6 @@
 package com.naver.zipviewer.service;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,14 +8,13 @@ import java.util.Map;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
-import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.naver.zipviewer.domain.Zipfile;
+import com.naver.zipviewer.factory.Compress;
+import com.naver.zipviewer.factory.CompressFactory;
 import com.naver.zipviewer.domain.Zip;
 
 @Service
@@ -33,6 +30,8 @@ public class ZipfileService {
 		{
 			throw new Exception("Not your file, or there is no file on database.");
 		}
+		String fileName = getFileName(fileId);
+		String ext = getExt(fileName);
 		ArchiveInputStream is = null;
 		ArchiveEntry entry = null;
 		Map<Long, List<Zipfile>> map = new HashMap<Long, List<Zipfile>>();
@@ -45,12 +44,12 @@ public class ZipfileService {
 
 		try
 		{
-			if (CompressArchiveInputStream(path, fileId) == null)
+			if (CompressFactory.createCompress(path, fileId, ext).getArchiveInputStream() == null)
 			{
 				throw new Exception("Not a compressed file.");
 			}
-			is = CompressArchiveInputStream(path, fileId);
-
+			
+			is = CompressFactory.createCompress(path, fileId, ext).getArchiveInputStream();
 			while ((entry = is.getNextEntry()) != null)
 			{		
 				zipfile = new Zipfile();
@@ -171,28 +170,13 @@ public class ZipfileService {
 		return true;
 	}
 	
-	public ArchiveInputStream CompressArchiveInputStream(String path, long fileId) throws FileNotFoundException
+	public String getFileName(long fileId)
 	{
-		File file;
-		
-		file = new File(path + fileId + ".zip");
-		if (file.isFile())
-		{
-			return new ZipArchiveInputStream(new FileInputStream(file), "EUC-KR");
-		}
-		
-		file = new File(path + fileId + ".tar");
-		if (file.isFile())
-		{
-			return new TarArchiveInputStream(new FileInputStream(file), "EUC-KR");
-		}
-		
-		file = new File(path + fileId + ".jar");
-		if (file.isFile())
-		{
-			return new JarArchiveInputStream(new FileInputStream(file), "EUC-KR");
-		}
-		// 확장자 추가 예정
-		return null;
+		return fileService.select(fileId).getFileName();
+	}
+	
+	public String getExt(String fileName)
+	{
+		return fileName.substring(fileName.lastIndexOf(".") + 1);
 	}
 }
