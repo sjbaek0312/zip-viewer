@@ -33,6 +33,7 @@ public class ZipfileService {
 		String ext = getExt(fileName);
 		ArchiveInputStream is = null;
 		ArchiveEntry entry = null;
+		List<ArchiveEntry> entryList = new ArrayList<ArchiveEntry>();
 		Map<Long, List<Zipfile>> map = new HashMap<Long, List<Zipfile>>();
 		List<Zipfile> zipfileList;
 		Zipfile zipfile;
@@ -40,17 +41,17 @@ public class ZipfileService {
 		Zip z;
 		long tmpZipfileId = 1;
 		parentIdList.add((long) 0);
-
+	
 		try
 		{
 			if (CompressFactory.createCompress(path, fileId, ext) == null)
 			{
 				throw new Exception("Not a compressed file.");
 			}
-			
+
 			is = CompressFactory.createCompress(path, fileId, ext).getArchiveInputStream();
 			while ((entry = is.getNextEntry()) != null)
-			{		
+			{
 				zipfile = new Zipfile();
 				zipfileList = new ArrayList<Zipfile>();
 				zipfile.setZipfileId(tmpZipfileId);
@@ -124,14 +125,15 @@ public class ZipfileService {
 					}
 				}
 				tmpZipfileId++;
+				entryList.add(entry);
 			}
 		}
 		finally
 		{
 			is.close();
 		}
-		
-		z = new Zip(fileId, map);	
+
+		z = new Zip(fileId, map, entryList);	
 		zipCacheService.findZip(fileId, z);
 
 		return map.get((long) 0);
