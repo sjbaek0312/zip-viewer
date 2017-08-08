@@ -11,7 +11,8 @@ class ZipFileAction extends EventEmitter {
 	
 	clickDir(parentId){
 		let self = this;
-		_apiZipFileList(parentId);
+
+		this._apiZipFileList(parentId);
 		this._promiseAPIList.done(function(response){
 			  self._apiZipFileRenew();
 			  self.emit("APIListDone:Dir",response.items);
@@ -20,7 +21,7 @@ class ZipFileAction extends EventEmitter {
 	
 	clickTree(parentId){
 		let self = this;
-		_apiZipFileList(parentId);
+		this._apiZipFileList(parentId);
 		this._promiseAPIList.done(function(response){
 			 self._apiZipFileRenew();
 			 self.emit("APIListDone:Tree",response.items);
@@ -42,7 +43,7 @@ class ZipFileAction extends EventEmitter {
 	_apiZipFileList(parentId) {
 		let self = this;
 		this._promiseAPIList = $.ajax({
-			url : this._URL,
+			url : this._URL, 
 			data : {"zipfileParentId" : parentId},
 			type : "GET",
 			dataType: "json",

@@ -31,14 +31,19 @@ class FileListController {
 			.on("dragover",DragAndDropAction.dragover);
 	}
 	_bindDynamicClickEvents(){ 
-		let self = this;
 		let fileListDom = this._view.getDomForEventBinding()
-		fileListDom.on("click", ".file", function(event){
-			let fileId = $(this).data("fileId");
-			if (self._model.isFileZip(fileId))
-				new ZipFileController(fileId); 
-			else console.log("Not a zip File");
-		});
+		fileListDom.on("click", ".file", this._startZipFileController.bind(this));
+	}
+	
+	_startZipFileController(event){
+		const fileId = $(event.currentTarget).data('fileid');
+		if (this._model.isFileCompressed(fileId)) {
+			const fileModel = this._model.getFile(fileId)
+			new ZipFileController(fileModel); 
+		}
+		else{
+			console.log("Not a zip File");
+		}
 	}
 }
 

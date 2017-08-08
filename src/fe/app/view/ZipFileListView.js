@@ -8,5 +8,13 @@ class ZipFileListView {
 	rendering(model) {		
 		this.$el.html(zipFileListTemplate(model));
 	}
+	
+	destroy(){ 
+		this.$el.off("click");
+		this.$el = null;
+	}
+	getDom(){
+		return this.$el;
+	}
 }
 export default ZipFileListView;
