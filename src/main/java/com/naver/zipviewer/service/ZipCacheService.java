@@ -8,16 +8,15 @@ import com.naver.zipviewer.domain.Zip;
 @Service
 public class ZipCacheService {
 	
-	@Cacheable(value = "zips")
-	public Zip findZip(Zip z)
+	@Cacheable(value = "zips", key = "#fileId")
+	public Zip findZip(long fileId, Zip z)
 	{
 		return z;
 	}
-	/*
+
 	@Cacheable(value = "zips", key = "#fileId")
 	public Zip findZipByFileId(long fileId)
 	{
-		List<Zip> list = zipCacheSer
-		return ;
-	}*/
+		return new Zip();
+	}
 }

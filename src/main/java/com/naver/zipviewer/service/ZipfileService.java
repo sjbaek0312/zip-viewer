@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,7 @@ public class ZipfileService {
 	@Value("#{config['fileUploadPath']}") String path;
 	@Autowired private FileService fileService;
 	@Autowired private ZipCacheService zipCacheService;
-	
+
 	public List<Zipfile> load(long fileId) throws Exception
 	{
 		if (!validation(fileId, "admin"))
@@ -133,10 +132,34 @@ public class ZipfileService {
 		{
 			is.close();
 		}
-	
-		z = new Zip(fileId, new Date(), map);		
-		zipCacheService.findZip(z);
+		
+		z = new Zip(fileId, map);	
+		zipCacheService.findZip(fileId, z);
+
 		return map.get((long) 0);
+	}
+
+	public List<Zipfile> list(long fileId, long zipfileParentId) throws Exception
+	{
+		if (!validation(fileId, "admin"))
+		{
+			throw new Exception("Not your file, or there is no file on database.");
+		}
+		Map<Long, List<Zipfile>> map = new HashMap<Long, List<Zipfile>>();
+
+		if (zipCacheService.findZipByFileId(fileId).getFileId() != fileId)
+		{
+			return load(fileId);
+		}
+		else
+		{
+			map.putAll(zipCacheService.findZipByFileId(fileId).getMap());
+			if (!map.containsKey(zipfileParentId))
+			{
+				throw new Exception("There is no folder with id : " + zipfileParentId);
+			}
+			return map.get(zipfileParentId);
+		}
 	}
 	
 	public boolean validation(long fileId, String userId)
@@ -167,9 +190,9 @@ public class ZipfileService {
 		file = new File(path + fileId + ".jar");
 		if (file.isFile())
 		{
-			return new JarArchiveInputStream(new FileInputStream(file));
+			return new JarArchiveInputStream(new FileInputStream(file), "EUC-KR");
 		}
-		
+		// 확장자 추가 예정
 		return null;
 	}
 }
