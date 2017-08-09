@@ -29,7 +29,7 @@ public class Zip {
 	public Map<Long, Map<Long, Zipfile>> getMap() {
 		return map;
 	}
-	public void setList(Map<Long, Map<Long, Zipfile>> map) {
+	public void setMap(Map<Long, Map<Long, Zipfile>> map) {
 		this.map = map;
 	}
 	public List<ArchiveEntry> getEntryList() {
