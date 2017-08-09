@@ -29,11 +29,11 @@ class FileListModel extends EventEmitter {
 	}
 		
 	isFileCompressed(fileId){
-		return (this._fileList.get(fileId).isCompressed());
+		return this._fileList.get(fileId).isCompressed();
 	}
 	
 	getFile(fileId){
-		return (this._fileList.get(fileId));
+		return this._fileList.get(fileId);
 	}
 	
 	_addFiles(json){
