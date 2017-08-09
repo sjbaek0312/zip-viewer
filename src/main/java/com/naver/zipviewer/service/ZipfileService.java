@@ -34,8 +34,8 @@ public class ZipfileService {
 		ArchiveInputStream is = null;
 		ArchiveEntry entry = null;
 		List<ArchiveEntry> entryList = new ArrayList<ArchiveEntry>();
-		Map<Long, List<Zipfile>> map = new HashMap<Long, List<Zipfile>>();
-		List<Zipfile> zipfileList;
+		Map<Long, Map<Long, Zipfile>> map = new HashMap<Long, Map<Long, Zipfile>>();
+		Map<Long, Zipfile> nestedMap;
 		Zipfile zipfile;
 		List<Long> parentIdList = new ArrayList<Long>();
 		Zip z;
@@ -53,7 +53,7 @@ public class ZipfileService {
 			while ((entry = is.getNextEntry()) != null)
 			{
 				zipfile = new Zipfile();
-				zipfileList = new ArrayList<Zipfile>();
+				nestedMap = new HashMap<Long, Zipfile>();
 				zipfile.setZipfileId(tmpZipfileId);
 				zipfile.setZipfileName(new File(entry.getName()).getName());
 				zipfile.setZipfileSize(entry.getSize());
@@ -95,33 +95,34 @@ public class ZipfileService {
 				{
 					zipfile.setZipfileParentId(parentIdList.get(depth - 1));
 				}
-		
+
 				if (depth == 0)
 				{
 					if (!map.containsKey(parentIdList.get(0)))
 					{
-						zipfileList.add(zipfile);
-						map.put(parentIdList.get(0), zipfileList);
+						nestedMap.put(tmpZipfileId, zipfile);
+						map.put(parentIdList.get(0), nestedMap);
+
 					}
 					else
 					{
-						zipfileList = map.get(parentIdList.get(0));
-						zipfileList.add(zipfile);
-						map.put(parentIdList.get(0), zipfileList);
+						nestedMap.putAll(map.get(parentIdList.get(0)));
+						nestedMap.put(tmpZipfileId, zipfile);
+						map.put(parentIdList.get(0), nestedMap);
 					}
 				}
 				else
 				{
 					if (!map.containsKey(parentIdList.get(depth - 1)))
 					{
-						zipfileList.add(zipfile);
-						map.put(parentIdList.get(depth - 1), zipfileList);
+						nestedMap.put(tmpZipfileId, zipfile);
+						map.put(parentIdList.get(depth - 1), nestedMap);
 					}
 					else
 					{
-						zipfileList = map.get(parentIdList.get(depth - 1));
-						zipfileList.add(zipfile);
-						map.put(parentIdList.get(depth - 1), zipfileList);
+						nestedMap.putAll(map.get(parentIdList.get(depth - 1)));
+						nestedMap.put(tmpZipfileId, zipfile);
+						map.put(parentIdList.get(depth - 1), nestedMap);
 					}
 				}
 				tmpZipfileId++;
@@ -132,11 +133,10 @@ public class ZipfileService {
 		{
 			is.close();
 		}
-
 		z = new Zip(fileId, map, entryList);	
 		zipCacheService.findZip(fileId, z);
 
-		return map.get((long) 0);
+		return new ArrayList<Zipfile>(map.get((long) 0).values());
 	}
 
 	public List<Zipfile> list(long fileId, long zipfileParentId) throws Exception
@@ -145,7 +145,7 @@ public class ZipfileService {
 		{
 			throw new Exception("Not your file, or there is no file on database.");
 		}
-		Map<Long, List<Zipfile>> map = new HashMap<Long, List<Zipfile>>();
+		Map<Long, Map<Long, Zipfile>> map = new HashMap<Long, Map<Long, Zipfile>>();
 
 		if (zipCacheService.findZipByFileId(fileId).getFileId() != fileId)
 		{
@@ -158,7 +158,7 @@ public class ZipfileService {
 			{
 				throw new Exception("There is no folder with id : " + zipfileParentId);
 			}
-			return map.get(zipfileParentId);
+			return new ArrayList<Zipfile>(map.get(zipfileParentId).values());
 		}
 	}
 	
