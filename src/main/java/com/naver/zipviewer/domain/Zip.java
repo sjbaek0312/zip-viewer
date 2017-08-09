@@ -8,12 +8,12 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 public class Zip {
 
 	private long fileId;
-	private Map<Long, List<Zipfile>> map;
+	private Map<Long, Map<Long, Zipfile>> map;
 	private List<ArchiveEntry> entryList;
 	
 	public Zip() {}
 	
-	public Zip(long fileId, Map<Long, List<Zipfile>> map, List<ArchiveEntry> entryList)
+	public Zip(long fileId, Map<Long, Map<Long, Zipfile>> map, List<ArchiveEntry> entryList)
 	{
 		this.fileId = fileId;
 		this.map = map;
@@ -26,10 +26,10 @@ public class Zip {
 	public void setFileId(long fileId) {
 		this.fileId = fileId;
 	}
-	public Map<Long, List<Zipfile>> getMap() {
+	public Map<Long, Map<Long, Zipfile>> getMap() {
 		return map;
 	}
-	public void setList(Map<Long, List<Zipfile>> map) {
+	public void setList(Map<Long, Map<Long, Zipfile>> map) {
 		this.map = map;
 	}
 	public List<ArchiveEntry> getEntryList() {
