@@ -24,32 +24,32 @@ public class ZipfileController {
 	@Autowired private ZipfileService service;
 	
 	@PostMapping(value = "")
-	public ResponseEntity<?> load(@PathVariable(value = "fileId") long fileId) throws Exception
+	public ResponseEntity<?> load(@PathVariable(value = "fileId") long fileId, String userId) throws Exception
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("items", service.load(fileId));
+		map.put("items", service.load(fileId, userId));
 		return new ResponseEntity<>(map, HttpStatus.CREATED);
 	}
 	
 	@GetMapping(value = "")
-	public ResponseEntity<?> list(@PathVariable(value = "fileId") long fileId, @RequestParam(value = "zipfileParentId") long zipfileParentId) throws Exception
+	public ResponseEntity<?> list(@PathVariable(value = "fileId") long fileId, @RequestParam(value = "zipfileParentId") long zipfileParentId, String userId) throws Exception
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("items", service.list(fileId, zipfileParentId));
+		map.put("items", service.list(fileId, zipfileParentId, userId));
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
 	
 	@PatchMapping(value = "")
-	public ResponseEntity<?> renew(@PathVariable(value = "fileId") long fileId) throws Exception
+	public ResponseEntity<?> renew(@PathVariable(value = "fileId") long fileId, String userId) throws Exception
 	{
-		service.renew(fileId);
+		service.renew(fileId, userId);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	
 	@DeleteMapping(value = "")
-	public ResponseEntity<?> expire(@PathVariable(value = "fileId") long fileId) throws Exception
+	public ResponseEntity<?> expire(@PathVariable(value = "fileId") long fileId, String userId) throws Exception
 	{
-		service.expire(fileId);
+		service.expire(fileId, userId);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 }

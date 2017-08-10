@@ -5,18 +5,18 @@ import java.util.Map;
 
 public class CompressFactory {
 
-	public static Compress createCompress(String path, long fileId, String ext)
+	public static Compress createCompress(String fullPath)
 	{
 		Map<String, Compress> compresses = new HashMap<String, Compress>()
 		{
 			private static final long serialVersionUID = 1L;
 			{
-				put("zip", new ZipCompress(path, fileId, ext));
-				put("jar", new JarCompress(path, fileId, ext));
-				put("tar", new TarCompress(path, fileId, ext));
+				put("zip", new ZipCompress(fullPath));
+				put("jar", new JarCompress(fullPath));
+				put("tar", new TarCompress(fullPath));
 			}
 		};
 		
-		return compresses.get(ext.toLowerCase());
+		return compresses.get(fullPath.substring(fullPath.lastIndexOf(".") + 1).toLowerCase());
 	}
 }
