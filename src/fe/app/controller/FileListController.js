@@ -35,8 +35,8 @@ class FileListController {
 		fileListDom.on("click", ".file", this._startZipFileController.bind(this));
 	}
 	
-	_startZipFileController(event){
-		const fileId = $(event.currentTarget).data('fileid');
+	_startZipFileController(evt){
+		const fileId = $(evt.currentTarget).data('fileid');
 		if (this._model.isFileCompressed(fileId)) {
 			const fileModel = this._model.getFile(fileId)
 			new ZipFileController(fileModel); 
