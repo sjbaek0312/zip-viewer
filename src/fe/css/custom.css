@@ -26,7 +26,6 @@
 .filename{
 	display: block; 
 	overflow: hidden; 
-	text-overflow: ellipsis;
 	white-space: nowrap; 
 	width: 130px;
 	text-overflow: ellipsis;
@@ -65,4 +64,25 @@
 	padding: 0px;
 	overflow: auto;
 	height: calc(100% - 55px);
+}
+#contextMenu {
+	position: absolute;
+	display:none;
+	width: 100px;
+	top: 0px;
+	left: 0px;
+	border: 1px solid gray;
+	background-color: white;
+	z-index: 2;
+}
+#contextMenu .menu {
+	border-bottom: 1px dashed gray;
+	height: 20px;
+}
+#contextMenu .menu:hover {
+	background-color: B7B7B7;
+	height: 20px;
+}
+#contextMenu .menu:last-child{
+	border-bottom: none;
 }

@@ -4,6 +4,7 @@ import FileListView from "view/FileListView.js"
 import FileUploadStateListView from "view/FileUploadStateListView.js"
 
 import DragAndDropAction from 'lib/DropHandler.js';
+//import ContextMenuAction from 'lib/ContextMenuHandler.js'; 
 
 class FileListController {
 	constructor(){
@@ -14,8 +15,10 @@ class FileListController {
 
 		this._bindModelAndView();
 		this._bindStaticDropEvents();
-		this._bindDynamicClickEvents();
 
+		this._bindViewEvents();
+//		this._bindContextMenu();
+		
 		this._model.apiFileList();
 	}
 	_bindModelAndView(){
@@ -25,20 +28,27 @@ class FileListController {
 			.on("change:dispatched", this._uploadStateView.rendering.bind(this._uploadStateView))
 			.on("progres:uploading", this._uploadStateView.progressRendering.bind(this._uploadStateView))
 	}
+
 	_bindStaticDropEvents(){
 		$("#dropZone")
 			.on("drop", {toModel : this._model}, DragAndDropAction.drop)
 			.on("dragover",DragAndDropAction.dragover);
 	}
-	_bindDynamicClickEvents(){ 
-		let fileListDom = this._view.getDomForEventBinding()
+	_bindViewEvents(){ 
+		const fileListDom = this._view.getDomForEventBinding()
 		fileListDom.on("click", ".file", this._startZipFileController.bind(this));
+	}
+	_bindContextMenu(){
+		const fileListDom = this._view.getDomForEventBinding();
+		
+		fileListDom.on("contextmenu", ".file", ContextMenuAction.showMainContextView);
+		$(document).on("click", ContextMenuAction.hideMainContextView)
 	}
 	
 	_startZipFileController(evt){
 		const fileId = $(evt.currentTarget).data('fileid');
-		if (this._model.isFileCompressed(fileId)) {
-			const fileModel = this._model.getFile(fileId)
+		const fileModel = this._model.getFile(fileId)
+		if (fileModel.isCompressed()) {
 			new ZipFileController(fileModel); 
 		}
 		else{
