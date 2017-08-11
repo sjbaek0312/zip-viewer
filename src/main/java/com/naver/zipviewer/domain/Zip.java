@@ -1,6 +1,5 @@
 package com.naver.zipviewer.domain;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -9,15 +8,15 @@ public class Zip {
 
 	private long fileId;
 	private Map<Long, Map<Long, Zipfile>> map;
-	private List<ArchiveEntry> entryList;
+	private Map<Long, ArchiveEntry> entry;
 	
 	public Zip() {}
 	
-	public Zip(long fileId, Map<Long, Map<Long, Zipfile>> map, List<ArchiveEntry> entryList)
+	public Zip(long fileId, Map<Long, Map<Long, Zipfile>> map, Map<Long, ArchiveEntry> entry)
 	{
 		this.fileId = fileId;
 		this.map = map;
-		this.entryList = entryList;
+		this.entry = entry;
 	}
 	
 	public long getFileId() {
@@ -32,10 +31,10 @@ public class Zip {
 	public void setMap(Map<Long, Map<Long, Zipfile>> map) {
 		this.map = map;
 	}
-	public List<ArchiveEntry> getEntryList() {
-		return entryList;
+	public Map<Long, ArchiveEntry> getEntry() {
+		return entry;
 	}
-	public void setEntryList(List<ArchiveEntry> entryList) {
-		this.entryList = entryList;
+	public void setEntry(Map<Long, ArchiveEntry> entry) {
+		this.entry = entry;
 	}
 }

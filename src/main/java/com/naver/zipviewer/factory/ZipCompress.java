@@ -2,33 +2,24 @@ package com.naver.zipviewer.factory;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ZipCompress implements Compress {
 
-	private String path;
-	private long fileId;
-	private String ext;
-	
-	ZipCompress (String path, long fileId, String ext)
+	@Value("#{config['encoding']}") String encoding;
+	@Override
+	public ZipArchiveInputStream getArchiveInputStream(String fullPath) throws FileNotFoundException
 	{
-		this.path = path;
-		this.fileId = fileId;
-		this.ext = ext;
+		return new ZipArchiveInputStream(new FileInputStream(fullPath), encoding);
 	}
 	
 	@Override
-	public ZipArchiveInputStream getArchiveInputStream() throws FileNotFoundException
+	public void validation()
 	{
-		return new ZipArchiveInputStream(new FileInputStream(path + fileId + "." + ext), "EUC-KR");
-	}
-	@Override
-	public List<ArchiveEntry> getArchiveEntry()
-	{
-		return new ArrayList<ArchiveEntry>();
+		// 예외 상황 추가
 	}
 }
