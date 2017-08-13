@@ -47,7 +47,7 @@ public class FileService {
 					break;
 				fos.write(buffer, 0, count);
 			}
-		  
+
 			vo.setUserId("admin");
 			vo.setFileName(file.getOriginalFilename());  
 			vo.setFileSize(file.getSize());
