@@ -52,4 +52,10 @@ public class ZipfileController {
 		service.expire(fileId, userId);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
+	
+	@GetMapping(value = "/{zipfileId}")
+	public ResponseEntity<?> download(@PathVariable(value = "fileId") long fileId, @PathVariable(value = "zipfileId") long zipfileId, String userId) throws Exception
+	{
+		return new ResponseEntity<>(service.download(fileId, zipfileId, userId), HttpStatus.OK);
+	}
 }

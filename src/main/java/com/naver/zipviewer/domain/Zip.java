@@ -2,21 +2,19 @@ package com.naver.zipviewer.domain;
 
 import java.util.Map;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
-
 public class Zip {
 
 	private long fileId;
 	private Map<Long, Map<Long, Zipfile>> map;
-	private Map<Long, ArchiveEntry> entry;
+	private Map<Long, Zipfile> map2;
 	
 	public Zip() {}
 	
-	public Zip(long fileId, Map<Long, Map<Long, Zipfile>> map, Map<Long, ArchiveEntry> entry)
+	public Zip(long fileId, Map<Long, Map<Long, Zipfile>> map, Map<Long, Zipfile> map2)
 	{
 		this.fileId = fileId;
 		this.map = map;
-		this.entry = entry;
+		this.map2 = map2;
 	}
 	
 	public long getFileId() {
@@ -31,10 +29,10 @@ public class Zip {
 	public void setMap(Map<Long, Map<Long, Zipfile>> map) {
 		this.map = map;
 	}
-	public Map<Long, ArchiveEntry> getEntry() {
-		return entry;
+	public Map<Long, Zipfile> getMap2() {
+		return map2;
 	}
-	public void setEntry(Map<Long, ArchiveEntry> entry) {
-		this.entry = entry;
+	public void setMap2(Map<Long, Zipfile> map2) {
+		this.map2 = map2;
 	}
 }
