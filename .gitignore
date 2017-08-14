@@ -83,3 +83,6 @@ src/main/webapp/WEB-INF/web.xml
 ### FE ###
 *node_modules/
 
+*.js
+*.css
+*.html
