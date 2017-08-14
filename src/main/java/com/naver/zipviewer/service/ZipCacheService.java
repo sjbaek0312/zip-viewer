@@ -114,10 +114,10 @@ public class ZipCacheService {
 				nestedMap = new HashMap<Long, Zipfile>();
 				zipfile.setZipfileId(tmpZipfileId);
 				zipfile.setZipfileSize(entry.getSize());
+				zipfile.setZipfileName(new File(entry.getName()).getName());
 				
 				if (entry.isDirectory())
 				{
-					zipfile.setZipfileName(new File(entry.getName()).getName() + "/");
 					zipfile.setIsDirectory(true);
 					parentIdMap.put(depth, tmpZipfileId);
 
@@ -139,10 +139,6 @@ public class ZipCacheService {
 						tmpMap.put(parentIdMap.get(depth - 1), tmp);
 						map.put(parentIdMap.get(depth - 2), tmpMap);
 					}
-				}
-				else
-				{
-					zipfile.setZipfileName(new File(entry.getName()).getName());
 				}
 
 				if (depth == 0)
