@@ -3,7 +3,9 @@ package com.naver.zipviewer.service;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -24,7 +26,7 @@ public class ZipfileService {
 	@Value("#{config['fileUploadPath']}") String path;
 	@Value("#{config['fileDownloadPath']}") String targetParentPath;
 
-	public Map<Long, Zipfile> load(long fileId, String userId) throws Exception
+	public List<Zipfile> load(long fileId, String userId) throws Exception
 	{
 		userId = "admin";
 		if (!validation(fileId, userId))
@@ -36,10 +38,9 @@ public class ZipfileService {
 		{
 			return list(fileId, (long) 0, userId);
 		}
-		return new HashMap<Long, Zipfile>(zipCacheService.putZip(fileId).getMap().get((long) 0));
+		return new ArrayList<Zipfile>(zipCacheService.putZip(fileId).getMap().get((long) 0).values());
 	}
-
-	public Map<Long, Zipfile> list(long fileId, long zipfileParentId, String userId) throws Exception
+	public List<Zipfile> list(long fileId, long zipfileParentId, String userId) throws Exception
 	{	
 		userId = "admin";
 		if (!validation(fileId, userId))
@@ -56,10 +57,10 @@ public class ZipfileService {
 			{
 				throw new Exception("There is no folder with id : " + zipfileParentId);
 			}
-			return new HashMap<Long, Zipfile>(zipCacheService.findZip(fileId).getMap().get(zipfileParentId));
+			return new ArrayList<Zipfile>(zipCacheService.findZip(fileId).getMap().get(zipfileParentId).values());
 		}
 	}
-	
+
 	public void renew(long fileId, String userId) throws Exception
 	{
 		userId = "admin";
