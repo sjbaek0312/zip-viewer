@@ -4,19 +4,22 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
+@Service
 public class TarCompress implements Compress {
 
-	private String fullPath;
-	
-	TarCompress (String fullPath)
+	@Value("#{config['encoding']}") String encoding;
+	@Override
+	public TarArchiveInputStream getArchiveInputStream(String fullPath) throws FileNotFoundException
 	{
-		this.fullPath = fullPath;
+		return new TarArchiveInputStream(new FileInputStream(fullPath), encoding);
 	}
 	
 	@Override
-	public TarArchiveInputStream getArchiveInputStream() throws FileNotFoundException
+	public void validation()
 	{
-		return new TarArchiveInputStream(new FileInputStream(fullPath), "EUC-KR");
+		// 예외 상황 추가
 	}
 }

@@ -4,19 +4,22 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ZipCompress implements Compress {
 
-	private String fullPath;
-	
-	ZipCompress (String fullPath)
+	@Value("#{config['encoding']}") String encoding;
+	@Override
+	public ZipArchiveInputStream getArchiveInputStream(String fullPath) throws FileNotFoundException
 	{
-		this.fullPath = fullPath;
+		return new ZipArchiveInputStream(new FileInputStream(fullPath), encoding);
 	}
 	
 	@Override
-	public ZipArchiveInputStream getArchiveInputStream() throws FileNotFoundException
+	public void validation()
 	{
-		return new ZipArchiveInputStream(new FileInputStream(fullPath), "EUC-KR");
+		// 예외 상황 추가
 	}
 }

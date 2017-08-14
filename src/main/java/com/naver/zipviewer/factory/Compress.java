@@ -6,5 +6,6 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 
 public interface Compress {
 
-	public ArchiveInputStream getArchiveInputStream() throws FileNotFoundException;
+	public ArchiveInputStream getArchiveInputStream(String fullPath) throws FileNotFoundException;
+	public void validation();
 }

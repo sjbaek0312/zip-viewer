@@ -2,7 +2,7 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd" >
 
 <properties>
-<comment>file upload/download path</comment>
 <entry key="fileUploadPath">C:/Users/upload/</entry>
-<entry key="fileDonwloadPath">C:/Users/download/</entry>
+<entry key="fileDownloadPath">C:/Users/download/</entry>
+<entry key="encoding">EUC-KR</entry>
 </properties>

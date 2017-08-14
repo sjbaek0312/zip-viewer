@@ -1,41 +1,75 @@
-
 import EventEmitter from 'events';
+import {zipFileList} from 'lib/zipFileAction'
 
 class ZipFileModel {
 	constructor(json){
-		this.text = json.zipfileName;
 		this.id = json.zipfileId;
-		this.parent = json.zipfileParentId;
-	}
+		this.text = json.zipfileName;
+		this.children = json.hasDirectory;
+		this.parent = json.zipfileParentId; 
+	}	
 }
 
-class ZipFileTreeModel extends EventEmitter {
-	constructor(){
+class ZipFileTreeModel extends EventEmitter { 
+	constructor(rootModel){
 		super();
-		this._zipFileTree = [];
-		this._zipFileTree[0] = {"id": 0, "parent": "#", "text": "TEMP ROOT"}; 
-		// 생성자로 부터 root 파일 이름을 넘겨 받아야 할 것 같다.
+		this._zipFileTree = new Map();
+		this._setRootModel(rootModel)
+		this._APIList = zipFileList(rootModel.fileId)
+	}
+	_setRootModel(rootModel){
+		this._zipFileTree.set(0, {id: 0, text: rootModel.fileName, children: true , parent: '#' ,state: { opened : true }})
 	}
 	
-	setModel(jsonArray){
-		let self = this;
-		jsonArray.forEach(function(json){
-			if(json.isDirectory)
-				self._zipFileTree.push(new ZipFileModel(json));
-			// 쓰레기 자식값을 넣어줘야함.
+	apiList(obj, callback){
+		const parentId = obj.id
+		const self = this;
+		this._APIList(parentId).done(function(response){
+			let res = response.items
+			self.addModel(res, obj, callback)
 		})
-		this.emit("ModelSettingDone", this._zipFileTree);
 	}
 	
-	addModel(jsonArray){
-		let self = this;
-		jsonArray.forEach(function(json){
-			if(json.isDirectory)
-				self._zipFileTee.push(new ZipFileModel(json));
-			// 기존 쓰레기 값을 지우고 addModel 해줘야함.
-		})
-		console.dir(this._zipFileTee);
+	getPath(zipFileId){
+		const pathArray = [];
+		let parentId = zipFileId;
+		while( parentId != '#') {
+			parentId = this._zipFileTree.get(parentId).parent;
+			pathArray.push(parentId);
+		}
+		return pathArray;
 	}
-
+	
+	initModel(jsonArray, obj, callback) { 
+		const dirArray = jsonArray.filter(this._getDirType);
+		
+		dirArray.forEach(this._setDirModel, this)
+		console.dir(this._zipFileTree);
+		if(dirArray.length != 0) {
+			this._zipFileTree.get(0).children = false;
+		}
+		callback.call(obj, Array.from(this._zipFileTree.values()))
+	}
+	
+	_getDirType(json){
+		return json.isDirectory
+	}
+	
+	_setDirModel(json){
+		this._zipFileTree.set(json.zipfileId, new ZipFileModel(json));
+	}
+	
+	_setPortion(json){
+		this.push( new ZipFileModel(json) )
+	}
+	
+	addModel(jsonArray, obj, callback) {
+		const dirArray = jsonArray.filter(this._getDirType);
+		let dir = [];
+		dirArray.forEach(this._setDirModel, this)
+		dirArray.forEach(this._setPortion, dir);
+		callback.call(obj, dir)
+	}
+	
 }
 export default ZipFileTreeModel;

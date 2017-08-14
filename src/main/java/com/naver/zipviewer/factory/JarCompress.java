@@ -4,19 +4,22 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
+@Service
 public class JarCompress implements Compress {
 
-	private String fullPath;
-	
-	JarCompress (String fullPath)
+	@Value("#{config['encoding']}") String encoding;
+	@Override
+	public JarArchiveInputStream getArchiveInputStream(String fullPath) throws FileNotFoundException
 	{
-		this.fullPath = fullPath;
+		return new JarArchiveInputStream(new FileInputStream(fullPath), encoding);
 	}
 	
 	@Override
-	public JarArchiveInputStream getArchiveInputStream() throws FileNotFoundException
+	public void validation()
 	{
-		return new JarArchiveInputStream(new FileInputStream(fullPath));
+		// 예외 상황 추가
 	}
 }

@@ -20,9 +20,9 @@ import com.naver.zipviewer.factory.CompressFactory;
 @Service
 public class ZipCacheService {
 	
+	@Autowired CompressFactory compressFactory;
 	@Autowired FileService fileService;
 	@Value("#{config['fileUploadPath']}") String path;
-	
 	
 	@CachePut(value = "zips", key = "#fileId")
 	public Zip putZip(long fileId) throws Exception
@@ -44,9 +44,9 @@ public class ZipCacheService {
 		String ext = getFileExt(fileId);
 		ArchiveInputStream is = null;
 		ArchiveEntry entry = null;
-		Map<Long, ArchiveEntry> entryMap = new HashMap<Long, ArchiveEntry>();
 		Map<Long, Map<Long, Zipfile>> map = new HashMap<Long, Map<Long, Zipfile>>();
 		Map<Long, Zipfile> nestedMap;
+		Map<Long, Zipfile> map2 = new HashMap<Long, Zipfile>();
 		Zipfile zipfile;
 		Map<Integer, Long> parentIdMap = new HashMap<Integer, Long>();
 		long tmpZipfileId = 1;
@@ -56,12 +56,12 @@ public class ZipCacheService {
 	
 		try
 		{
-			if (CompressFactory.createCompress(fullPath) == null)
+			if (compressFactory.createCompress(ext) == null)
 			{
 				throw new Exception("Not a compressed file.");
 			}
 
-			is = CompressFactory.createCompress(fullPath).getArchiveInputStream();
+			is = compressFactory.createCompress(ext).getArchiveInputStream(fullPath);
 			while ((entry = is.getNextEntry()) != null)
 			{
 				String str = null;
@@ -75,38 +75,41 @@ public class ZipCacheService {
 					}
 				}
 				
-				if (depth == 1)
+				if (depth == 1) // depth 0의 폴더들을 entry에서 인식하지 못하기 때문에 자식들의 이름에서 파싱하여 임의로 추가
 				{
 					zipfile = new Zipfile();
 					nestedMap = new HashMap<Long, Zipfile>();
 					str = entry.getName();
 					values = str.split("/");
 					
-					if (depth0Directories == null || !depth0Directories.equals(values[0] +"/"))
+					if (depth0Directories == null || !depth0Directories.equals(values[0] + "/"))
 					{
+						parentIdMap.put(0, (long) 0);
 						zipfile.setZipfileId(tmpZipfileId);
 						zipfile.setZipfileName(values[0] + "/");
 						zipfile.setZipfileSize((long) 0);
 						zipfile.setIsDirectory(true);
-						zipfile.setZipfileParentId((long) 0);
 						depth0Directories = values[0] + "/";
-						
-						if (!map.containsKey(parentIdMap.get(depth - 1)))
+	
+						zipfile.setZipfileParentId((long) 0);
+						if (!map.containsKey(parentIdMap.get(0)))
 						{
 							nestedMap.put(tmpZipfileId, zipfile);
-							map.put(parentIdMap.get(depth - 1), nestedMap);
+							map.put(parentIdMap.get(0), nestedMap);
 						}
 						else
 						{
-							nestedMap.putAll(map.get(parentIdMap.get(depth - 1)));
+							nestedMap.putAll(map.get(parentIdMap.get(0)));
 							nestedMap.put(tmpZipfileId, zipfile);
-							map.put(parentIdMap.get(depth - 1), nestedMap);
+							map.put(parentIdMap.get(0), nestedMap);
 						}
 
+						map2.put(tmpZipfileId, zipfile);
+						parentIdMap.put(0, tmpZipfileId);				
 						tmpZipfileId++;
 					}
 				}
-				
+				// 정상적인 entry
 				zipfile = new Zipfile();
 				nestedMap = new HashMap<Long, Zipfile>();
 				zipfile.setZipfileId(tmpZipfileId);
@@ -117,11 +120,29 @@ public class ZipCacheService {
 					zipfile.setZipfileName(new File(entry.getName()).getName() + "/");
 					zipfile.setIsDirectory(true);
 					parentIdMap.put(depth, tmpZipfileId);
+
+					Zipfile tmp = new Zipfile();
+					Map<Long, Zipfile> tmpMap = new HashMap<Long, Zipfile>();
+					if (depth == 1) // 자신이 디렉토리일 경우 부모의 hasDirectory를 true로 변경
+					{
+						tmp = map.get((long) 0).get(parentIdMap.get(0));
+						tmpMap = map.get((long) 0);
+						tmp.setHasDirectory(true);
+						tmpMap.put(parentIdMap.get(0), tmp);
+						map.put((long) 0, tmpMap);
+					}
+					else if (depth > 1)
+					{					
+						tmp = map.get(parentIdMap.get(depth - 2)).get(parentIdMap.get(depth - 1));
+						tmpMap = map.get(parentIdMap.get(depth - 2));
+						tmp.setHasDirectory(true);
+						tmpMap.put(parentIdMap.get(depth - 1), tmp);
+						map.put(parentIdMap.get(depth - 2), tmpMap);
+					}
 				}
 				else
 				{
 					zipfile.setZipfileName(new File(entry.getName()).getName());
-					zipfile.setIsDirectory(false);
 				}
 
 				if (depth == 0)
@@ -155,7 +176,7 @@ public class ZipCacheService {
 					}
 				}
 
-				entryMap.put(tmpZipfileId, entry);
+				map2.put(tmpZipfileId, zipfile);
 				tmpZipfileId++;
 			}
 		}
@@ -164,7 +185,7 @@ public class ZipCacheService {
 			is.close();
 		}
 
-		return new Zip(fileId, map, entryMap);
+		return new Zip(fileId, map, map2);
 	}
 	
 	public String getFileExt(long fileId)
