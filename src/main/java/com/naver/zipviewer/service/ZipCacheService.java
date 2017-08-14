@@ -44,9 +44,9 @@ public class ZipCacheService {
 		String ext = getFileExt(fileId);
 		ArchiveInputStream is = null;
 		ArchiveEntry entry = null;
-		Map<Long, ArchiveEntry> entryMap = new HashMap<Long, ArchiveEntry>();
 		Map<Long, Map<Long, Zipfile>> map = new HashMap<Long, Map<Long, Zipfile>>();
 		Map<Long, Zipfile> nestedMap;
+		Map<Long, Zipfile> map2 = new HashMap<Long, Zipfile>();
 		Zipfile zipfile;
 		Map<Integer, Long> parentIdMap = new HashMap<Integer, Long>();
 		long tmpZipfileId = 1;
@@ -104,6 +104,7 @@ public class ZipCacheService {
 							map.put(parentIdMap.get(0), nestedMap);
 						}
 
+						map2.put(tmpZipfileId, zipfile);
 						parentIdMap.put(0, tmpZipfileId);				
 						tmpZipfileId++;
 					}
@@ -175,7 +176,7 @@ public class ZipCacheService {
 					}
 				}
 
-				entryMap.put(tmpZipfileId, entry);
+				map2.put(tmpZipfileId, zipfile);
 				tmpZipfileId++;
 			}
 		}
@@ -184,7 +185,7 @@ public class ZipCacheService {
 			is.close();
 		}
 
-		return new Zip(fileId, map, entryMap);
+		return new Zip(fileId, map, map2);
 	}
 	
 	public String getFileExt(long fileId)
