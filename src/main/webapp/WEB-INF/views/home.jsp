@@ -66,19 +66,57 @@
 
 	<div id="ZipViewerBackground" class="displayBlock">
 		<div class="row ">
-			<div class="col-xs-12" id="zipFileTab"><button type="button" class="floatRight btn btn-primary" id="zipFileClose"><span class="glyphicon glyphicon-remove"></span></button></div>
+			<div class="col-xs-12" id="zipFileTab"><div id="zipFilePath"></div><button type="button" class="floatRight btn btn-primary" id="zipFileClose"><span class="glyphicon glyphicon-remove"></span></button></div>
 		</div>
 		<div class="row height">
 			<div class="col-xs-3" id="zipFileTree">
 				
 			</div>
 			<div class="col-xs-9" id="zipFileList">
-				<div class="col-xs-9" id="zipFileList">
-				<!-- tpl/ZipFileList.html -->
+			<!-- template engine 적용해야 하는 부분. -->
+				
 			</div>
 		</div>
 	</div>
 
+	<div class="container">
+		<div class="modal fade" id="zipFileModal" role="dialog">
+			<!-- Modal content-->
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Zip File Viewer</h4>
+					</div>
+					<div class="modal-body">
+						<p>Some text in the modal.</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
 
+			</div>
+		</div>
+		<div class="modal fade" id="ErrorModal" role="dialog">
+			<!-- Modal content-->
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Zip File Viewer</h4>
+					</div>
+					<div class="modal-body">
+						<p>Some text in the modal.</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+		
 </body>
 </html>
