@@ -1,22 +1,20 @@
 package com.naver.zipviewer.domain;
 
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 public class Zip {
 
 	private long fileId;
-	private Date accessTime;
-	private Map<Long, List<Zipfile>> map;
+	private Map<Long, Map<Long, Zipfile>> map;
+	private Map<Long, Zipfile> map2;
 	
 	public Zip() {}
 	
-	public Zip(long fileId, Date accessTime, Map<Long, List<Zipfile>> map)
+	public Zip(long fileId, Map<Long, Map<Long, Zipfile>> map, Map<Long, Zipfile> map2)
 	{
 		this.fileId = fileId;
-		this.accessTime = accessTime;
 		this.map = map;
+		this.map2 = map2;
 	}
 	
 	public long getFileId() {
@@ -25,16 +23,16 @@ public class Zip {
 	public void setFileId(long fileId) {
 		this.fileId = fileId;
 	}
-	public Date getAccessTime() {
-		return accessTime;
-	}
-	public void setAccessTime(Date accessTime) {
-		this.accessTime = accessTime;
-	}
-	public Map<Long, List<Zipfile>> getMap() {
+	public Map<Long, Map<Long, Zipfile>> getMap() {
 		return map;
 	}
-	public void setList(Map<Long, List<Zipfile>> map) {
+	public void setMap(Map<Long, Map<Long, Zipfile>> map) {
 		this.map = map;
-	} 
+	}
+	public Map<Long, Zipfile> getMap2() {
+		return map2;
+	}
+	public void setMap2(Map<Long, Zipfile> map2) {
+		this.map2 = map2;
+	}
 }

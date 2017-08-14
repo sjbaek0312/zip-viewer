@@ -7,6 +7,7 @@ public class Zipfile {
 	private long zipfileSize;
 	private long zipfileParentId;
 	private boolean isDirectory;
+	private boolean hasDirectory;
 	
 	public long getZipfileId() {
 		return zipfileId;
@@ -37,6 +38,12 @@ public class Zipfile {
 	}
 	public void setIsDirectory(boolean isDirectory) {
 		this.isDirectory = isDirectory;
+	}
+	public boolean getHasDirectory() {
+		return hasDirectory;
+	}
+	public void setHasDirectory(boolean hasDirectory) {
+		this.hasDirectory = hasDirectory;
 	}
 
 }
