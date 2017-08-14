@@ -1,19 +1,15 @@
+const FileListTemplate = require("tpl/FileList.html");
+
 class FileListView {
 	constructor(domId){
 		this.$el = $(domId);
-		this._imgUrl = "/static/img/"
 	}
 
 	getDomForEventBinding(){
 		return this.$el;
 	}
-	rendering(json) {
-		let innerDiv = $("<div></div>").addClass("col-xs-2 file").data("fileId",json.fileId);
-		let img = $("<img></img>").css("height", "100px").addClass("media-object");
-		img.attr("src", this._imgUrl + "file-" + json.fileType + ".png").attr("onerror","this.src='"+ this._imgUrl +"file-common.png'"); 
-		
-		let name = $("<h5></h5>").text(json.fileName).addClass("filename");
-		innerDiv.append(img).append(name);
+	rendering(model) {
+		let innerDiv = FileListTemplate(model);
 	
 		let div;
 		if (this.$el.children().length%6 === 0)
