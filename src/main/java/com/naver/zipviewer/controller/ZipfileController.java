@@ -27,7 +27,7 @@ public class ZipfileController {
 	public ResponseEntity<?> load(@PathVariable(value = "fileId") long fileId) throws Exception
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("items", service.load(fileId));
+		map.put("items", service.load(fileId, "admin"));
 		return new ResponseEntity<>(map, HttpStatus.CREATED);
 	}
 	
@@ -35,27 +35,27 @@ public class ZipfileController {
 	public ResponseEntity<?> list(@PathVariable(value = "fileId") long fileId, @RequestParam(value = "zipfileParentId") long zipfileParentId) throws Exception
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("items", service.list(fileId, zipfileParentId));
+		map.put("items", service.list(fileId, zipfileParentId, "admin"));
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
 	
 	@PatchMapping(value = "")
 	public ResponseEntity<?> renew(@PathVariable(value = "fileId") long fileId) throws Exception
 	{
-		service.renew(fileId);
+		service.renew(fileId, "admin");
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	
 	@DeleteMapping(value = "")
 	public ResponseEntity<?> expire(@PathVariable(value = "fileId") long fileId) throws Exception
 	{
-		service.expire(fileId);
+		service.expire(fileId, "admin");
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	
 	@GetMapping(value = "/{zipfileId}")
 	public ResponseEntity<?> download(@PathVariable(value = "fileId") long fileId, @PathVariable(value = "zipfileId") long zipfileId) throws Exception
 	{
-		return new ResponseEntity<>(service.download(fileId, zipfileId), HttpStatus.OK);
+		return new ResponseEntity<>(service.download(fileId, zipfileId, "admin"), HttpStatus.OK);
 	}
 }
