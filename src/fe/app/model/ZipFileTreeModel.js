@@ -64,6 +64,7 @@ class ZipFileTreeModel extends EventEmitter {
 	}
 	
 	addModel(jsonArray, obj, callback) {
+		if(jsonArray == null) throw "Nothing exist";
 		const dirArray = jsonArray.filter(this._getDirType);
 		let dir = [];
 		dirArray.forEach(this._setDirModel, this)

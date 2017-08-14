@@ -10,7 +10,9 @@ class ZipFileListView {
 	}
 	
 	destroy(){ 
-		this.$el.off("click");
+		this.$el.off("dblclick");
+		this.$el.off("contextmenu");
+		this.$el.empty();
 		this.$el = null;
 	}
 	getDom(){

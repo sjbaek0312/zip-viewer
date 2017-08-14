@@ -3,8 +3,8 @@ const APIURL =  "api/files/"; //real API
  
 export function zipFileLoad(fileId){
 	let apiURL = APIURL + fileId + "/zipfiles";
-	let call = function(){
-		return $.ajax({ url : apiURL, type : "POST", dataType: "json"})
+	let call = function(callback){
+		return $.ajax({ url : apiURL, type : "POST", dataType: "json", beforeSend: callback, xhr : function() {const xhr = $.ajaxSettings.xhr(); return xhr}})
 	}
 	return call;
 }
@@ -26,9 +26,9 @@ export function zipFileRenew(fileId){
 }
 
 export function zipFileDownload(fileId){
-	let apiURL = APIURL + fileId + "/zipfiles";
+	let apiURL = APIURL + fileId + "/zipfiles/";
 	let call = function(parentId) {
-		return $.ajax({ url : apiURL, data : {"zipfileId" : zipFileId}, type : "GET", dataType: "json"})
+		return $.ajax({ url : apiURL + parentId, type : "GET", dataType: false})
 	}
 	return call;
 }

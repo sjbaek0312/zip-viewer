@@ -22,8 +22,8 @@ class FileModel {
 class FileListModel extends EventEmitter {
 	constructor(){
 		super();
-		this._url = "http://localhost:8080/api/files"; // test용
-//		this._url = "/api/files"				// 실제 사용.
+//		this._url = "http://localhost:8080/api/files"; // test용
+		this._url = "/api/files"				// 실제 사용.
 		this._fileList = new Map(); 
 		this._dispatchedFiles = []; 
 	}

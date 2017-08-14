@@ -21,38 +21,34 @@ class ZipFileListModel extends EventEmitter {
 	constructor(rootModelId){
 		super();
 		this._zipFileList = new Map();
-		
 		this._APIList = zipFileList(rootModelId);
 		this._APIDownload = zipFileDownload(rootModelId);
 	}
 	
-	apiList(parentId) {
+	apiList(parentId, ancestorId) {
 		const self = this;
 		this._APIList(parentId)
 		.done(function(res){
 			let response = res.items
-			console.dir(res);
-			self.setModel(response);
+//			console.dir(res);
+			self.setModel(response, ancestorId);
 		})
 		.fail(this._emitListFail.bind(this))
 	}
 	
 	apiDownload(fileId) {
 		this._APIDownload(fileId)
+			.done(function(res){console.dir(res)})
 			.fail(this._emitDownloadFail.bind(this))
 	}
 		
-	setModel(jsonArray){
+	setModel(jsonArray, ancestorId){
 		this._zipFileList.clear();
-		this._setFirstList(jsonArray)
-		jsonArray.forEach(this._pushZipFile, this)
-		this.emit("ModelSettingDone", Array.from(this._zipFileList.values()));
-	}
-	
-	_setFirstList(jsonArray){
-		if (!this._isRootDepth(jsonArray[0])) {
-			this._zipFileList.set( jsonArray[0].zipfileParentId ,{zipfileName: '...', zipfileType: 'dir', zipfileSize: "", isDirectory: true, zipfileId: jsonArray[0].zipfileParentId})
+		if(jsonArray != null) { // 내부 조회 결과가 빈 값이 아닌 경우.(빈폴더 아님)
+			jsonArray.forEach(this._pushZipFile, this)
 		}
+//		this._zipFileList.set() // zipfileId는 부모 아이디, 그리고 zipfileParentId는 부모의 부모 아이디가 담겨야함!
+		this.emit("ModelSettingDone", Array.from(this._zipFileList.values()));
 	}
 	
 	_isRootDepth(json){
@@ -71,8 +67,8 @@ class ZipFileListModel extends EventEmitter {
 		this.emit("APIDownloadFail", res)
 	}
 
-	isDir(fileId){
-		return this._zipFileList.get(fileId).isDirectory;
+	getFile(fileId){
+		return this._zipFileList.get(fileId)
 	}
 
 }
