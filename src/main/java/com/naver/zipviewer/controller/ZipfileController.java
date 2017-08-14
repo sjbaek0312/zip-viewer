@@ -24,38 +24,38 @@ public class ZipfileController {
 	@Autowired private ZipfileService service;
 	
 	@PostMapping(value = "")
-	public ResponseEntity<?> load(@PathVariable(value = "fileId") long fileId, String userId) throws Exception
+	public ResponseEntity<?> load(@PathVariable(value = "fileId") long fileId) throws Exception
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("items", service.load(fileId, userId));
+		map.put("items", service.load(fileId));
 		return new ResponseEntity<>(map, HttpStatus.CREATED);
 	}
 	
 	@GetMapping(value = "")
-	public ResponseEntity<?> list(@PathVariable(value = "fileId") long fileId, @RequestParam(value = "zipfileParentId") long zipfileParentId, String userId) throws Exception
+	public ResponseEntity<?> list(@PathVariable(value = "fileId") long fileId, @RequestParam(value = "zipfileParentId") long zipfileParentId) throws Exception
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("items", service.list(fileId, zipfileParentId, userId));
+		map.put("items", service.list(fileId, zipfileParentId));
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
 	
 	@PatchMapping(value = "")
-	public ResponseEntity<?> renew(@PathVariable(value = "fileId") long fileId, String userId) throws Exception
+	public ResponseEntity<?> renew(@PathVariable(value = "fileId") long fileId) throws Exception
 	{
-		service.renew(fileId, userId);
+		service.renew(fileId);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	
 	@DeleteMapping(value = "")
-	public ResponseEntity<?> expire(@PathVariable(value = "fileId") long fileId, String userId) throws Exception
+	public ResponseEntity<?> expire(@PathVariable(value = "fileId") long fileId) throws Exception
 	{
-		service.expire(fileId, userId);
+		service.expire(fileId);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	
 	@GetMapping(value = "/{zipfileId}")
-	public ResponseEntity<?> download(@PathVariable(value = "fileId") long fileId, @PathVariable(value = "zipfileId") long zipfileId, String userId) throws Exception
+	public ResponseEntity<?> download(@PathVariable(value = "fileId") long fileId, @PathVariable(value = "zipfileId") long zipfileId) throws Exception
 	{
-		return new ResponseEntity<>(service.download(fileId, zipfileId, userId), HttpStatus.OK);
+		return new ResponseEntity<>(service.download(fileId, zipfileId), HttpStatus.OK);
 	}
 }

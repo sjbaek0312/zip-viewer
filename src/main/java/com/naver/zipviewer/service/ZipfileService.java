@@ -4,7 +4,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,30 +25,28 @@ public class ZipfileService {
 	@Value("#{config['fileUploadPath']}") String path;
 	@Value("#{config['fileDownloadPath']}") String targetParentPath;
 
-	public List<Zipfile> load(long fileId, String userId) throws Exception
+	public List<Zipfile> load(long fileId) throws Exception
 	{
-		userId = "admin";
-		if (!validation(fileId, userId))
+		if (!validation(fileId, "admin"))
 		{
 			throw new Exception("Not your file, or there is no file on database.");
 		}
 		
 		if (zipCacheService.findZip(fileId) != null)
 		{
-			return list(fileId, (long) 0, userId);
+			return list(fileId, (long) 0);
 		}
 		return new ArrayList<Zipfile>(zipCacheService.putZip(fileId).getMap().get((long) 0).values());
 	}
-	public List<Zipfile> list(long fileId, long zipfileParentId, String userId) throws Exception
+	public List<Zipfile> list(long fileId, long zipfileParentId) throws Exception
 	{	
-		userId = "admin";
-		if (!validation(fileId, userId))
+		if (!validation(fileId, "admin"))
 		{
 			throw new Exception("Not your file, or there is no file on database.");
 		}
 		if (zipCacheService.findZip(fileId) == null)
 		{
-			return load(fileId, userId);
+			return load(fileId);
 		}
 		else
 		{
@@ -57,14 +54,17 @@ public class ZipfileService {
 			{
 				throw new Exception("There is no folder with id : " + zipfileParentId);
 			}
+			if (zipCacheService.findZip(fileId).getMap().get(zipfileParentId).values() == null)
+			{
+				return null;
+			}
 			return new ArrayList<Zipfile>(zipCacheService.findZip(fileId).getMap().get(zipfileParentId).values());
 		}
 	}
 
-	public void renew(long fileId, String userId) throws Exception
+	public void renew(long fileId) throws Exception
 	{
-		userId = "admin";
-		if (!validation(fileId, userId))
+		if (!validation(fileId, "admin"))
 		{
 			throw new Exception("Not your file, or there is no file on database.");
 		}
@@ -74,10 +74,9 @@ public class ZipfileService {
 		}
 	}
 	
-	public void expire(long fileId, String userId) throws Exception
+	public void expire(long fileId) throws Exception
 	{
-		userId = "admin";
-		if (!validation(fileId, userId))
+		if (!validation(fileId, "admin"))
 		{
 			throw new Exception("Not your file, or there is no file on database.");
 		}
@@ -88,10 +87,9 @@ public class ZipfileService {
 		zipCacheService.evictZip(fileId);
 	}
 	
-	public File download(long fileId, long zipfileId, String userId) throws Exception
+	public File download(long fileId, long zipfileId) throws Exception
 	{
-		userId = "admin";
-		if (!validation(fileId, userId))
+		if (!validation(fileId, "admin"))
 		{
 			throw new Exception("Not your file, or there is no file on database.");
 		}
