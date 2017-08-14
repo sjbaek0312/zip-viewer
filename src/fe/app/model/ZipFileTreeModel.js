@@ -1,73 +1,75 @@
-
 import EventEmitter from 'events';
+import {zipFileList} from 'lib/zipFileAction'
 
 class ZipFileModel {
 	constructor(json){
 		this.id = json.zipfileId;
 		this.text = json.zipfileName;
-		this.parent = json.zipfileParentId;
-		this.state = {selected: true};
-	}
+		this.children = json.hasDirectory;
+		this.parent = json.zipfileParentId; 
+	}	
 }
 
-class TempZipFileModel {
-	constructor(json){
-		this.id = json.zipfileId + 'tempChild';
-		this.parent = json.zipfileId;
-	}
-}
-
-class ZipFileTreeModel extends EventEmitter {
+class ZipFileTreeModel extends EventEmitter { 
 	constructor(rootModel){
 		super();
 		this._zipFileTree = new Map();
-		this._tempZipFileTree = new Map();
-		
-		this._zipFileTree.set(0,{"id": 0, "parent": "#", "text": rootModel.fileName, "state": { opened : true }})
+		this._setRootModel(rootModel)
+		this._APIList = zipFileList(rootModel.fileId)
 	}
-
-	
-	setModel(jsonArray) {
-		jsonArray.forEach(this._setModelAndAddTempChild, this);
-		this._settingDoneEmit();
+	_setRootModel(rootModel){
+		this._zipFileTree.set(0, {id: 0, text: rootModel.fileName, children: true , parent: '#' ,state: { opened : true }})
 	}
 	
-	_setModelAndAddTempChild(json){
-		if(json.isDirectory) {
-			this._zipFileTree.set(json.zipfileId, new ZipFileModel(json));
-			this._tempZipFileTree.set(json.zipfileId, new TempZipFileModel(json));
+	apiList(obj, callback){
+		const parentId = obj.id
+		const self = this;
+		this._APIList(parentId).done(function(response){
+			let res = response.items
+			self.addModel(res, obj, callback)
+		})
+	}
+	
+	getPath(zipFileId){
+		const pathArray = [];
+		let parentId = zipFileId;
+		while( parentId != '#') {
+			parentId = this._zipFileTree.get(parentId).parent;
+			pathArray.push(parentId);
 		}
+		return pathArray;
 	}
 	
-	addModel(jsonArray) {
-		jsonArray.forEach(this._addModelAndRemoveTempChild, this);
-		this._settingDoneEmit();
-	}
-	
-	_addModelAndRemoveTempChild(json){
-		const isDeleted = this._tempZipFileTree.delete(json.zipfileParentId); 
-		if(isDeleted) {
-			this._zipFileTree.get(json.zipfileParentId).state = {'opened': true }
+	initModel(jsonArray, obj, callback) { 
+		const dirArray = jsonArray.filter(this._getDirType);
+		
+		dirArray.forEach(this._setDirModel, this)
+		console.dir(this._zipFileTree);
+		if(dirArray.length != 0) {
+			this._zipFileTree.get(0).children = false;
 		}
-		
-		if(json.isDirectory) {
-			this._zipFileTree.set(json.zipfileId, new ZipFileModel(json));
-			this._tempZipFileTree.set(json.zipfileId, new TempZipFileModel(json));
-		}
+		callback.call(obj, Array.from(this._zipFileTree.values()))
 	}
 	
-	_settingDoneEmit(){
-		
-		let sendModel1 = Array.from(this._zipFileTree.values());
-		let sendModel2 = Array.from(this._tempZipFileTree.values());
-		
-		const sendModel = sendModel1.concat(sendModel2);
-
-		this.emit("ModelSettingDone", sendModel);
-
+	_getDirType(json){
+		return json.isDirectory
 	}
 	
-
-
+	_setDirModel(json){
+		this._zipFileTree.set(json.zipfileId, new ZipFileModel(json));
+	}
+	
+	_setPortion(json){
+		this.push( new ZipFileModel(json) )
+	}
+	
+	addModel(jsonArray, obj, callback) {
+		const dirArray = jsonArray.filter(this._getDirType);
+		let dir = [];
+		dirArray.forEach(this._setDirModel, this)
+		dirArray.forEach(this._setPortion, dir);
+		callback.call(obj, dir)
+	}
+	
 }
 export default ZipFileTreeModel;

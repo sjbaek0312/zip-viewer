@@ -1,4 +1,5 @@
 import EventEmitter from 'events';
+import { zipFileList, zipFileDownload } from 'lib/zipFileAction'
 
 class ZipFileModel {
 	constructor(json){
@@ -6,6 +7,7 @@ class ZipFileModel {
 		this.zipfileType = json.zipfileName.slice(json.zipfileName.lastIndexOf(".") + 1).toLowerCase();
 		this.zipfileId = json.zipfileId;
 		this.zipfileSize = json.zipfileSize;
+		this.hasDirectory = json.hasDirectory;
 		this.zipfileParentId = json.zipfileParentId;
 		this.isDirectory = json.isDirectory
 		if(json.isDirectory) {
@@ -16,22 +18,40 @@ class ZipFileModel {
 }
 
 class ZipFileListModel extends EventEmitter {
-	constructor(){
+	constructor(rootModelId){
 		super();
-		this._zipFileList = [];
+		this._zipFileList = new Map();
+		
+		this._APIList = zipFileList(rootModelId);
+		this._APIDownload = zipFileDownload(rootModelId);
 	}
-
+	
+	apiList(parentId) {
+		const self = this;
+		this._APIList(parentId)
+		.done(function(res){
+			let response = res.items
+			console.dir(res);
+			self.setModel(response);
+		})
+		.fail(this._emitListFail.bind(this))
+	}
+	
+	apiDownload(fileId) {
+		this._APIDownload(fileId)
+			.fail(this._emitDownloadFail.bind(this))
+	}
+		
 	setModel(jsonArray){
+		this._zipFileList.clear();
 		this._setFirstList(jsonArray)
 		jsonArray.forEach(this._pushZipFile, this)
-		this.emit("ModelSettingDone", this._zipFileList);
+		this.emit("ModelSettingDone", Array.from(this._zipFileList.values()));
 	}
 	
 	_setFirstList(jsonArray){
-		if (this._isRootDepth(jsonArray[0])) {
-			this._zipFileList = [];
-		} else {
-			this._zipFileList = [{zipfileName: '...', zipfileType: 'dir', zipfileSize: "", isDirectory: true, zipfileId: jsonArray[0].zipfileParentId}]
+		if (!this._isRootDepth(jsonArray[0])) {
+			this._zipFileList.set( jsonArray[0].zipfileParentId ,{zipfileName: '...', zipfileType: 'dir', zipfileSize: "", isDirectory: true, zipfileId: jsonArray[0].zipfileParentId})
 		}
 	}
 	
@@ -40,16 +60,21 @@ class ZipFileListModel extends EventEmitter {
 	}
 	
 	_pushZipFile(json){
-		this._zipFileList.push(new ZipFileModel(json))
+		this._zipFileList.set(json.zipfileId ,new ZipFileModel(json))
 	}
 	
-	getZipfileId(domId){
-		return this._zipFileList[domId].zipfileId;
+	_emitListFail(res){
+		this.emit("APIListFail",res)
 	}
 	
-	isDirectory(domId){
-		return this._zipFileList[domId].isDirectory;
+	_emitDownloadFail(res){
+		this.emit("APIDownloadFail", res)
 	}
+
+	isDir(fileId){
+		return this._zipFileList.get(fileId).isDirectory;
+	}
+
 }
 
 export default ZipFileListModel;

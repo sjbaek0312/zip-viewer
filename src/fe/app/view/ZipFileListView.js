@@ -5,7 +5,7 @@ class ZipFileListView {
 		this.$el = $(domId);
 	}
 
-	rendering(model) {		
+	rendering(model) {	
 		this.$el.html(zipFileListTemplate(model));
 	}
 	

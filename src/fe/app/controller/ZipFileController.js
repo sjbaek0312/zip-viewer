@@ -1,87 +1,72 @@
 import ZipFileListModel from "model/ZipFileListModel.js"
 import ZipFileTreeModel from "model/ZipFileTreeModel.js"
-import ZipFileAction from "model/ZipFileAction.js"
 import ZipFileListView from "view/ZipFileListView.js"
 import ZipFileTreeView from "view/ZipFileTreeView.js"
+import { zipFileLoad, zipFileExpire } from 'lib/zipFileAction'
 
 class ZipFileController {
 	constructor(fileModel){
+		
+		this._fileId = fileModel.fileId;
+		
 		this._zipFileListView = new ZipFileListView("#zipFileList"); 
 		this._zipFileTreeView = new ZipFileTreeView("#zipFileTree"); 	
 
-		this._zipFileAction = new ZipFileAction(fileModel.fileId);
 		this._zipFileTreeModel = new ZipFileTreeModel(fileModel);
-		this._zipFileListModel = new ZipFileListModel();
-
-		this.$criticalErrorModal = $("#ErrorModal");
+		this._zipFileListModel = new ZipFileListModel(fileModel.fileId);
+		
+//		this.$criticalErrorModal = $("#ErrorModal"); //
 		this.$zipFileModal = $("#zipFileModal");
 		
-		this._bindActionEvents();
-		this._bindModelEvents();
+		this._bindModelEvents()
 		this._bindListViewEvents();
 		this._bindTreeViewEvents();
-		
-		this._zipFileAction.apiZipFileLoad();
-		
-		this._startView(fileModel);
 		this._bindClickFinishEvent();
-		this._bindErrorModalEvents();
+//		this._bindContextMenu(); 
+		this._startView(fileModel);
+
+		this._zipFileTreeView.start();
+//		this._bindErrorModalEvents(); // 
+		
 		
 	}
 	
-	_bindActionEvents(){
-		let self = this;
-		this._zipFileAction
-			.on("APILoadDone", function(jsonArray) {
-				self._zipFileListModel.setModel(jsonArray);
-				self._zipFileTreeModel.setModel(jsonArray);
-			})
-			.on("APIListDone:Dir", function(jsonArray) { 
-				self._zipFileListModel.setModel(jsonArray);
-				self._zipFileTreeModel.addModel(jsonArray);
-			})
-			.on("APIListDone:Tree", function(jsonArray) {
-				self._zipFileTreeModel.addModel(jsonArray);
-			})
-			.on("APIListFail", function(){
-				self.$criticalErrorModal.find('.modal-body p').text('error happen')
-				self.$criticalErrorModal.modal('show');
-			})
-			.on("APILoadFail", function(){
-				self.$criticalErrorModal.find('.modal-body p').text('error happen')
-				self.$criticalErrorModal.modal('show');
-			})
-			.on("APIDownloadFail", function(){
-				self.$zipFileModal.find('.modal-body p').text('download Fail!')
-				self.$zipFileModal.modal('show');
-			})
+	_bindModelEvents(){ 
+		this._zipFileListModel
+			.on("ModelSettingDone", this._zipFileListView.rendering.bind(this._zipFileListView))
+			.on("APIListFail", this._setErrorMessage.bind(this))
+			.on("APIDownloadFail", this._setErrorMessage.bind(this))
+			
+		this._zipFileTreeModel
+			.on("APIListFail", this._setErrorMessage.bind(this))
 	}
 	
-	_bindModelEvents(){
-		let self = this;
-		this._zipFileListModel.on("ModelSettingDone", this._zipFileListView.rendering.bind(this._zipFileListView))
-		this._zipFileTreeModel.on("ModelSettingDone", this._zipFileTreeView.rendering.bind(this._zipFileTreeView))
-	}
-	
-	_bindListViewEvents(){
+	_bindListViewEvents(){ 
 		const self = this;
-		let dom = this._zipFileListView.getDom();
-		
-		dom.on("click", ".zipfile", function(event){
-			if(self._zipFileListModel.isDirectory(this.dataset.id)) {
-				const zipFileId = self._zipFileListModel.getZipfileId(this.dataset.id);
-				self._zipFileAction.clickDir(zipFileId);
-			} else {
-				console.log("Not a directory type");
-			}
+		let dom = this._zipFileListView.getDom();	
+		dom.on("dblclick", ".zipfile", function(evt){
+			const fileid = $(this).data('fileid');
+			if(self._zipFileListModel.isDir(fileid))
+				self._zipFileListModel.apiList(fileid);
+			else console.log("Not a directory")
 		});
-		dom = null;
 	}
 	
-	_bindTreeViewEvents(){
+	_bindTreeViewEvents(){ 
+		let self = this;
+//		const APIList = zipFileList(this._fileId);
+		const APILoad = zipFileLoad(this._fileId);
+		
 		this._zipFileTreeView
-			.on("APIListNeed:Dir", this._zipFileAction.clickDir.bind(this._zipFileAction))
-			.on("APIListNeed:Tree", this._zipFileAction.clickTree.bind(this._zipFileAction))
+			.once("APILoadNeed",function(obj, callback){
+				APILoad().done(function(res){
+					let response = res.items
+					self._zipFileTreeModel.initModel(response, obj, callback)
+					self._zipFileListModel.setModel(response);
+				})
+			})
+			.on("APIListNeed:Tree", this._zipFileTreeModel.apiList.bind(this._zipFileTreeModel))
+			.on("APIListNeed:Dir", this._zipFileListModel.apiList.bind(this._zipFileListModel))
 	}
 	
 	_startView(root){
@@ -89,20 +74,23 @@ class ZipFileController {
 	}
 	
 	_bindClickFinishEvent() {
-		let self = this;
-		$("#zipFileClose").on("click", function() { 
-			self._finish();
-		})
+		$("#zipFileClose").on("click", this._finish.bind(this))
 	}
 	
-	_bindErrorModalEvents(){
-		this.$criticalErrorModal.on('hidden.bs.modal', this._finish.bind(this));
+	_setErrorMessage(errorMessage){
+		this.$zipFileModal.find('.modal-body p').text(errorMessage)
+		this.$zipFileMoadl.modal('show');
+	}
+	
+	_bindContextMenu(){
+		// 다음 pr에 반영.
 	}
 	
 	_finish(){
 		$("#ZipViewerBackground").css("display","none");
 		$("#zipFileClose").off("click") 
-		this.$criticalErrorModal.off('hidden.bs.modal')
+		
+		const APIExpire = zipFileExpire(this.fileId);
 		
 		this._zipFileTreeView.destroy();
 		this._zipFileListView.destroy();
@@ -110,12 +98,13 @@ class ZipFileController {
 		this._zipFileListView = null;
 		this._zipFileTreeView = null;
 
-		this._zipFileAction = null;
 		this._zipFileTreeModel = null;
 		this._zipFileListModel = null;
 
 		this.$zipFileModal = null;
 		this.$criticalErrorModal = null;
+		
+		APIExpire();
 		
 		console.log("zipFileController Finished");
 	}
