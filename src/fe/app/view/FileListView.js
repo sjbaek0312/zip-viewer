@@ -21,7 +21,7 @@ class FileListView {
 		this.$el.prepend(div);
 	}
 	removeRendering() {
-		// iteration 3
+		// iteration 4
 	}
 }
 export default FileListView;

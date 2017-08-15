@@ -1,8 +1,6 @@
-import ZipFileListModel from "model/ZipFileListModel.js"
-import ZipFileTreeModel from "model/ZipFileTreeModel.js"
+import ZipFileModels from "model/ZipFileModels.js"
 import ZipFileListView from "view/ZipFileListView.js"
 import ZipFileTreeView from "view/ZipFileTreeView.js"
-import { zipFileLoad, zipFileExpire } from 'lib/zipFileAction'
 
 class ZipFileController {
 	constructor(fileModel){
@@ -12,11 +10,8 @@ class ZipFileController {
 		this._zipFileListView = new ZipFileListView("#zipFileList"); 
 		this._zipFileTreeView = new ZipFileTreeView("#zipFileTree"); 	
 
-		this._zipFileTreeModel = new ZipFileTreeModel(fileModel);
-		this._zipFileListModel = new ZipFileListModel(fileModel.fileId);
-		
-//		this.$zipFileEndingModal = $("#ErrorModal"); //
-		this.$zipFileModal = $("#zipFileModal");
+		this._zipFileModel = new ZipFileModels(fileModel);
+		this.$Modal = $("#zipFileModal");
 		
 		this._bindModelEvents()
 		this._bindListViewEvents();
@@ -26,18 +21,14 @@ class ZipFileController {
 		this._startView(fileModel);
 
 		this._zipFileTreeView.start();
-//		this._bindErrorModalEvents(); // 
 	}
 	
 	_bindModelEvents(){ 
-		this._zipFileListModel
-			.on("ModelSettingDone", this._zipFileListView.rendering.bind(this._zipFileListView))
-			.on("ModelSettingDone:null", this._setErrorMessage.bind(this))
-			.on("APIListFail", this._setErrorMessage.bind(this))
-			.on("APIDownloadFail", this._setErrorMessage.bind(this))
-			
-		this._zipFileTreeModel
-			.on("APIListFail", this._setErrorMessage.bind(this))
+		this._zipFileModel 
+		.on("LoadDone", this._zipFileListView.rendering.bind(this._zipFileListView))
+		.on("ListDone", this._zipFileListView.rendering.bind(this._zipFileListView))
+		.on("APIListFail", this._setErrorMessage.bind(this))
+		.on("APIDownloadFail", this._setErrorMessage.bind(this))
 	}
 	
 	_bindListViewEvents(){ 
@@ -46,21 +37,10 @@ class ZipFileController {
 		dom
 		.on("dblclick", ".zipfile", function(evt){
 			const fileid = $(this).data('fileid');
-			const file = self._zipFileListModel.getFile(fileid)
-			if(file.isDirectory){
-				self._zipFileListModel.apiList(fileid, file.zipfileParentId);
-				self._zipFileTreeView.loadAndShowNode(fileid)
-			}
-			else console.log("Not a directory")
+			self._zipFileModel.ListAllChildren(fileid, self._zipFileTreeView.loadAndShowNode.bind(self._zipFileTreeView))
 		})
 		.on("contextmenu", ".zipfile", function(evt){
-			evt.preventDefault();
-			const fileid = $(this).data('fileid');
-			console.dir(fileid)
-			const file = self._zipFileListModel.getFile(fileid)
-			if(!file.isDirectory){
-				self._zipFileListModel.apiDownload(fileid);
-			}
+			// 다음 pr에 반영.
 		})
 	}
 	
@@ -73,15 +53,9 @@ class ZipFileController {
 		}
 		
 		this._zipFileTreeView
-			.once("APILoadNeed",function(obj, callback){
-				APILoad(beforeSendFunction.bind(self)).done(function(res){
-					let response = res.items
-					self._zipFileTreeModel.initModel(response, obj, callback)
-					self._zipFileListModel.setModel(response);
-				})
-			})
-			.on("APIListNeed:Tree", this._zipFileTreeModel.apiList.bind(this._zipFileTreeModel))
-			.on("APIListNeed:Dir", this._zipFileListModel.apiList.bind(this._zipFileListModel))
+			.once("LoadNeed", this._zipFileModel.Load.bind(this._zipFileModel))	
+			.on("ListNeed:Tree", this._zipFileModel.ListDirChildren.bind(this._zipFileModel)) // tree 뷰만 바뀌는 경우.
+			.on("ListNeed:List", this._zipFileModel.ListAllChildren.bind(this._zipFileModel)) // list 뷰만 바뀌는 경우.
 	}
 	
 	_startView(root){
@@ -94,8 +68,8 @@ class ZipFileController {
 	
 	_setErrorMessage(errorMessage){
 		console.dir(errorMessage)
-		this.$zipFileModal.find('.modal-body p').text(errorMessage)
-		this.$zipFileModal.modal('show');
+		this.$Modal.find('.modal-body p').text(errorMessage)
+		this.$Modal.modal('show');
 	}
 	
 	_bindContextMenu(){
@@ -115,14 +89,11 @@ class ZipFileController {
 		
 		this._zipFileListView = null;
 		this._zipFileTreeView = null;
-
-		this._zipFileTreeModel = null;
-		this._zipFileListModel = null;
-
-		this.$zipFileModal = null;
-		this.$criticalErrorModal = null;
 		
-		APIExpire();
+		this._zipFileModel.Expire();
+		this._zipFileModel = null;
+
+		this.$Modal = null;
 		
 		console.log("zipFileController Finished");
 	}

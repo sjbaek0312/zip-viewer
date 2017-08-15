@@ -6,11 +6,11 @@
 	</thead>
 	<tbody>
 		{{#each this}}
-		<tr class="zipfile" data-fileid="{{zipfileId}}" >
-			<td class="col-xs-2"><img src="/static/img/file-{{zipfileType}}.png" width="20" onerror="this.src='/static/img/file-common.png'"/></td>
-			<td class="col-xs-7">{{zipfileName}}</td>
-			<td class="col-xs-3">{{zipfileSize}}</td>
+		<tr class="zipfile" data-fileid="{{id}}" >
+			<td class="col-xs-2"><img src="/static/img/file-{{type}}.png" width="20" onerror="this.src='/static/img/file-common.png'"/></td>
+			<td class="col-xs-7">{{text}}</td>
+			<td class="col-xs-3">{{size}}</td>
 		</tr>
 		{{/each}}				
 	</tbody>
-</table>
+</table
