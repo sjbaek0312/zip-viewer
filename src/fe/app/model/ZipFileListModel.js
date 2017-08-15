@@ -60,11 +60,11 @@ class ZipFileListModel extends EventEmitter {
 	}
 	
 	_emitListFail(res){
-		this.emit("APIListFail",res)
+		this.emit("APIListFail", res.msg)
 	}
 	
 	_emitDownloadFail(res){
-		this.emit("APIDownloadFail", res)
+		this.emit("APIDownloadFail", res.msg)
 	}
 
 	getFile(fileId){

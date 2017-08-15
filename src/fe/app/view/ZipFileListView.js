@@ -4,14 +4,14 @@ class ZipFileListView {
 	constructor(domId){
 		this.$el = $(domId);
 	}
+	
 
 	rendering(model) {	
 		this.$el.html(zipFileListTemplate(model));
 	}
 	
 	destroy(){ 
-		this.$el.off("dblclick");
-		this.$el.off("contextmenu");
+		this.$el.off();
 		this.$el.empty();
 		this.$el = null;
 	}
