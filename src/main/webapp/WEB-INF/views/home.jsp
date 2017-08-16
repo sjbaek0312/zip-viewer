@@ -22,10 +22,10 @@
 	<nav class="navbar navbar-default navbar-fixed-top">
 		<div class="container">
 			<div class="navbar-header">
-				<a class="navbar-brand" href="#">Compress File Viewer</a>
+				<a class="navbar-brand">Compress File Viewer</a>
 			</div>
 			<ul class="nav navbar-nav">
-				<li><a href="#">UserName</a></li>
+				<li><a>UserName</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				<li class="dropdown">
@@ -60,9 +60,10 @@
 		</div>
 	</div>
 
-	<div class="container" id="fileList">
-	<!-- tpl/FileList.html -->
-
+	<div class="container" >
+		<div class="row" id="fileList">
+			<!-- tpl/FileList.html -->
+		</div>
 	</div>
 
 	<div id="ZipViewerBackground" class="displayBlock">

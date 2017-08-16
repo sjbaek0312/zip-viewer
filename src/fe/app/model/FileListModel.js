@@ -23,8 +23,7 @@ class FileModel {
 class FileListModel extends EventEmitter {
 	constructor(){
 		super();
-//		this._url = "http://localhost:8080/api/files"; // test용
-		this._url = "/api/files"				// 실제 사용.
+		this._url = "api/files"				// 실제 사용.
 		this._fileList = new Map(); 
 		this._dispatchedFiles = []; 
 	}
@@ -64,6 +63,28 @@ class FileListModel extends EventEmitter {
 				return xhr;
 			}
 		});
+	}
+	
+	getDownloadURL(fileId){
+		if(!this._fileList.get(fileId)) throw "Can't Download This File"
+		return this._url + "/" + fileId
+	}
+	
+	apiFileDelete(fileId) {
+		const self = this;
+		if(!this._fileList.get(fileId)) throw "Can't Delete This File."
+		$.ajax({
+			url : this._url + fileId ,
+			type : "DELETE",
+			dataType : "json",
+		})
+		.done(function(res){
+			self._fileList.delete(fileId);
+			self.emit('change:delete', fileId)
+		})
+		.fail(function(res){
+			self.emit('APIDeleteFail', res.msg)
+		})
 	}
 
 	dispatchFiles(files) {

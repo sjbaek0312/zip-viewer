@@ -8,20 +8,19 @@ class FileListView {
 	getDomForEventBinding(){
 		return this.$el;
 	}
+	
 	rendering(model) {
 		let innerDiv = FileListTemplate(model);
-	
-		let div;
-		if (this.$el.children().length%3 === 0)
-			div = $("<div></div>").attr("class", "row");
-		else
-			div = this.$el.children().first();
-		
-		div.prepend(innerDiv);
-		this.$el.prepend(div);
+		this.$el.prepend(innerDiv);
 	}
-	removeRendering() {
-		// iteration 4
+	removeRendering(fileId) {
+		this.$el.children().each(function(){
+			if(fileId == $(this).data('fileid')) {
+				$(this).remove();
+				return false;
+			}
+			return true;
+		})
 	}
 }
 export default FileListView;

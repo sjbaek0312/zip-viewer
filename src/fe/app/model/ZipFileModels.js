@@ -2,8 +2,6 @@ import EventEmitter from 'events';
 import FileSizeMaker from 'lib/FileSizeMaker.js';
 import {zipFileLoad, zipFileList, zipFileDownload, zipFileRenew, zipFileExpire} from 'lib/zipFileAction'
 
-const Sizes = ['Byte', 'KB', 'MB', 'GB']
-
 class zipFileModel {
 	constructor(json) {
 		this.text = json.zipfileName
@@ -23,7 +21,7 @@ class zipFileModel {
 }
 
 class ZipFileModels extends EventEmitter {
-	constructor(root){
+	constructor(root) {
 		super();
 		this._models = new Map();
 		this._setRoot(root)
@@ -76,7 +74,6 @@ class ZipFileModels extends EventEmitter {
 		this._models.set(json.zipfileId ,new zipFileModel(json))
 	}
 	
-	// List view -> 이벤트 에미터로 일이 진행. callback은 list view 가 바뀌면서 수행될 놈들!
 	ListAllChildren(parent, callback){ 
 		const self = this;
 		let parentId = parent;
