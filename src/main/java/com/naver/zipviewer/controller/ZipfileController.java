@@ -1,11 +1,14 @@
 package com.naver.zipviewer.controller;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -56,6 +59,13 @@ public class ZipfileController {
 	@GetMapping(value = "/{zipfileId}")
 	public ResponseEntity<?> download(@PathVariable(value = "fileId") long fileId, @PathVariable(value = "zipfileId") long zipfileId) throws Exception
 	{
-		return new ResponseEntity<>(service.download(fileId, zipfileId, "admin"), HttpStatus.OK);
+		File file = service.download(fileId, zipfileId, "admin");
+		byte[] fileData = FileCopyUtils.copyToByteArray(file);
+
+		HttpHeaders header = new HttpHeaders();
+		header.add("Content-Disposition", "attachment; filename=\"" + new String(file.getName().getBytes("UTF-8"), "ISO-8859-1")+"\"");
+		file.delete();
+		
+		return new ResponseEntity<>(fileData, header, HttpStatus.OK);
 	}
 }
