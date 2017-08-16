@@ -86,7 +86,7 @@ public class ZipCacheService {
 					{
 						parentIdMap.put(0, (long) 0);
 						zipfile.setZipfileId(tmpZipfileId);
-						zipfile.setZipfileName(values[0] + "/");
+						zipfile.setZipfileName(values[0]);
 						zipfile.setZipfileSize((long) 0);
 						zipfile.setIsDirectory(true);
 						depth0Directories = values[0] + "/";

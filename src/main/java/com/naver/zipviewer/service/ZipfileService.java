@@ -38,6 +38,7 @@ public class ZipfileService {
 		}
 		return new ArrayList<Zipfile>(zipCacheService.putZip(fileId).getMap().get((long) 0).values());
 	}
+	
 	public List<Zipfile> list(long fileId, long zipfileParentId, String userId) throws Exception
 	{	
 		if (!validation(fileId, userId))
@@ -93,7 +94,6 @@ public class ZipfileService {
 		{
 			throw new Exception("There is no compressed file with id : " + fileId);
 		}
-		
 		return downloadUtil(fileId, zipfileId);
 	}
 	
