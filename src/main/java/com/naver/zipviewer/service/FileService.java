@@ -22,6 +22,8 @@ public class FileService {
  
 	@Value("#{config['fileUploadPath']}") String path;
 	@Autowired private FileDAO dao;
+	@Autowired private ZipCacheService zipCacheService;
+	@Autowired private ZipfileService zipfileService;
 
 	public FileVO insert(MultipartFile file) throws MultipartException, IOException, FileNotFoundException
 	{
@@ -66,18 +68,39 @@ public class FileService {
 		}
 
 		dao.insert(vo);
-
 		f.renameTo(new File(path + vo.getFileId() + ext));
 		return vo;
 	}
 
-	public List<FileVO> listAll()
+	public List<FileVO> listAll(String userId)
 	{
-		return dao.listAll();
+		return dao.listAll(userId);
 	}
 	
 	public FileVO select(long fileId)
 	{
 		return dao.select(fileId);
 	}
+	
+	public File download(long fileId, String userId) throws Exception
+	{
+		if (!zipfileService.validation(fileId, userId))
+		{
+			throw new Exception("Not your file, or there is no file on database.");
+		}
+		String ext = zipCacheService.getFileExt(fileId);		
+		return new File(path + fileId + "." + ext);
+	}
+	
+	public void delete(long fileId, String userId) throws Exception
+	{
+		if (!zipfileService.validation(fileId, userId))
+		{
+			throw new Exception("Not your file, or there is no file on database.");
+		}
+		String ext = zipCacheService.getFileExt(fileId);
+		dao.delete(fileId);
+		new File(path + fileId + "." + ext).delete();
+	}
+
 }
