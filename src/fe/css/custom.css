@@ -27,7 +27,7 @@
 	display: block; 
 	overflow: hidden; 
 	white-space: nowrap; 
-	width: 130px;
+	width: 230px;
 	text-overflow: ellipsis;
 }
 
@@ -57,13 +57,18 @@
 }
 #zipFileTree {
 	border-right: 1px dashed gray;
-	height: calc(100% - 55px);
+	height: calc(100% - 80px);
 	overflow: auto;
 }
 #zipFileList {
 	padding: 0px;
 	overflow: auto;
-	height: calc(100% - 55px);
+	height: calc(100% - 80px);
+}
+.zipfileContextHelper {
+	position: relative;
+	top: 0px;
+	left: 0px;
 }
 #contextMenu {
 	position: absolute;

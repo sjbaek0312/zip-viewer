@@ -62,6 +62,7 @@
 
 	<div class="container" id="fileList">
 	<!-- tpl/FileList.html -->
+
 	</div>
 
 	<div id="ZipViewerBackground" class="displayBlock">
@@ -89,7 +90,7 @@
 						<h4 class="modal-title">Zip File Viewer</h4>
 					</div>
 					<div class="modal-body">
-						<p>Some text in the modal.</p>
+						<p></p>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

@@ -1,20 +1,23 @@
 import EventEmitter from 'events';
+import FileSizeMaker from 'lib/FileSizeMaker.js';
 import {zipFileLoad, zipFileList, zipFileDownload, zipFileRenew, zipFileExpire} from 'lib/zipFileAction'
+
+const Sizes = ['Byte', 'KB', 'MB', 'GB']
 
 class zipFileModel {
 	constructor(json) {
 		this.text = json.zipfileName
 		this.type = json.zipfileName.slice(json.zipfileName.lastIndexOf(".") + 1).toLowerCase();
 		this.id = json.zipfileId;
-		this.size = json.zipfileSize;
 		this.children = json.hasDirectory;
 		this.parent = json.zipfileParentId;
 		this.isDirectory = json.isDirectory
+		this.size;
 		if(json.isDirectory) {
 			this.type = "dir";
-			this.size = "";
+		} else if (json.zipfileSize > 0) {
+			this.size = FileSizeMaker.calculateSize(json.zipfileSize)
 		}
-		
 		this.loaded = false
 	}
 }
@@ -58,7 +61,6 @@ class ZipFileModels extends EventEmitter {
 
 			allObject = self._getAllChildren(0);
 			self.emit('LoadDone', allObject);
-			console.dir(self._models)
 		})
 	}
 	
@@ -85,6 +87,7 @@ class ZipFileModels extends EventEmitter {
 		}
 		
 		if (this._models.get(parentId).loaded ) { // 이미 받은 것 있음.
+			console.log("AlreadyExist")
 			this._makeAllChildrenAndCallback(parentId, callback);
 			this._APIRenew();
 		} else {
@@ -105,6 +108,10 @@ class ZipFileModels extends EventEmitter {
 	
 	_getAllChildren(byParentId){
 		const result = [];
+		if(byParentId != 0) {
+			const ancestorId = this._models.get(byParentId).parent
+			result.push({id: ancestorId,text: '...', type: 'dir', isDirectory: true})
+		}
 		this._models.forEach(function(value){
 			if(value.parent == byParentId)
 				result.push(value)
@@ -120,6 +127,7 @@ class ZipFileModels extends EventEmitter {
 		if (!this._models.get(parentId).isDirectory){
 			throw "Not a directory";
 		} else if (this._models.get(parentId).loaded ) { // 이미 받은 것 있음.
+			console.log("AlreadyExist")
 			this._makeDirChildrenAndCallback(parentId, callback)
 			this._APIRenew();
 		} else {
@@ -150,13 +158,11 @@ class ZipFileModels extends EventEmitter {
 		this._APIExpire();
 	}
 	
-//	apiDownload(fileId) { // 다운로드 : ajax 요청 말고 새로운 링크 클릭으로 수행되게 해야함.
-//		if (this._models.get(parentId).isDirectory)
-//			throw "Can't Download Directory Type"
-////		this._APIDownload(fileId) 그냥 다운로드 api 주소를 넘겨줘야 한다.
-////			.done(function(res){console.dir(res)})
-////			.fail(this._emitDownloadFail.bind(this))
-//	}
+	getDownloadPath(zipFileId){
+		if(this._models.get(zipFileId).isDirectory)
+			throw "Can't Download Directory Type"	
+		return this._APIDownload(zipFileId)
+	}
 	
 	_emitListFail(res){
 		this.emit("APIListFail", res.msg)

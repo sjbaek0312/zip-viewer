@@ -16,7 +16,8 @@ class ZipFileTreeView extends EventEmitter {
 					'name' : 'proton'
 				},
 				'dblclick_toggle': false,
-				'check_callback' : true
+				'check_callback' : true,
+				'animation': false
 			}
 		});
 		
@@ -25,7 +26,7 @@ class ZipFileTreeView extends EventEmitter {
 
 	
 	_dataLoadFunction(obj, callback){
-		console.dir(obj)
+	//	console.dir(obj)
 		if(obj.id == '#') { // if root
 			this.emit('LoadNeed', callback.bind(obj));
 		} else {

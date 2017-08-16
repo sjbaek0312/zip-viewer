@@ -1,6 +1,7 @@
 import ZipFileModels from "model/ZipFileModels.js"
 import ZipFileListView from "view/ZipFileListView.js"
 import ZipFileTreeView from "view/ZipFileTreeView.js"
+import ContextMenuHandler from "lib/ContextMenuHandler.js"
 
 class ZipFileController {
 	constructor(fileModel){
@@ -40,17 +41,19 @@ class ZipFileController {
 			self._zipFileModel.ListAllChildren(fileid, self._zipFileTreeView.loadAndShowNode.bind(self._zipFileTreeView))
 		})
 		.on("contextmenu", ".zipfile", function(evt){
-			// 다음 pr에 반영.
+			evt.preventDefault();
+			const fileid = $(this).data('fileid');
+			try{
+				const downloadURL = self._zipFileModel.getDownloadPath(fileid)
+				ContextMenuHandler.showZipFileContextView(evt, downloadURL);
+			}catch(err){
+				console.log(err)
+			}
 		})
 	}
 	
 	_bindTreeViewEvents(){ 
 		let self = this;
-		const APILoad = zipFileLoad(this._fileId);
-		
-		const beforeSendFunction = function(a){
-			this._zipFileListView.$el.html("Loading...")
-		}
 		
 		this._zipFileTreeView
 			.once("LoadNeed", this._zipFileModel.Load.bind(this._zipFileModel))	
@@ -71,18 +74,11 @@ class ZipFileController {
 		this.$Modal.find('.modal-body p').text(errorMessage)
 		this.$Modal.modal('show');
 	}
-	
-	_bindContextMenu(){
-		// 다음 pr에 반영.
-	}
+
 	
 	_finish(){
 		$("#ZipViewerBackground").css("display","none");
 		$("#zipFileClose").off("click") 
-		
-		console.dir(this)
-		
-		const APIExpire = zipFileExpire(this._fileId);
 		
 		this._zipFileTreeView.destroy();
 		this._zipFileListView.destroy();

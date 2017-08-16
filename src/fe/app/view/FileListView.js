@@ -12,7 +12,7 @@ class FileListView {
 		let innerDiv = FileListTemplate(model);
 	
 		let div;
-		if (this.$el.children().length%6 === 0)
+		if (this.$el.children().length%3 === 0)
 			div = $("<div></div>").attr("class", "row");
 		else
 			div = this.$el.children().first();

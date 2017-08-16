@@ -1,4 +1,6 @@
 import EventEmitter from 'events';
+import FileSizeMaker from 'lib/FileSizeMaker.js';
+const ZIP_TYPE = ["zip", "jar", "tar"]
 
 class FileModel {
 	constructor(json){
@@ -6,10 +8,9 @@ class FileModel {
 		this.fileName = json.fileName;
 		this.fileType = json.fileName.slice(json.fileName.lastIndexOf(".") + 1).toLowerCase();
 		this.fileUploadTime = json.fileName.fileUploadTime;
-		this.fileSize = json.fileSize;
+		this.fileSize = FileSizeMaker.calculateSize(json.fileSize);
 	}
 	isCompressed(){
-		const ZIP_TYPE = ["zip", "7z", "alz", "egg"]
 		let self = this;
 		let result = false;
 		ZIP_TYPE.forEach(function(type){

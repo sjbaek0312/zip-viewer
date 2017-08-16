@@ -27,10 +27,10 @@ export function zipFileRenew(fileId){
 
 export function zipFileDownload(fileId){
 	let apiURL = APIURL + fileId + "/zipfiles/";
-	let call = function(parentId) {
-		return $.ajax({ url : apiURL + parentId, type : "GET", dataType: false})
+	let downloadURL = function(zipFileId){
+		return apiURL + zipFileId;
 	}
-	return call;
+	return downloadURL;
 }
 
 export function zipFileExpire(fileId){
