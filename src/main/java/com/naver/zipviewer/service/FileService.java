@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,6 +21,7 @@ import com.naver.zipviewer.persistence.FileDAO;
 @Service
 public class FileService {
  
+	@Value("#{config['fileDownloadPath']}") String targetParentPath;
 	@Value("#{config['fileUploadPath']}") String path;
 	@Autowired private FileDAO dao;
 	@Autowired private ZipCacheService zipCacheService;
@@ -88,8 +90,17 @@ public class FileService {
 		{
 			throw new Exception("Not your file, or there is no file on database.");
 		}
-		String ext = zipCacheService.getFileExt(fileId);		
-		return new File(path + fileId + "." + ext);
+
+		String ext = "";
+		if (select(fileId).getFileName().contains("."))
+		{
+			ext = "." + zipCacheService.getFileExt(fileId);	
+		}
+		File file = new File(path + fileId + ext);
+		File newFile = new File(targetParentPath + select(fileId).getFileName());
+		FileCopyUtils.copy(file, newFile);
+		return newFile;
+		
 	}
 	
 	public void delete(long fileId, String userId) throws Exception
@@ -98,7 +109,12 @@ public class FileService {
 		{
 			throw new Exception("Not your file, or there is no file on database.");
 		}
-		String ext = zipCacheService.getFileExt(fileId);
+		
+		String ext = "";
+		if (select(fileId).getFileName().contains("."))
+		{
+			ext = "." + zipCacheService.getFileExt(fileId);	
+		}
 		dao.delete(fileId);
 		new File(path + fileId + "." + ext).delete();
 	}

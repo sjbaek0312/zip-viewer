@@ -29,18 +29,19 @@ public class FileController {
 
 	@Autowired private FileService service;
 	
+
+	@PostMapping(value = "")
+	public ResponseEntity<?> insert(@RequestPart("file") MultipartFile file) throws IOException, MultipartException, FileNotFoundException
+	{
+		return new ResponseEntity<>(service.insert(file), HttpStatus.CREATED);
+	}
+	
 	@GetMapping(value = "")
 	public ResponseEntity<?> list() throws IllegalStateException
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("items", service.listAll("admin"));
 		return new ResponseEntity<>(map, HttpStatus.OK);
-	}
-
-	@PostMapping(value = "")
-	public ResponseEntity<?> insert(@RequestPart("file") MultipartFile file) throws IOException, MultipartException, FileNotFoundException
-	{
-		return new ResponseEntity<>(service.insert(file), HttpStatus.CREATED);
 	}
 	
 	@GetMapping(value = "/{fileId}")
@@ -51,6 +52,7 @@ public class FileController {
 		
 		HttpHeaders header = new HttpHeaders();
 		header.add("Content-Disposition", "attachment; filename=\"" + new String(file.getName().getBytes("UTF-8"), "ISO-8859-1")+"\"");
+		file.delete();
 		
 		return new ResponseEntity<>(fileData, header, HttpStatus.OK);
 	}
