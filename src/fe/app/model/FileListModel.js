@@ -74,7 +74,7 @@ class FileListModel extends EventEmitter {
 		const self = this;
 		if(!this._fileList.get(fileId)) throw "Can't Delete This File."
 		$.ajax({
-			url : this._url + fileId ,
+			url : this._url +"/"+ fileId ,
 			type : "DELETE",
 			dataType : "json",
 		})
