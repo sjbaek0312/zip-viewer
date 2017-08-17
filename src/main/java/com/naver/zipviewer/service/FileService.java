@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,8 +21,11 @@ import com.naver.zipviewer.persistence.FileDAO;
 @Service
 public class FileService {
  
+	@Value("#{config['fileDownloadPath']}") String targetParentPath;
 	@Value("#{config['fileUploadPath']}") String path;
 	@Autowired private FileDAO dao;
+	@Autowired private ZipCacheService zipCacheService;
+	@Autowired private ZipfileService zipfileService;
 
 	public FileVO insert(MultipartFile file) throws MultipartException, IOException, FileNotFoundException
 	{
@@ -66,18 +70,53 @@ public class FileService {
 		}
 
 		dao.insert(vo);
-
 		f.renameTo(new File(path + vo.getFileId() + ext));
 		return vo;
 	}
 
-	public List<FileVO> listAll()
+	public List<FileVO> listAll(String userId)
 	{
-		return dao.listAll();
+		return dao.listAll(userId);
 	}
 	
 	public FileVO select(long fileId)
 	{
 		return dao.select(fileId);
 	}
+	
+	public File download(long fileId, String userId) throws Exception
+	{
+		if (!zipfileService.validation(fileId, userId))
+		{
+			throw new Exception("Not your file, or there is no file on database.");
+		}
+
+		String ext = "";
+		if (select(fileId).getFileName().contains("."))
+		{
+			ext = "." + zipCacheService.getFileExt(fileId);	
+		}
+		File file = new File(path + fileId + ext);
+		File newFile = new File(targetParentPath + select(fileId).getFileName());
+		FileCopyUtils.copy(file, newFile);
+		return newFile;
+		
+	}
+	
+	public void delete(long fileId, String userId) throws Exception
+	{
+		if (!zipfileService.validation(fileId, userId))
+		{
+			throw new Exception("Not your file, or there is no file on database.");
+		}
+		
+		String ext = "";
+		if (select(fileId).getFileName().contains("."))
+		{
+			ext = "." + zipCacheService.getFileExt(fileId);	
+		}
+		dao.delete(fileId);
+		new File(path + fileId + "." + ext).delete();
+	}
+
 }
