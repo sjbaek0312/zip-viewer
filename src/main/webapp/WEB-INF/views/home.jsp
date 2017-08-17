@@ -9,7 +9,7 @@
 
 <script src="/static/bundle/jquery-3.2.1.js"></script>
 
-<script src="/static/bundle/main.js?v=sdfsd959"></script>
+<script src="/static/bundle/main.js?v=sdasdddf59"></script>
 <script src="/static/dist/js/bootstrap.js"></script>
 <script src="/static/dist/jstree.min.js"></script>
 <style>
@@ -62,6 +62,7 @@
 
 	<div class="container" id="fileList">
 	<!-- tpl/FileList.html -->
+
 	</div>
 
 	<div id="ZipViewerBackground" class="displayBlock">
@@ -89,7 +90,7 @@
 						<h4 class="modal-title">Zip File Viewer</h4>
 					</div>
 					<div class="modal-body">
-						<p>Some text in the modal.</p>
+						<p></p>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -107,7 +108,7 @@
 						<h4 class="modal-title">Zip File Viewer</h4>
 					</div>
 					<div class="modal-body">
-						<p>Some text in the modal.</p>
+						<p></p>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
