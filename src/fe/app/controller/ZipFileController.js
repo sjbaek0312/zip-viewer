@@ -4,10 +4,10 @@ import ZipFileTreeView from "view/ZipFileTreeView.js"
 import ContextMenuHandler from "lib/ContextMenuHandler.js"
 
 class ZipFileController {
-	constructor(fileModel){
+	constructor(fileModel, errorCallback){
 		
+		this._errorCallback = errorCallback;
 		this._fileId = fileModel.fileId;
-		
 		this._zipFileListView = new ZipFileListView("#zipFileList"); 
 		this._zipFileTreeView = new ZipFileTreeView("#zipFileTree"); 	
 
@@ -18,7 +18,6 @@ class ZipFileController {
 		this._bindListViewEvents();
 		this._bindTreeViewEvents();
 		this._bindClickFinishEvent();
-//		this._bindContextMenu(); 
 		this._startView(fileModel);
 
 		this._zipFileTreeView.start();
@@ -29,7 +28,7 @@ class ZipFileController {
 		.on("LoadDone", this._zipFileListView.rendering.bind(this._zipFileListView))
 		.on("ListDone", this._zipFileListView.rendering.bind(this._zipFileListView))
 		.on("APIListFail", this._setErrorMessage.bind(this))
-		.on("APIDownloadFail", this._setErrorMessage.bind(this))
+		.on("APIFail", this._setErrorMessage.bind(this))
 	}
 	
 	_bindListViewEvents(){ 
@@ -71,8 +70,14 @@ class ZipFileController {
 	
 	_setErrorMessage(errorMessage){
 		console.dir(errorMessage)
-		this.$Modal.find('.modal-body p').text(errorMessage)
+		if(typeof errorMesssage == 'Object'){
+			this.$Modal.find('.modal-body p').text(errorMessage.responseText)
+		} else {
+			this.$Modal.find('.modal-body p').text("Error Happen. Close the Compressed File Viewer.")
+		}
 		this.$Modal.modal('show');
+		this._errorCallback();
+		this._finish();
 	}
 
 	
@@ -90,7 +95,8 @@ class ZipFileController {
 		this._zipFileModel = null;
 
 		this.$Modal = null;
-		
+		this._errorCallback = null;
+
 		console.log("zipFileController Finished");
 	}
 }

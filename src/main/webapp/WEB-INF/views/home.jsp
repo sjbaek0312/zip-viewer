@@ -22,34 +22,19 @@
 	<nav class="navbar navbar-default navbar-fixed-top">
 		<div class="container">
 			<div class="navbar-header">
-				<a class="navbar-brand" href="#">Compress File Viewer</a>
+				<a class="navbar-brand">Compress File Viewer</a>
 			</div>
-			<ul class="nav navbar-nav">
-				<li><a href="#">UserName</a></li>
-			</ul>
-			<ul class="nav navbar-nav navbar-right">
+
+			<ul class="nav navbar-nav navbar-right" >
 				<li class="dropdown">
-					<button class="btn btn-danger navbar-btn dropdown-toggle"
+					<button id="uploadStateButton" class="disabled btn btn-danger navbar-btn dropdown-toggle"
 						type="button" data-toggle="dropdown">
 						Upload Progress <span class="caret"></span>
 					</button>
-					<ul class="dropdown-menu dropDownView">
-
-						<li>subTasj2.zip upload Done</li>
-						<li>subTasj2.zip upload
-								<div class="progress">
-									<div class="progress-bar" role="progressbar" aria-valuenow="70"
-										aria-valuemin="0" aria-valuemax="100" style="width: 70%">
-										<span class="sr-only">70% Complete</span>
-									</div>
-								</div>
-						</li>
-						<li>subTasj2.zip upload </li>
+					<ul id="uploadStateList" class="dropdown-menu dropDownView">
+					<!-- upload state View template -->						
 					</ul>
 				</li>
-				<li><a href="#"><span class="glyphicon glyphicon-log-out"></span>
-
-						Logout</a></li>
 			</ul>
 		</div>
 	</nav>
@@ -60,9 +45,10 @@
 		</div>
 	</div>
 
-	<div class="container" id="fileList">
-	<!-- tpl/FileList.html -->
-
+	<div class="container" >
+		<div class="row" id="fileList">
+			<!-- tpl/FileList.html -->
+		</div>
 	</div>
 
 	<div id="ZipViewerBackground" class="displayBlock">

@@ -1,4 +1,5 @@
 const FileListTemplate = require("tpl/FileList.html");
+const FileTemplate = require("tpl/File.html");
 
 class FileListView {
 	constructor(domId){
@@ -10,18 +11,20 @@ class FileListView {
 	}
 	rendering(model) {
 		let innerDiv = FileListTemplate(model);
-	
-		let div;
-		if (this.$el.children().length%3 === 0)
-			div = $("<div></div>").attr("class", "row");
-		else
-			div = this.$el.children().first();
-		
-		div.prepend(innerDiv);
-		this.$el.prepend(div);
+		this.$el.html(innerDiv);
 	}
-	removeRendering() {
-		// iteration 4
+	addRendering(model) {
+		let innerDiv = FileTemplate(model);
+		this.$el.prepend(innerDiv);
+	}
+	removeRendering(fileId) {
+		this.$el.children().each(function(){
+			if(fileId == $(this).data('fileid')) {
+				$(this).remove();
+				return false;
+			}
+			return true;
+		})
 	}
 }
 export default FileListView;
