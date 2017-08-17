@@ -1,16 +1,17 @@
 package com.naver.zipviewer.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,7 +30,6 @@ public class FileController {
 
 	@Autowired private FileService service;
 	
-
 	@PostMapping(value = "")
 	public ResponseEntity<?> insert(@RequestPart("file") MultipartFile file) throws IOException, MultipartException, FileNotFoundException
 	{
@@ -48,12 +48,23 @@ public class FileController {
 	public ResponseEntity<?> download(@PathVariable("fileId") long fileId) throws Exception
 	{
 		File file = service.download(fileId, "admin");
-		byte[] fileData = FileCopyUtils.copyToByteArray(file);
+		FileInputStream fis = null;
+		byte[] fileData;
 		
+		try
+		{
+			fis = new FileInputStream(file);
+			fileData = IOUtils.toByteArray(fis);
+		}
+		finally
+		{
+			fis.close();
+		}
+
 		HttpHeaders header = new HttpHeaders();
 		header.add("Content-Disposition", "attachment; filename=\"" + new String(file.getName().getBytes("UTF-8"), "ISO-8859-1")+"\"");
 		file.delete();
-		
+
 		return new ResponseEntity<>(fileData, header, HttpStatus.OK);
 	}
 	
