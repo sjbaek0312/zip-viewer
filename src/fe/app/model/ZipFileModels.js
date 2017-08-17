@@ -66,6 +66,10 @@ class ZipFileModels extends EventEmitter {
 		const jsonArray = response.items;
 		this._models.get(parentId).loaded = true;
 		if(jsonArray != null) { 
+			if(jsonArray[0].zipfileParentId != parentId) {
+				this._models.get(parentId).loaded = false;
+				throw "Cache removed... Click Again..."
+			}
 			jsonArray.forEach(this._pushModel, this)
 		} 
 	}
