@@ -24,7 +24,8 @@ class FileListController {
 	_bindModelAndView(){
 		let self = this;
 		this._model
-			.on("change:add", this._view.rendering.bind(this._view))
+			.on("change", this._view.rendering.bind(this._view))
+			.on("change:add", this._view.addRendering.bind(this._view))
 			.on("change:delete", this._view.removeRendering.bind(this._view))
 			.on("change:dispatched", this._uploadStateView.rendering.bind(this._uploadStateView))
 			.on("progres:uploading", this._uploadStateView.progressRendering.bind(this._uploadStateView))
@@ -52,6 +53,7 @@ class FileListController {
 				ContextMenuAction.showMainContextView(evt, downloadURL, self._model.apiFileDelete.bind(self._model), fileid)				
 			} catch(err){
 				console.log(err)
+				this._model.apiFileList();
 			}
 		});
 		$(document).on("click", ContextMenuAction.hideMainContextView)
@@ -61,7 +63,7 @@ class FileListController {
 		const fileId = $(evt.currentTarget).data('fileid');
 		const fileModel = this._model.getFile(fileId)
 		if (fileModel.isCompressed()) {
-			new ZipFileController(fileModel); 
+			new ZipFileController(fileModel, this._model.apiFileList.bind(this._model)); 
 		}
 		else{
 			console.log("Not a zip File");

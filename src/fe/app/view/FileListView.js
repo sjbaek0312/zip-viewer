@@ -1,4 +1,5 @@
 const FileListTemplate = require("tpl/FileList.html");
+const FileTemplate = require("tpl/File.html");
 
 class FileListView {
 	constructor(domId){
@@ -8,9 +9,12 @@ class FileListView {
 	getDomForEventBinding(){
 		return this.$el;
 	}
-	
 	rendering(model) {
 		let innerDiv = FileListTemplate(model);
+		this.$el.html(innerDiv);
+	}
+	addRendering(model) {
+		let innerDiv = FileTemplate(model);
 		this.$el.prepend(innerDiv);
 	}
 	removeRendering(fileId) {

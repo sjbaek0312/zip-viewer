@@ -48,7 +48,8 @@ class ZipFileModels extends EventEmitter {
 		const self = this
 		let dirObject;
 		let allObject
-		this._APILoad(null).done(function(res){
+		this._APILoad(null)
+		.done(function(res){
 			const root = self._models.get(0);
 			
 			self._addModels(0, res);
@@ -59,6 +60,9 @@ class ZipFileModels extends EventEmitter {
 
 			allObject = self._getAllChildren(0);
 			self.emit('LoadDone', allObject);
+		})
+		.fail(function(res){
+			self.emit('APIFail', res);
 		})
 	}
 	
@@ -165,12 +169,12 @@ class ZipFileModels extends EventEmitter {
 		return this._APIDownload(zipFileId)
 	}
 	
-	_emitListFail(res){
-		this.emit("APIListFail", res.msg)
+	_emitFail(res){
+		this.emit("APIFail",res)
 	}
 	
-	_emitDownloadFail(res){
-		this.emit("APIDownloadFail", res.msg)
+	_emitListFail(res){
+		this.emit("APIListFail", res)
 	}
 
 }

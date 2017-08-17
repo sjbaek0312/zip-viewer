@@ -26,25 +26,32 @@ class FileListModel extends EventEmitter {
 		this._url = "api/files"				// 실제 사용.
 		this._fileList = new Map(); 
 		this._dispatchedFiles = []; 
+//		this._dispatchedFiles = new Map(); 
+		
 	}
 	
 	getFile(fileId){
 		return this._fileList.get(fileId);
 	}
 	
+	
 	_addFiles(json){
 		let file = new FileModel(json);
 		this._fileList.set(json.fileId, file);
-		this.emit('change:add', file);
 	}
   
   	_pushDispatchedQueue(json){
 		this._dispatchedFiles.push(json);
 		this.emit('change:dispatched',json);
 	}
-	_notifyProgress(){
-		this.emit('change:')
-	}
+  	
+  	_makeObject(){
+  		const object = [];
+  		this._fileList.forEach(function(val){
+  			object.push(val);
+  		})
+  		return object.reverse();
+  	}
 	
 	apiFileList() {
 		let self = this;
@@ -52,16 +59,16 @@ class FileListModel extends EventEmitter {
 			url : this._url ,
 			type : "GET",
 			dataType : "json",
-			success : function(results) {
-				let resultFileList = results.items;
-				resultFileList.forEach(function(resultFile){
-					self._addFiles(resultFile);
-				})
-			},
 			xhr : function() {
 				var xhr = $.ajaxSettings.xhr();
 				return xhr;
 			}
+		}).done(function(results){
+			let resultFileList = results.items;
+			resultFileList.forEach(function(resultFile){
+				self._addFiles(resultFile);
+			})
+			self.emit('change', self._makeObject())
 		});
 	}
 	
@@ -115,9 +122,6 @@ class FileListModel extends EventEmitter {
 			dataType : "json",
 			type : "POST",
 			mimeType : "multipart/form-data",
-			success : function(results) {
-				self._addFiles(results);
-			},
 			error : function(){
 				console.log('ERROR');
 			},
@@ -132,6 +136,9 @@ class FileListModel extends EventEmitter {
 				}
 				return xhr;
 			}
+		}).done(function(result){
+			self._addFiles(result);
+			self.emit('change:add', self._fileList.get(result.fileId));
 		}).always(function() {
 			self._dispatchedFiles.shift();
 			self.apiFileInsert();
