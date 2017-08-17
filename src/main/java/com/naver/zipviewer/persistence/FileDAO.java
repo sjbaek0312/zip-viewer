@@ -19,13 +19,18 @@ public class FileDAO {
 		sqlSessionTemplate.insert(namespace+".insert", vo);
 	}
 	
-	public List<FileVO> listAll()
+	public List<FileVO> listAll(String userId)
 	{
-		return sqlSessionTemplate.selectList(namespace+".listAll");
+		return sqlSessionTemplate.selectList(namespace+".listAll", userId);
 	}
 	
 	public FileVO select(long fileId)
 	{
 		return sqlSessionTemplate.selectOne(namespace+".select", fileId);
+	}
+	
+	public void delete(long fileId)
+	{
+		sqlSessionTemplate.delete(namespace+".delete", fileId);
 	}
 }

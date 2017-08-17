@@ -54,7 +54,7 @@ public class ZipfileService {
 			if (!zipCacheService.findZip(fileId).getMap().containsKey(zipfileParentId))
 			{
 				return null;
-			}	
+			}
 			return new ArrayList<Zipfile>(zipCacheService.findZip(fileId).getMap().get(zipfileParentId).values());
 		}
 	}
@@ -67,7 +67,7 @@ public class ZipfileService {
 		}
 		if (zipCacheService.findZip(fileId) == null)
 		{
-			throw new Exception("There is no compressed file with id : " + fileId);
+			load(fileId, userId);
 		}
 	}
 	
@@ -79,7 +79,7 @@ public class ZipfileService {
 		}
 		if (zipCacheService.findZip(fileId) == null)
 		{
-			throw new Exception("There is no compressed file with id : " + fileId);
+			throw new Exception("There is no compressed file data with id : " + fileId);
 		}
 		zipCacheService.evictZip(fileId);
 	}
@@ -92,7 +92,7 @@ public class ZipfileService {
 		}
 		if (zipCacheService.findZip(fileId) == null)
 		{
-			throw new Exception("There is no compressed file with id : " + fileId);
+			load(fileId, userId);
 		}
 		return downloadUtil(fileId, zipfileId);
 	}

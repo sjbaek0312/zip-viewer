@@ -40,7 +40,7 @@ public class CommonExceptionAdvice {
 		er.setMsg("Not Found");
 		return new ResponseEntity<ErrorResponse>(er, HttpStatus.NOT_FOUND);
 	}
-	
+
 	// 500
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> handleException(Exception e)

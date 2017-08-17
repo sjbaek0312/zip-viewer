@@ -1,6 +1,7 @@
 package com.naver.zipviewer.service;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,8 +22,11 @@ import com.naver.zipviewer.persistence.FileDAO;
 @Service
 public class FileService {
  
+	@Value("#{config['fileDownloadPath']}") String targetParentPath;
 	@Value("#{config['fileUploadPath']}") String path;
 	@Autowired private FileDAO dao;
+	@Autowired private ZipCacheService zipCacheService;
+	@Autowired private ZipfileService zipfileService;
 
 	public FileVO insert(MultipartFile file) throws MultipartException, IOException, FileNotFoundException
 	{
@@ -33,7 +38,9 @@ public class FileService {
 		f = new File(path, file.getOriginalFilename());
 		
 		if (file.getOriginalFilename().contains("."))
+		{
 			ext = f.getName().substring(f.getName().lastIndexOf("."));
+		}
 		
 		try
 		{
@@ -66,18 +73,71 @@ public class FileService {
 		}
 
 		dao.insert(vo);
-
 		f.renameTo(new File(path + vo.getFileId() + ext));
 		return vo;
 	}
 
-	public List<FileVO> listAll()
+	public List<FileVO> listAll(String userId)
 	{
-		return dao.listAll();
+		return dao.listAll(userId);
 	}
 	
 	public FileVO select(long fileId)
 	{
 		return dao.select(fileId);
 	}
+	
+	public File download(long fileId, String userId) throws Exception
+	{
+		if (!zipfileService.validation(fileId, userId))
+		{
+			throw new Exception("Not your file, or there is no file on database.");
+		}
+
+		String ext = "";
+		if (select(fileId).getFileName().contains("."))
+		{
+			ext = "." + zipCacheService.getFileExt(fileId);	
+		}
+
+		File newFile = new File(targetParentPath + select(fileId).getFileName());
+		FileInputStream fis = null;
+		FileOutputStream fos = null;
+		try
+		{
+			fis = new FileInputStream(new File(path + fileId + ext));
+			fos = new FileOutputStream(newFile);
+			IOUtils.copy(fis,fos);
+		}
+		finally
+		{
+			try
+			{
+				fis.close();
+			}
+			finally
+			{
+				fos.close();
+			}
+		}
+
+		return newFile;	
+	}
+	
+	public void delete(long fileId, String userId) throws Exception
+	{
+		if (!zipfileService.validation(fileId, userId))
+		{
+			throw new Exception("Not your file, or there is no file on database.");
+		}
+		
+		String ext = "";
+		if (select(fileId).getFileName().contains("."))
+		{
+			ext = "." + zipCacheService.getFileExt(fileId);	
+		}
+		dao.delete(fileId);
+		new File(path + fileId + ext).delete();
+	}
+
 }
