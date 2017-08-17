@@ -37,7 +37,9 @@ public class FileService {
 		f = new File(path, file.getOriginalFilename());
 		
 		if (file.getOriginalFilename().contains("."))
+		{
 			ext = f.getName().substring(f.getName().lastIndexOf("."));
+		}
 		
 		try
 		{
