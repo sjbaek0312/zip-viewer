@@ -1,6 +1,7 @@
 package com.naver.zipviewer.service;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,10 +9,10 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -98,11 +99,29 @@ public class FileService {
 		{
 			ext = "." + zipCacheService.getFileExt(fileId);	
 		}
-		File file = new File(path + fileId + ext);
+
 		File newFile = new File(targetParentPath + select(fileId).getFileName());
-		FileCopyUtils.copy(file, newFile);
-		return newFile;
-		
+		FileInputStream fis = null;
+		FileOutputStream fos = null;
+		try
+		{
+			fis = new FileInputStream(new File(path + fileId + ext));
+			fos = new FileOutputStream(newFile);
+			IOUtils.copy(fis,fos);
+		}
+		finally
+		{
+			try
+			{
+				fis.close();
+			}
+			finally
+			{
+				fos.close();
+			}
+		}
+
+		return newFile;	
 	}
 	
 	public void delete(long fileId, String userId) throws Exception
@@ -118,7 +137,7 @@ public class FileService {
 			ext = "." + zipCacheService.getFileExt(fileId);	
 		}
 		dao.delete(fileId);
-		new File(path + fileId + "." + ext).delete();
+		new File(path + fileId + ext).delete();
 	}
 
 }
