@@ -34,22 +34,10 @@
 						Upload Progress <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu dropDownView">
-
-						<li>subTasj2.zip upload Done</li>
-						<li>subTasj2.zip upload
-								<div class="progress">
-									<div class="progress-bar" role="progressbar" aria-valuenow="70"
-										aria-valuemin="0" aria-valuemax="100" style="width: 70%">
-										<span class="sr-only">70% Complete</span>
-									</div>
-								</div>
-						</li>
-						<li>subTasj2.zip upload </li>
+					<!-- upload state View template -->						
 					</ul>
 				</li>
-				<li><a href="#"><span class="glyphicon glyphicon-log-out"></span>
-
-						Logout</a></li>
+				<li><a href="#"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
 			</ul>
 		</div>
 	</nav>
