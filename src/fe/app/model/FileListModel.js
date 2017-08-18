@@ -36,19 +36,19 @@ class FileListModel extends EventEmitter {
 		this._url = "api/files"				// 실제 사용.
 		this._fileList = new Map(); 
 		this._dispatchedFiles = []; 
-		
 	}
 	
 	getFile(fileId){
 		return this._fileList.get(fileId);
 	}
 	
+	
 	_addFiles(json){
 		let file = new FileModel(json);
 		this._fileList.set(json.fileId, file);
 	}
   	
-  	_makeObject(){
+  _makeObject(){
   		const object = [];
   		this._fileList.forEach(function(val){
   			object.push(val);
@@ -78,6 +78,7 @@ class FileListModel extends EventEmitter {
 	
 	getDownloadURL(fileId){
 		if(!this._fileList.get(fileId)) throw "Can't Download This File."
+
 		return this._url + "/" + fileId
 	}
 	
@@ -146,7 +147,6 @@ class FileListModel extends EventEmitter {
 		}).done(function(result){
 			self._addFiles(result);
 			self.emit('change:add', self._fileList.get(result.fileId));
-			
 			const currentFile = self._dispatchedFiles[0].uploadInfo;
 			currentFile.uploaded = true
 			self.emit("progres:uploading", currentFile);
@@ -154,8 +154,7 @@ class FileListModel extends EventEmitter {
 		.fail(function(res){ 
 			const errorMessage = self._dispatchedFiles[0].name + "upload Fail!"  
 			self.emit('APIUploadFail', errorMessage)
-		})
-		.done(function(){
+		}).always(function() {
 			self._dispatchedFiles.shift();
 			self.apiFileInsert();
 		});

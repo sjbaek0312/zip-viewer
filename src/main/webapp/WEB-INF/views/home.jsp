@@ -26,6 +26,7 @@
 			</div>
 
 			<ul class="nav navbar-nav navbar-right" >
+
 				<li class="dropdown">
 					<button id="uploadStateButton" class="disabled btn btn-danger navbar-btn dropdown-toggle"
 						type="button" data-toggle="dropdown">
@@ -35,6 +36,7 @@
 					<!-- upload state View template -->						
 					</ul>
 				</li>
+
 			</ul>
 		</div>
 	</nav>
