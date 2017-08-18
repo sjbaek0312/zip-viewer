@@ -1,5 +1,7 @@
 import EventEmitter from 'events';
 import FileSizeMaker from 'lib/FileSizeMaker.js';
+import UUID from 'lib/UUIDMaker.js'
+
 const ZIP_TYPE = ["zip", "jar", "tar"]
 
 class FileModel {
@@ -20,14 +22,20 @@ class FileModel {
 	}
 }
 
+class pendingFile {
+	constructor(json){
+		this.uploadId = json.id;
+		this.text = json.text;
+		this.progress = json.progress;
+	}
+}
+
 class FileListModel extends EventEmitter {
 	constructor(){
 		super();
 		this._url = "api/files"				// 실제 사용.
 		this._fileList = new Map(); 
 		this._dispatchedFiles = []; 
-//		this._dispatchedFiles = new Map(); 
-		
 	}
 	
 	getFile(fileId){
@@ -39,13 +47,8 @@ class FileListModel extends EventEmitter {
 		let file = new FileModel(json);
 		this._fileList.set(json.fileId, file);
 	}
-  
-  	_pushDispatchedQueue(json){
-		this._dispatchedFiles.push(json);
-		this.emit('change:dispatched',json);
-	}
   	
-  	_makeObject(){
+  _makeObject(){
   		const object = [];
   		this._fileList.forEach(function(val){
   			object.push(val);
@@ -65,6 +68,7 @@ class FileListModel extends EventEmitter {
 			}
 		}).done(function(results){
 			let resultFileList = results.items;
+			self._fileList.clear();
 			resultFileList.forEach(function(resultFile){
 				self._addFiles(resultFile);
 			})
@@ -73,7 +77,8 @@ class FileListModel extends EventEmitter {
 	}
 	
 	getDownloadURL(fileId){
-		if(!this._fileList.get(fileId)) throw "Can't Download This File"
+		if(!this._fileList.get(fileId)) throw "Can't Download This File."
+
 		return this._url + "/" + fileId
 	}
 	
@@ -90,14 +95,14 @@ class FileListModel extends EventEmitter {
 			self.emit('change:delete', fileId)
 		})
 		.fail(function(res){
-			self.emit('APIDeleteFail', res.msg)
+			self.apiFileList();
 		})
 	}
 
 	dispatchFiles(files) {
-		console.log(this._dispatchedFiles.length);
-		
+		console.dir(files)
 		let isUploadingKnow = (this._dispatchedFiles.length != 0);
+		
 		for (let i=0; i<files.length; i++) {
 			this._pushDispatchedQueue(files[i]);
 		}
@@ -107,13 +112,21 @@ class FileListModel extends EventEmitter {
 			this.apiFileInsert();
 		}
 	}
+	
+	  
+  	_pushDispatchedQueue(file){
+  		const fileInfo = { uploadInfo: { id: UUID.make() , text: file.name, progress: 0 }, content: file }
+		this._dispatchedFiles.push(fileInfo);
+		this.emit('progress:dispatched',fileInfo.uploadInfo);
+	}
 
 	apiFileInsert() {
 		if(this._dispatchedFiles.length === 0) throw "NO MORE FILES TO UPLOAD";
-
+		
 		let self = this;
 		let formData = new FormData();
-		formData.append("file", this._dispatchedFiles[0]);
+		formData.append("file", this._dispatchedFiles[0].content);
+		
 		$.ajax({
 			url : this._url ,
 			data : formData,
@@ -122,27 +135,30 @@ class FileListModel extends EventEmitter {
 			dataType : "json",
 			type : "POST",
 			mimeType : "multipart/form-data",
-			error : function(){
-				console.log('ERROR');
-			},
 			xhr : function() {
 				var xhr = $.ajaxSettings.xhr();
+				const currentFile = self._dispatchedFiles[0].uploadInfo;
 				xhr.upload.onprogress = function(event) {
-					console.log('progress', event.loaded, "/", event.total);
-					self.emit("progres:uploading");
-				}
-				xhr.upload.onload =function(event){
-					console.log('DONE!');
+					currentFile.progress = event.loaded / event.total * 100
+					self.emit("progres:uploading", currentFile);
 				}
 				return xhr;
 			}
 		}).done(function(result){
 			self._addFiles(result);
 			self.emit('change:add', self._fileList.get(result.fileId));
+			const currentFile = self._dispatchedFiles[0].uploadInfo;
+			currentFile.uploaded = true
+			self.emit("progres:uploading", currentFile);
+		})
+		.fail(function(res){ 
+			const errorMessage = self._dispatchedFiles[0].name + "upload Fail!"  
+			self.emit('APIUploadFail', errorMessage)
 		}).always(function() {
 			self._dispatchedFiles.shift();
 			self.apiFileInsert();
 		});
 	}
+	
 }
 export default FileListModel;

@@ -27,7 +27,7 @@ class FileListController {
 			.on("change", this._view.rendering.bind(this._view))
 			.on("change:add", this._view.addRendering.bind(this._view))
 			.on("change:delete", this._view.removeRendering.bind(this._view))
-			.on("change:dispatched", this._uploadStateView.rendering.bind(this._uploadStateView))
+			.on("progress:dispatched", this._uploadStateView.rendering.bind(this._uploadStateView))
 			.on("progres:uploading", this._uploadStateView.progressRendering.bind(this._uploadStateView))
 	}
 

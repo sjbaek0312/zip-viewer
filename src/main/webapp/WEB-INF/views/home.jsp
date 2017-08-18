@@ -24,20 +24,19 @@
 			<div class="navbar-header">
 				<a class="navbar-brand">Compress File Viewer</a>
 			</div>
-			<ul class="nav navbar-nav">
-				<li><a>UserName</a></li>
-			</ul>
-			<ul class="nav navbar-nav navbar-right">
+
+			<ul class="nav navbar-nav navbar-right" >
+
 				<li class="dropdown">
-					<button class="btn btn-danger navbar-btn dropdown-toggle"
+					<button id="uploadStateButton" class="disabled btn btn-danger navbar-btn dropdown-toggle"
 						type="button" data-toggle="dropdown">
 						Upload Progress <span class="caret"></span>
 					</button>
-					<ul class="dropdown-menu dropDownView">
+					<ul id="uploadStateList" class="dropdown-menu dropDownView">
 					<!-- upload state View template -->						
 					</ul>
 				</li>
-				<li><a href="#"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
+
 			</ul>
 		</div>
 	</nav>

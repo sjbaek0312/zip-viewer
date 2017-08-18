@@ -73,10 +73,11 @@ class ZipFileController {
 		if(typeof errorMesssage == 'Object'){
 			this.$Modal.find('.modal-body p').text(errorMessage.responseText)
 		} else {
-			this.$Modal.find('.modal-body p').text("Error Happen")
+			this.$Modal.find('.modal-body p').text("Error Happen. Close the Compressed File Viewer.")
 		}
 		this.$Modal.modal('show');
 		this._errorCallback();
+		this._finish();
 	}
 
 	
