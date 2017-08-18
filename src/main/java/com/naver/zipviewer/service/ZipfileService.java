@@ -54,7 +54,7 @@ public class ZipfileService {
 			if (!zipCacheService.findZip(fileId).getMap().containsKey(zipfileParentId))
 			{
 				return null;
-			}
+			}	
 			return new ArrayList<Zipfile>(zipCacheService.findZip(fileId).getMap().get(zipfileParentId).values());
 		}
 	}

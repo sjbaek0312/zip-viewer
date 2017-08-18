@@ -2,8 +2,6 @@ import EventEmitter from 'events';
 import FileSizeMaker from 'lib/FileSizeMaker.js';
 import {zipFileLoad, zipFileList, zipFileDownload, zipFileRenew, zipFileExpire} from 'lib/zipFileAction'
 
-const Sizes = ['Byte', 'KB', 'MB', 'GB']
-
 class zipFileModel {
 	constructor(json) {
 		this.text = json.zipfileName
@@ -23,7 +21,7 @@ class zipFileModel {
 }
 
 class ZipFileModels extends EventEmitter {
-	constructor(root){
+	constructor(root) {
 		super();
 		this._models = new Map();
 		this._setRoot(root)
@@ -50,7 +48,8 @@ class ZipFileModels extends EventEmitter {
 		const self = this
 		let dirObject;
 		let allObject
-		this._APILoad(null).done(function(res){
+		this._APILoad(null)
+		.done(function(res){
 			const root = self._models.get(0);
 			
 			self._addModels(0, res);
@@ -62,12 +61,19 @@ class ZipFileModels extends EventEmitter {
 			allObject = self._getAllChildren(0);
 			self.emit('LoadDone', allObject);
 		})
+		.fail(function(res){
+			self.emit('APIFail', res);
+		})
 	}
 	
 	_addModels(parentId, response){
 		const jsonArray = response.items;
 		this._models.get(parentId).loaded = true;
 		if(jsonArray != null) { 
+			if(jsonArray[0].zipfileParentId != parentId) {
+				this._models.get(parentId).loaded = false;
+				throw "Cache removed... Click Again..."
+			}
 			jsonArray.forEach(this._pushModel, this)
 		} 
 	}
@@ -76,7 +82,6 @@ class ZipFileModels extends EventEmitter {
 		this._models.set(json.zipfileId ,new zipFileModel(json))
 	}
 	
-	// List view -> 이벤트 에미터로 일이 진행. callback은 list view 가 바뀌면서 수행될 놈들!
 	ListAllChildren(parent, callback){ 
 		const self = this;
 		let parentId = parent;
@@ -164,12 +169,12 @@ class ZipFileModels extends EventEmitter {
 		return this._APIDownload(zipFileId)
 	}
 	
-	_emitListFail(res){
-		this.emit("APIListFail", res.msg)
+	_emitFail(res){
+		this.emit("APIFail",res)
 	}
 	
-	_emitDownloadFail(res){
-		this.emit("APIDownloadFail", res.msg)
+	_emitListFail(res){
+		this.emit("APIListFail", res)
 	}
 
 }

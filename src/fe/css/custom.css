@@ -82,11 +82,15 @@
 }
 #contextMenu .menu {
 	border-bottom: 1px dashed gray;
-	height: 20px;
+	color: #101010;
+	height: 25px;
+}
+#contextMenu .menu a, a:link, a:hover, a:active, a:visited {
+	color: #101010;
+	text-decoration: none;
 }
 #contextMenu .menu:hover {
 	background-color: B7B7B7;
-	height: 20px;
 }
 #contextMenu .menu:last-child{
 	border-bottom: none;
