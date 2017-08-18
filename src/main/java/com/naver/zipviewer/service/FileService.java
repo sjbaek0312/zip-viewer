@@ -1,15 +1,14 @@
 package com.naver.zipviewer.service;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -33,7 +32,7 @@ public class FileService {
 		FileVO vo = new FileVO();
 		File f = new File(path, file.getOriginalFilename());
 		InputStream is = null;
-		FileOutputStream fos = null;
+		OutputStream os = null;
 		String ext = "";
 		f = new File(path, file.getOriginalFilename());
 		
@@ -45,14 +44,14 @@ public class FileService {
 		try
 		{
 			is = file.getInputStream();
-			fos = new FileOutputStream(f);
+			os = new FileOutputStream(f);
 			byte[] buffer = new byte[1024 * 8];		
 			while(true)			
 			{
 				int count = is.read(buffer);
 				if(count == -1)
 					break;
-				fos.write(buffer, 0, count);
+				os.write(buffer, 0, count);
 			}
 
 			vo.setUserId("admin");
@@ -68,7 +67,7 @@ public class FileService {
 			}
 			finally
 			{
-				fos.close();
+				os.close();
 			}
 		}
 
@@ -99,29 +98,9 @@ public class FileService {
 		{
 			ext = "." + zipCacheService.getFileExt(fileId);	
 		}
-
-		File newFile = new File(targetParentPath + select(fileId).getFileName());
-		FileInputStream fis = null;
-		FileOutputStream fos = null;
-		try
-		{
-			fis = new FileInputStream(new File(path + fileId + ext));
-			fos = new FileOutputStream(newFile);
-			IOUtils.copy(fis,fos);
-		}
-		finally
-		{
-			try
-			{
-				fis.close();
-			}
-			finally
-			{
-				fos.close();
-			}
-		}
-
-		return newFile;	
+		File file = new File(path + fileId + ext);
+	
+		return file;	
 	}
 	
 	public void delete(long fileId, String userId) throws Exception

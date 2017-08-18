@@ -24,14 +24,6 @@ public class CommonExceptionAdvice {
 	}
 	
 	// 404
-/*	@ExceptionHandler(NotFoundException.class)
-	public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e)
-	{
-		ErrorResponse er = new ErrorResponse();
-		er.setErrorCode(100);
-		er.setMsg("Not Found");
-		return new ResponseEntity<ErrorResponse>(er, HttpStatus.NOT_FOUND);
-	}*/
 	@ExceptionHandler(FileNotFoundException.class)
 	public ResponseEntity<ErrorResponse> handleFileNotFoundException(FileNotFoundException e)
 	{

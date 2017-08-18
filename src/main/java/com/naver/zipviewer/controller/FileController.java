@@ -4,12 +4,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,6 +31,7 @@ import com.naver.zipviewer.service.FileService;
 @RequestMapping(value = "/api/files")
 public class FileController {
 
+	@Value("#{config['fileDownloadPath']}") String targetParentPath;
 	@Autowired private FileService service;
 	
 	@PostMapping(value = "")
@@ -45,27 +49,40 @@ public class FileController {
 	}
 	
 	@GetMapping(value = "/{fileId}")
-	public ResponseEntity<?> download(@PathVariable("fileId") long fileId) throws Exception
+	public void download(@PathVariable("fileId") long fileId, HttpServletResponse response) throws Exception
 	{
 		File file = service.download(fileId, "admin");
-		FileInputStream fis = null;
-		byte[] fileData;
+		InputStream is = null;
+		OutputStream os = null;
 		
+		response.setStatus(200);
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + new String(service.select(fileId).getFileName().getBytes("UTF-8"), "ISO-8859-1")+"\"");
+
 		try
 		{
-			fis = new FileInputStream(file);
-			fileData = IOUtils.toByteArray(fis);
+			is = new FileInputStream(file);
+			os = response.getOutputStream();
+			byte[] buffer = new byte[1024 * 8];		
+			while(true)			
+			{
+				int count = is.read(buffer);
+				if(count == -1)
+					break;
+				os.write(buffer, 0, count);
+			}
 		}
 		finally
 		{
-			fis.close();
+			try
+			{
+				is.close();
+			}
+			finally
+			{
+				os.flush();
+				os.close();
+			}
 		}
-
-		HttpHeaders header = new HttpHeaders();
-		header.add("Content-Disposition", "attachment; filename=\"" + new String(file.getName().getBytes("UTF-8"), "ISO-8859-1")+"\"");
-		file.delete();
-
-		return new ResponseEntity<>(fileData, header, HttpStatus.OK);
 	}
 	
 	@DeleteMapping(value = "/{fileId}")
