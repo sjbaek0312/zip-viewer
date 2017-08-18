@@ -24,9 +24,8 @@
 			<div class="navbar-header">
 				<a class="navbar-brand">Compress File Viewer</a>
 			</div>
-
 			<ul class="nav navbar-nav navbar-right" >
-
+			
 				<li class="dropdown">
 					<button id="uploadStateButton" class="disabled btn btn-danger navbar-btn dropdown-toggle"
 						type="button" data-toggle="dropdown">
@@ -93,7 +92,7 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Zip File Viewer</h4>
+						<h4 class="modal-title">Compress File Viewer</h4>
 					</div>
 					<div class="modal-body">
 						<p></p>

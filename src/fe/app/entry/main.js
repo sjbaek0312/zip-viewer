@@ -7,4 +7,3 @@ $(document).ready(function(){
 	let fileController = new FileListController();
 })
 
-
