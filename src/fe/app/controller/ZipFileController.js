@@ -44,7 +44,7 @@ class ZipFileController {
 			const fileid = $(this).data('fileid');
 			try{
 				const downloadURL = self._zipFileModel.getDownloadPath(fileid)
-				ContextMenuHandler.showZipFileContextView(evt, downloadURL);
+				ContextMenuHandler.showZipFileContextView(evt, downloadURL, self._setErrorMessage.bind(self));
 			}catch(err){
 				console.log(err)
 			}
@@ -70,11 +70,14 @@ class ZipFileController {
 	
 	_setErrorMessage(errorMessage){
 		console.dir(errorMessage)
-		if(typeof errorMesssage == 'Object'){
+		let message;
+		if(typeof errorMessage == 'Object'){
+			message = message.responseText
 			this.$Modal.find('.modal-body p').text(errorMessage.responseText)
 		} else {
-			this.$Modal.find('.modal-body p').text("Error Happen. Close the Compressed File Viewer.")
+			message = "Error Happen. Close the Compressed File Viewer."
 		}
+		this.$Modal.find('.modal-body p').text(message)
 		this.$Modal.modal('show');
 		this._errorCallback();
 		this._finish();

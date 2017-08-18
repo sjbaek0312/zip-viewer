@@ -11,6 +11,8 @@ class FileListController {
 		console.log("controller starts..");
 		this._view =  new FileListView("#fileList");
 		this._uploadStateView = new FileUploadStateListView("#uploadStateList");
+		this.$Modal = $("#zipFileModal");
+		
 		this._model = new FileListModel();
 
 		this._bindModelAndView();
@@ -50,13 +52,19 @@ class FileListController {
 			const fileid = $(this).data('fileid');
 			try{
 				const downloadURL = self._model.getDownloadURL(fileid);
-				ContextMenuAction.showMainContextView(evt, downloadURL, self._model.apiFileDelete.bind(self._model), fileid)				
+				ContextMenuAction.showMainContextView(evt, downloadURL, self._downloadError.bind(self), self._model.apiFileDelete.bind(self._model), fileid)				
 			} catch(err){
 				console.log(err)
 				this._model.apiFileList();
 			}
 		});
 		$(document).on("click", ContextMenuAction.hideMainContextView)
+	}
+	
+	_downloadError(errorMessage){
+		this.$Modal.find('.modal-body p').text(errorMessage)
+		this.$Modal.modal('show');
+		this._model.apiFileList();
 	}
 	
 	_startZipFileController(evt){
