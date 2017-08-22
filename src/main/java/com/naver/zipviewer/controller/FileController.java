@@ -26,11 +26,14 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.naver.zipviewer.service.FileService;
+import com.naver.zipviewer.service.ZipCacheService;
 
 @RestController
 @RequestMapping(value = "/api/files")
 public class FileController {
-
+	
+	@Autowired private ZipCacheService zipCacheService;
+	@Value("#{config['fileUploadPath']}") String path;
 	@Value("#{config['fileDownloadPath']}") String targetParentPath;
 	@Autowired private FileService service;
 	
@@ -51,7 +54,13 @@ public class FileController {
 	@GetMapping(value = "/{fileId}")
 	public void download(@PathVariable("fileId") long fileId, HttpServletResponse response) throws Exception
 	{
-		File file = service.download(fileId, "admin");
+		String ext = "";
+		if (service.select(fileId).getFileName().contains("."))
+		{
+			ext = "." + zipCacheService.getFileExt(fileId);	
+		}
+		File file = new File(path + fileId + ext);
+	//	File file = service.download(fileId, "admin");
 		InputStream is = null;
 		OutputStream os = null;
 		

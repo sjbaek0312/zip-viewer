@@ -85,7 +85,7 @@ public class FileService {
 	{
 		return dao.select(fileId);
 	}
-	
+	/*
 	public File download(long fileId, String userId) throws Exception
 	{
 		if (!zipfileService.validation(fileId, userId))
@@ -102,7 +102,7 @@ public class FileService {
 	
 		return file;	
 	}
-	
+	*/
 	public void delete(long fileId, String userId) throws Exception
 	{
 		if (!zipfileService.validation(fileId, userId))
